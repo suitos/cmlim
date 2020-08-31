@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="RSTest1" verbose="3">
+<parameter name="browser" value="Chrome"/>
+ <listeners>
+       <listener class-name="seminartest.TestListener"/>
+  </listeners>
+ 
+ <test name="Common_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.Common"/>
+    </classes>
+  </test> <!-- Test -->
+  
+  <test name="Join_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.JoinSeminar"/>
+    </classes>
+  </test> <!-- Test -->
+  
+  <test name="LoginTest_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.logintest"/>
+    </classes>
+  </test> <!-- Test -->
+  
+  <!--
+  <test name="LoginTest_FireFox">
+  <parameter name="browser" value="FireFox"/>
+    <classes>
+      <class name="seminartest.logintest"/>
+    </classes>
+  </test> 
+   -->
+  
+  <test name="UserInfo_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.MyProfile"/>
+    </classes>
+  </test> <!-- Test -->
+  
+  <!--
+  <test name="UserInfo_FireFox">
+  <parameter name="browser" value="FireFox"/>
+    <classes>
+      <class name="seminartest.MyProfile"/>
+    </classes>
+  </test> 
+  -->
+ 
+  <test name="CreateSeminar_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.CreateSeminar"/>
+    </classes>
+  </test> 
+
+  <test name="CreateSeminar2_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.CreateSeminar2"/>
+    </classes>
+  </test> 
+ 
+  <test name="CreateSeminar_Channel_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.CreateSeminar_Channel"/>
+    </classes>
+  </test> 
+
+  <test name="CreateSeminar_member_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.CreateSeminar_member"/>
+    </classes>
+  </test> 
+
+  <test name="CreateSeminar_Presentation_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.Presentation"/>
+    </classes>
+  </test>   
+ 
+  <test name="PreviewSeminar_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.PreviewSeminar"/>
+    </classes>
+  </test>   
+  
+ <test name="SeminarInvite(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.SeminarInvite"/>
+    </classes>
+  </test> <!-- SeminarInvite(defalut) test -->   
+ 
+ <test name="List_Basic_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ListTest"/>
+    </classes>
+  </test> <!-- List_Basic(defalut) test -->  
+ 
+ <test name="SeminarInformation_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.SeminarInfo"/>
+    </classes>
+  </test> <!-- List_Basic(defalut) test -->  
+        
+  <test name="Channel infomation(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ChannelInfo"/>
+    </classes>
+  </test> <!-- Channel infomation(defalut) test -->
+
+  <test name="Channel Management(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ChannelManagement"/>
+    </classes>
+  </test> <!-- Channel Management(defalut) test -->
+
+  <test name="Channel URL(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ChannelURL"/>
+    </classes>
+  </test> <!-- Channel URL(defalut) test -->
+  
+  <test name="Channel Visibility(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ChannelVisibility"/>
+    </classes>
+  </test> <!-- Channel Visibility(defalut) test -->
+  
+  <test name="Channel Invite(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ChannelInvite"/>
+    </classes>
+  </test> <!-- Channel Invite(defalut) test --> 
+  
+  <!-- 
+  <test name="Room state(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.RoomTest"/>
+    </classes>
+  </test> Room state(defalut) test --> 
+  
+ <test name="AttendeesTeststate(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.AttendeesTest"/>
+    </classes>
+  </test> <!-- AttendeesTest(defalut) test -->
+  
+ <test name="AttendeesTest2_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.AttendeesTest2"/>
+    </classes>
+  </test> 
+  
+  <test name="StandbyRoom(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.StandbyRoom"/>
+    </classes>
+  </test> <!-- StandbyRoom(defalut) test -->
+
+  <test name="OnAirRoom(defalut)_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.OnAirRoom"/>
+    </classes>
+  </test> 
+
+  <test name="RoomPresentation_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.RoomPresentation"/>
+    </classes>
+  </test> 
+  
+  <test name="Practice_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.Practice"/>
+    </classes>
+  </test> 
+  
+  <test name="Practice2_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.Practice2"/>
+    </classes>
+  </test> 
+
+  <test name="ExitSeminar_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ExitSeminar"/>
+    </classes>
+  </test>
+  
+  <test name="ExitSeminar2_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ExitSeminar2"/>
+	</classes>
+  </test>  
+  
+  <test name="Demo_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.Demo"/>
+    </classes>
+  </test>   
+       
+</suite> <!-- Suite -->
+

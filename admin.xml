@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="admin" verbose="3">
+<parameter name="browser" value="Chrome"/>
+ <listeners>
+       <listener class-name="seminartest.TestListener"/>
+  </listeners>
+ 
+ <test name="login_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="admin.LoginTest"/>
+    </classes>
+  </test> 
+  
+  <test name="Partners_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="admin.Partners"/>
+    </classes>
+  </test> 
+  
+  <test name="Partners2_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="admin.Partners2"/>
+    </classes>
+  </test> 
+  
+  <test name="Users_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="admin.Users"/>
+    </classes>
+  </test> 
+  
+  <test name="Users2_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="admin.Users2"/>
+    </classes>
+  </test> 
+       
+</suite> <!-- Suite -->
+
