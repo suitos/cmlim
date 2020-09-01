@@ -318,14 +318,14 @@ public class ExitSeminar {
 		Present_driver.findElement(By.xpath("//div[@class='buttons']/div/button[1]")).click();
 		Thread.sleep(1000);
 		
+		/*
 		Present_driver.switchTo().alert().accept();
 		Publisher_driver.switchTo().alert().accept();
 		Organizer_driver.switchTo().alert().accept();
 		Master_driver.switchTo().alert().accept();
 		LoginMember_driver.switchTo().alert().accept();
 		NotLoginMember_driver.switchTo().alert().accept();
-		
-		
+		*/
 		
 		if(!Present_driver.getCurrentUrl().contentEquals(closedurl) && 
 			!Publisher_driver.getCurrentUrl().contentEquals(closedurl) &&
