@@ -64,6 +64,7 @@ public class logintest {
 	public static String EMPTYPW = "Enter the password.";
 	public static String WRONGID = "You have entered and invalid username or password.";
 	public static String WRONGPW = "You have entered and invalid username or password.";
+	public static String MSG_LOGIN_DUPLICATED = "This connection will be terminated as you have logged in elsewhere. [41612]";
 	
 	public static String FINDPASSWORD_DESC = "Please, enter the information to reset the password."+ "\n" +"Please enter the registered email address.";
 	public static String FINDPASSWORD_ALERT_MSG = "Email information is incorrect. Please, check the email settings and try again.";
@@ -103,6 +104,7 @@ public class logintest {
 		String failMsg = "";
 		
 	    driver.get(CommonValues.SERVER_URL);
+	    Thread.sleep(1000);
 	    
 	    if (!driver.findElement(By.xpath(XPATH_ID)).getAttribute("placeholder").contentEquals(CommonValues.PLACEHOLDER_LOGIN_EMAIL))
 	    {
@@ -742,11 +744,25 @@ public class logintest {
 		
 		// 첫번째 브라우저 세미나 만들기 클릭
 		driver.findElement(By.xpath("//div[@class='l-right']/button[1]")).click();
-		Thread.sleep(500);
+		Thread.sleep(2000);
+		
+		if(isAlertPresent()) {
+			Alert alert = driver.switchTo().alert();
+			String alert_msg = alert.getText();
+			alert.accept();
+			
+			if(!alert_msg.contentEquals(MSG_LOGIN_DUPLICATED)) {
+				failMsg = failMsg + "1. alert message. [Expected]" + MSG_LOGIN_DUPLICATED 
+						+ " [Actual]" + alert_msg;
+			}
+			
+		} else {
+			failMsg = "0. cannot find alert.";
+		}
 		
 		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL) 
 				&& !driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/")) {
-			failMsg = "1. token error. current url : " + driver.getCurrentUrl();
+			failMsg = failMsg + "\n2. token error. current url : " + driver.getCurrentUrl();
 		}
 		secondDriver.quit();
 		
