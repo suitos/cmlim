@@ -105,41 +105,23 @@ public class PreviewSeminar {
 	//임시저장,미리보기 버튼 활성화 조건 확인(RST-383)
 	@Test(priority=2)
 	  public void checkActivePreviewBtn() throws Exception {
-		
-		WebElement DraftBtn = driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']"));
-		Boolean checkDraftBtn_BeforeTitle = DraftBtn.isEnabled();
-		if(checkDraftBtn_BeforeTitle == true) {
-			Exception e = new Exception("Draft_btn is enabled!! Before insert SeminarTitle");
-			throw e;
-		}
-		//세미나 제목 입력
-		CommonValues comm = new CommonValues();
-		comm.setCreateSeminar(driver, seminarTitle, false);
-		
-		BannerseminarTitle = driver.findElement(By.xpath("//div[@class='wrap-info']/div[1]")).getText();
-		BannerseminarDate = driver.findElement(By.xpath("//div[@class='wrap-info']/div[2]")).getText();
-		
-		//제목 입력 후 임시저장 버튼 활성화 확인
-		Boolean checkDraftBtn_AfterTitle = DraftBtn.isEnabled();
-		if(checkDraftBtn_AfterTitle == false) {
-			Exception e = new Exception("Draft_btn is not enabled!! After insert SeminarTitle");
-			throw e;
-		}
-		WebElement PreviewBtn_BeforeDraft = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']"));
-		
+
+		WebElement PreviewBtn_BeforeTitle = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']"));
+				
 		//미리보기 비활성화 확인
-		Boolean checkPreviewBtn_BeforeDraft = PreviewBtn_BeforeDraft.isDisplayed();
-		if(checkPreviewBtn_BeforeDraft == false) {
+		Boolean checkPreviewBtn_BeforeDraft = PreviewBtn_BeforeTitle.isEnabled();
+		if(checkPreviewBtn_BeforeDraft == true) {
 			Exception e = new Exception("Preview_btn is enabled!! Before click Draft");
 			throw e;
 		}
+		
 		//툴팁 확인
 		Actions action = new Actions(driver);
 		WebElement PreviewBtn_BeforeDraft2 = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']"));
 		Thread.sleep(1000);
 		action.moveToElement(PreviewBtn_BeforeDraft2).build().perform();
 		Thread.sleep(3000);
-		
+				
 		Boolean isToolTipDisplayed = driver.findElement(By.xpath("/html/body/div[3]/div/div/div/div[2]")).isDisplayed();
 		System.out.println("Is Tooltip displayed ? : " + isToolTipDisplayed);
 		if (isToolTipDisplayed == true) {
@@ -152,12 +134,16 @@ public class PreviewSeminar {
 		}
 		else {
 			Exception e = new Exception("Preview_tooltip is not displayed");
-			throw e;
-			
+			throw e;		
 			}
-		          
-		//임시저장 클릭
-		DraftBtn.click();
+		
+		//세미나 제목 입력
+		CommonValues comm = new CommonValues();
+		comm.setCreateSeminar(driver, seminarTitle, false);
+		
+		BannerseminarTitle = driver.findElement(By.xpath("//div[@class='wrap-info']/div[1]")).getText();
+		BannerseminarDate = driver.findElement(By.xpath("//div[@class='wrap-info']/div[2]")).getText();
+			
 		WebElement PreviewBtn_AfterDraft = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview ']"));
 		Boolean checkPreviewBtn_AfterDraft = PreviewBtn_AfterDraft.isEnabled();
 		if(checkPreviewBtn_AfterDraft == false) {

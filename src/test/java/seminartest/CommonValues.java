@@ -234,7 +234,7 @@ public class CommonValues {
 	public static String PREVIEW_STANBY_URI = "/seminar/preview-display";
 	public static String PREVIEW_SURVEY_URI = "/seminar/preview-survey";
 	public static String POST_URI = "/seminar/publish-complete";
-	public static String Preview_Tooltip = "Preview screen is shown when saved temporarily.";
+	public static String Preview_Tooltip = "seminar.onPreview.tooltip";
 	public static String PREVIEW_DEFAULT = "Preview seminar in progress";
 	public static String SURVEY_DEFAULT = "There is no seminar survey.";
 	
