@@ -36,6 +36,9 @@ import org.testng.annotations.Test;
 
 public class SeminarInvite {
 	
+	public static String XPATH_INVITE_EMAIL_INPUT = "//div[@class='inviteAttendeeToEmail__add__input']/input";
+	public static String XPATH_INVITE_EMAIL_ADD_BTN = "//div[@class='inviteAttendeeToEmail__add__input']/button";
+	public static String XPATH_INVITE_EMAIL_SEND_BTN = "//div[@class='InviteAttendeeToEmail_inviteAttendeeToEmail__buttons__1SJa5']/button";
 	
 	public static WebDriver driver;
 	private boolean acceptNextAlert = true;

@@ -270,6 +270,7 @@ public class CommonValues {
 	
 
 	public static String XPATH_ROOM_STARTSEMINAR_BTN = "//button[@class='btn btn-primary btn-xl seminar-start']";
+	public static String XPATH_ROOM_STARTSEMINAR_NOW_BTN = "//div[@class='countdown-footer']/button";
 	
 	public static String XPATH_SEMINARLIST_TAB = "//li[@class='seminarList__category__item']";
 	public static String XPATH_MODAL_BODY = "//div[@class='modal-body']";
@@ -318,7 +319,7 @@ public class CommonValues {
 	
 	public void loginseminar(WebDriver driver, String user) throws Exception
 	{
-		loginseminar(driver, USEREMAIL, USERPW);
+		loginseminar(driver, user, USERPW);
 	}
 	
 	public void loginseminar(WebDriver driver, String user, String pw) throws Exception {
@@ -340,6 +341,13 @@ public class CommonValues {
 	    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	    Thread.sleep(1000); 
 
+	    try {
+			driver.findElement(By.xpath(XPATH_MODAL_FOOTER + "/button[1]")).click();
+			Thread.sleep(1000); 
+		} catch (NoSuchElementException e) {
+	
+		}
+	    
 	    String listurl = CommonValues.SERVER_URL + CommonValues.LIST_URI;
 
 	    if(!driver.getCurrentUrl().contentEquals(listurl) && !driver.getCurrentUrl().contentEquals(SERVER_URL + INTRO_URI))
