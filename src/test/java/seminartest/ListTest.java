@@ -172,7 +172,7 @@ public class ListTest {
 			WebElement seminarTitle = driver.findElement(By.xpath(listitem));
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 			//takescreenshot(we, "draft.png");
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "post", true)) {
 				Thread.sleep(500);
 				String popupmsg = String.format(CommonValues.MSG_POST_SEMINAR, userName);
 				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(popupmsg)){
@@ -186,7 +186,7 @@ public class ListTest {
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
 				Thread.sleep(100);
 				
-				buttonTest(we, "button1", true);
+				buttonTest(we, "post", true);
 				Thread.sleep(500);
 				//confirm
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
@@ -256,8 +256,13 @@ public class ListTest {
 			if(!buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-3. can not find trash icon";
 			}
-			if(!buttonTest(we, "button2", false)) {
+			
+			if(!buttonTest(we, "rehearsal", false)) {
 				failMsg = failMsg + "\n1-4. can not find 2type button(rehearsal, invite button)";
+			}
+			
+			if(!buttonTest(we, "invite", false)) {
+				failMsg = failMsg + "\n1-5. can not find 2type button(rehearsal, invite button)";
 			}
 			
 			// click link
@@ -378,7 +383,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 			
 			//click invite
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(1000);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -434,7 +439,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 
 			// click rehearsal
-			if (buttonTest(we, "button2", true)) {
+			if (buttonTest(we, "rehearsal", true)) {
 				Thread.sleep(500);
 
 				ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
@@ -617,7 +622,7 @@ public class ListTest {
 			if(buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-3. find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
+			if(!buttonTest(we, "invite", false)) {
 				failMsg = failMsg + "\n1-4. can not find invite button.";
 			}
 			
@@ -690,7 +695,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 
 	
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(500);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -782,8 +787,15 @@ public class ListTest {
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(2000);
-		assertEquals(closeAlertAndGetItsText(), CommonValues.SEMINAR_CLOSE_MSG);
+		Thread.sleep(1000);
+		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n0-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n0-2. cannot find toast (presenter)";
+		}
 		
 		// go to listview
 		String listView = CommonValues.SERVER_URL + CommonValues.LIST_URI;
@@ -827,7 +839,7 @@ public class ListTest {
 			if(buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-3. find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
+			if(!buttonTest(we, "statistics", false)) {
 				failMsg = failMsg + "\n1-4. can not find statistics button";
 			}
 			
@@ -900,7 +912,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 
 			//click statistics
-			if (buttonTest(we, "button1", true)) {
+			if (buttonTest(we, "statistics", true)) {
 				Thread.sleep(500);
 				
 				String statisticsUrl = CommonValues.SERVER_URL + CommonValues.URI_STATISTIC + seminarID;
@@ -992,8 +1004,11 @@ public class ListTest {
 			if(!buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-4. can not find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
-				failMsg = failMsg + "\n1-5. can not find post button";
+			if(!buttonTest(we, "invite-temp", false)) {
+				failMsg = failMsg + "\n1-5. can not find invite-temp button";
+			}
+			if(!buttonTest(we, "post", false)) {
+				failMsg = failMsg + "\n1-6. can not find post button";
 			}
 			
 			//click edit
@@ -1148,7 +1163,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 			
 			//click post
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "post", true)) {
 				Thread.sleep(500);
 				String popupmsg = String.format(CommonValues.MSG_POST_SEMINAR, userName);
 				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(popupmsg)){
@@ -1162,7 +1177,7 @@ public class ListTest {
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
 				Thread.sleep(100);
 				
-				buttonTest(we, "button1", true);
+				buttonTest(we, "post", true);
 				Thread.sleep(500);
 				//confirm
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
@@ -1228,8 +1243,11 @@ public class ListTest {
 			if(!buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-4. can not find trash icon";
 			}
-			if(!buttonTest(we, "button2", false)) {
-				failMsg = failMsg + "\n1-5. can not find 2type button(practice, invite)";
+			if(!buttonTest(we, "invite", false)) {
+				failMsg = failMsg + "\n1-5. can not find 2type button(invite)";
+			}
+			if(!buttonTest(we, "practice", false)) {
+				failMsg = failMsg + "\n1-6. can not find 2type button(practice)";
 			}
 			
 			//click edit
@@ -1292,7 +1310,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 			
 			//click invite
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(500);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -1348,7 +1366,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 
 			// click rehearsal
-			if (buttonTest(we, "button2", true)) {
+			if (buttonTest(we, "rehearsal", true)) {
 				Thread.sleep(500);
 
 				ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
@@ -1537,7 +1555,7 @@ public class ListTest {
 			if(buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-3. find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
+			if(!buttonTest(we, "invite", false)) {
 				failMsg = failMsg + "\n1-4. can not find invite button.";
 			}
 			if(!buttonTest(we, "standby", false)) {
@@ -1545,7 +1563,7 @@ public class ListTest {
 			}
 			
 			// click invite button 
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(500);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -1602,6 +1620,8 @@ public class ListTest {
 		Thread.sleep(500);
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(1000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
 		
 		driver.get(CommonValues.SERVER_URL + CommonValues.LIST_URI);
 		Thread.sleep(1000);
@@ -1643,7 +1663,7 @@ public class ListTest {
 			if(buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-3. find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
+			if(!buttonTest(we, "invite", false)) {
 				failMsg = failMsg + "\n1-4. can not find invite button.";
 			}
 			if(!buttonTest(we, "onair", false)) {
@@ -1651,7 +1671,7 @@ public class ListTest {
 			}
 			
 			// click invite button 
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(500);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -1710,8 +1730,15 @@ public class ListTest {
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(2000);
-		assertEquals(closeAlertAndGetItsText(), CommonValues.SEMINAR_CLOSE_MSG);
 		
+		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n0-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n0-2. cannot find toast (presenter)";
+		}
 		
 		// go to listview
 		String listView = CommonValues.SERVER_URL + CommonValues.LIST_URI;
@@ -1742,7 +1769,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 
 			//click statistics
-			if (buttonTest(we, "button1", true)) {
+			if (buttonTest(we, "statistics", true)) {
 				Thread.sleep(500);
 				
 				String statisticsUrl = CommonValues.SERVER_URL + CommonValues.URI_STATISTIC + seminarID;
@@ -1878,8 +1905,11 @@ public class ListTest {
 			if(!buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-4. can not find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
+			if(!buttonTest(we, "invite-temp", false)) {
 				failMsg = failMsg + "\n1-5. can not find post button";
+			}
+			if(!buttonTest(we, "post", false)) {
+				failMsg = failMsg + "\n1-6. can not find post button";
 			}
 			
 			//click edit
@@ -2038,7 +2068,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 			
 			//click post
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "post", true)) {
 				Thread.sleep(500);
 				String popupmsg = String.format(CommonValues.MSG_POST_SEMINAR, userName);
 				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(popupmsg)){
@@ -2052,7 +2082,7 @@ public class ListTest {
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
 				Thread.sleep(100);
 				
-				buttonTest(we, "button1", true);
+				buttonTest(we, "post", true);
 				Thread.sleep(500);
 				//confirm
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
@@ -2105,7 +2135,7 @@ public class ListTest {
 
 			Actions actions = new Actions(driver);
 			actions.moveToElement(we).perform();
-			Thread.sleep(100);
+			Thread.sleep(500);
 	
 			//버튼 확인
 			if(!buttonTest(we, "lock", false)) {
@@ -2120,10 +2150,12 @@ public class ListTest {
 			if(!buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-4. can not find trash icon";
 			}
-			if(!buttonTest(we, "button2", false)) {
-				failMsg = failMsg + "\n1-5. can not find 2type button(practice, invite)";
+			if(!buttonTest(we, "invite", false)) {
+				failMsg = failMsg + "\n1-5. can not find 2type button(invite)";
 			}
-			
+			if(!buttonTest(we, "practice", false)) {
+				failMsg = failMsg + "\n1-6. can not find 2type button(practice)";
+			}
 			//click edit
 			if(buttonTest(we, "edit", true)) {
 				Thread.sleep(500);
@@ -2184,7 +2216,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 			
 			//click invite
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(500);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -2240,7 +2272,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 
 			// click rehearsal
-			if (buttonTest(we, "button2", true)) {
+			if (buttonTest(we, "rehearsal", true)) {
 				Thread.sleep(500);
 
 				ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
@@ -2431,7 +2463,7 @@ public class ListTest {
 			if(buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-3. find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
+			if(!buttonTest(we, "invite", false)) {
 				failMsg = failMsg + "\n1-4. can not find invite button.";
 			}
 			if(!buttonTest(we, "standby", false)) {
@@ -2439,7 +2471,7 @@ public class ListTest {
 			}
 			
 			// click invite button 
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(500);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -2496,6 +2528,8 @@ public class ListTest {
 		Thread.sleep(500);
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(1000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
 		
 		driver.get(CommonValues.SERVER_URL + CommonValues.LIST_URI);
 		Thread.sleep(1000);
@@ -2537,7 +2571,7 @@ public class ListTest {
 			if(buttonTest(we, "trash", false)) {
 				failMsg = failMsg + "\n1-3. find trash icon";
 			}
-			if(!buttonTest(we, "button1", false)) {
+			if(!buttonTest(we, "invite", false)) {
 				failMsg = failMsg + "\n1-4. can not find invite button.";
 			}
 			if(!buttonTest(we, "onair", false)) {
@@ -2545,7 +2579,7 @@ public class ListTest {
 			}
 			
 			// click invite button 
-			if(buttonTest(we, "button1", true)) {
+			if(buttonTest(we, "invite", true)) {
 				Thread.sleep(500);
 				
 				String inviteUrl = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -2604,8 +2638,15 @@ public class ListTest {
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(2000);
-		assertEquals(closeAlertAndGetItsText(), CommonValues.SEMINAR_CLOSE_MSG);
 		
+		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n0-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n0-2. cannot find toast (presenter)";
+		}
 		
 		// go to listview
 		String listView = CommonValues.SERVER_URL + CommonValues.LIST_URI;
@@ -2636,7 +2677,7 @@ public class ListTest {
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
 
 			//click statistics
-			if (buttonTest(we, "button1", true)) {
+			if (buttonTest(we, "statistics", true)) {
 				Thread.sleep(500);
 				
 				String statisticsUrl = CommonValues.SERVER_URL + CommonValues.URI_STATISTIC + seminarID;
@@ -2709,12 +2750,27 @@ public class ListTest {
 		case "trash":
 			xpath = ".//i[@class='ricon-trash']";
 			break;	
-		case "button1":
+		case "rehearsal":
+			xpath = ".//div[@class='SeminarListItem_seminarListItem__buttons__19f5i']/button[2]";
+			break;
+		case "statistics":
 			xpath = ".//div[@class='SeminarListItem_seminarListItem__buttons__19f5i']/button[1]";
 			break;
+		case "practice":
+			xpath = ".//div[@class='SeminarListItem_seminarListItem__buttons__19f5i']/button[2]";
+			break;
+		case "invite":
+			xpath = ".//div[@class='SeminarListItem_seminarListItem__buttons__19f5i']/button[1]";
+			break;
+		case "invite-temp":
+			xpath = ".//div[@class='SeminarListItem_seminarListItem__buttons__19f5i']/button[1]";
+			break;		
+		case "post":
+			xpath = ".//div[@class='SeminarListItem_seminarListItem__buttons__19f5i']/button[2]";
+			break;		
 		case "button2":
 			xpath = ".//div[@class='SeminarListItem_seminarListItem__buttons__19f5i']/button[2]";
-			break;	
+			break;		
 		case "lock":
 			xpath = ".//i[@class='ricon-lock']";
 			break;
