@@ -59,12 +59,13 @@ import org.testng.annotations.Test;
  * 14. 회사 필드 확인
  * 15. 직책 필드 확인
  * 16. 전화번호 필드 확인
- * 17. 일반 유저 입정정보 입력 후 세미나 입장
- * 18. 로그인한 유저가 세미나 입장 시 입장정보 확인  후 입장(rsrsup4) 
- * 19. 로그인한 유저  정보 수정하고 세미나 입장 (rsrsup4)
- * 20. 2명정원 세미나에  3번째 입장 시도
+ * 17. 동의 체크박스 확인
+ * 18. 일반 유저 입정정보 입력 후 세미나 입장
+ * 19. 로그인한 유저가 세미나 입장 시 입장정보 확인  후 입장(rsrsup4) 
+ * 20. 로그인한 유저  정보 수정하고 세미나 입장 (rsrsup4)
+ * 21. 2명정원 세미나에  3번째 입장 시도
  * 
- * 21. 비회원 참석자 재입장
+ * 22. 비회원 참석자 재입장
  * 
  * 31. 세미나 시작하기
  * 32. 세미나 종료하기
@@ -82,6 +83,12 @@ public class AttendeesTest{
 	public static String XPATH_ATTEND_POSITION = "//input[@name='jobPosition']";
 	public static String XPATH_ATTEND_PHONE = "//input[@name='phone']";
 	public static String XPATH_ATTEND_ERROR = "/../../span[@class='public-apply__errorMsg']";
+	
+	public static String XPATH_ATTEND_AGREE_CHECKBOX1 = "//div[@class='public-apply__attendeeInfo__terms']/div[@class='checkbox'][1]";
+	public static String XPATH_ATTEND_AGREE_CHECKBOX2 = "//div[@class='public-apply__attendeeInfo__terms']/div[@class='checkbox'][2]";
+	public static String XPATH_ATTEND_AGREE_ERROR = "//div[@class='public-apply__attendeeInfo__terms']/span[@class='public-apply__attendeeInfo__terms__error-msg']";
+	
+	public static String MSG_ATTEND_AGREE_ERROR = "blabla";
 	
 	public static String USER_PUBLISHER = "rsrsup2";
 	public static String USER_PRESENTER = "rsrsup3";
@@ -716,8 +723,75 @@ public class AttendeesTest{
 		}
 	}
 	
-	// 17. 일반 유저 입정정보 입력 후 세미나 입장 시도
+	//17. 동의 체크박스 확인
 	@Test(priority=17, enabled = true)
+	public void userAgreement() throws Exception 
+	{
+		String failMsg = "";
+		
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).click();
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).clear();
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).sendKeys(ATTENDEES_NICKNAME);
+		
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_EMAIL)).click();
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_EMAIL)).clear();
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_EMAIL)).sendKeys(ATTENDEES_EMAIL);
+		
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
+		Thread.sleep(500);
+		
+		// defalut 
+		if(attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1 + "//input")).isSelected() 
+				|| attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected()) {
+			failMsg = failMsg + "1. user agreement checkbox state. [Exepcted] unchecked, checkbox1:" 
+				+ attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected() 
+					+ " checkbox2:" + attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected();
+		}
+		
+		if(isElementPresent_wd(attendeesDriver, By.xpath(XPATH_ATTEND_AGREE_ERROR))) {
+			if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_ERROR)).getText().contentEquals(MSG_ATTEND_AGREE_ERROR)) {
+				failMsg = failMsg + "\n2. user agreement error message. [Exepcted]" + MSG_ATTEND_AGREE_ERROR 
+						+ " [Actual]" + attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n3. not find error message.";
+		}
+		//1check
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		Thread.sleep(100);
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
+		Thread.sleep(500);
+		if(isElementPresent_wd(attendeesDriver, By.xpath(XPATH_ATTEND_AGREE_ERROR))) {
+			if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_ERROR)).getText().contentEquals(MSG_ATTEND_AGREE_ERROR)) {
+				failMsg = failMsg + "\n4. user agreement error message. [Exepcted]" + MSG_ATTEND_AGREE_ERROR 
+						+ " [Actual]" + attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n5. not find error message.";
+		}
+		
+		// upcheck a, check b
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
+		Thread.sleep(500);
+		if(isElementPresent_wd(attendeesDriver, By.xpath(XPATH_ATTEND_AGREE_ERROR))) {
+			if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_ERROR)).getText().contentEquals(MSG_ATTEND_AGREE_ERROR)) {
+				failMsg = failMsg + "\n6. user agreement error message. [Exepcted]" + MSG_ATTEND_AGREE_ERROR 
+						+ " [Actual]" + attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n7. not find error message.";
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
+	// 18. 일반 유저 입정정보 입력 후 세미나 입장 시도
+	@Test(priority=18, enabled = true)
 	public void joinAttendeesNormalInfo() throws Exception 
 	{
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).click();
@@ -731,6 +805,11 @@ public class AttendeesTest{
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_COMPANY)).clear();
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_POSITION)).clear();
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_PHONE)).clear();
+		
+		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2)).click();
 		
 		//join seminar
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
@@ -747,8 +826,8 @@ public class AttendeesTest{
 	}
 	
 	
-	// 18. 로그인한 유저가 세미나 입장 시 입장정보 확인  후 입장(rsrsup4) 
-	@Test(priority = 18, enabled = true)
+	// 19. 로그인한 유저가 세미나 입장 시 입장정보 확인  후 입장(rsrsup4) 
+	@Test(priority = 19, enabled = true)
 	public void memberJoinInfo() throws Exception {
 		//login seminar
 		memberDriver.get(CommonValues.SERVER_URL);
@@ -792,6 +871,11 @@ public class AttendeesTest{
 	
 		}
 		
+		if(!memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+		
 		// 입장
 		// join seminar
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
@@ -812,8 +896,8 @@ public class AttendeesTest{
 		
 	}
 	
-	// 19. 로그인한 유저  정보 수정하고 세미나 입장 (rsrsup4)
-	@Test(priority = 19, enabled = true)
+	// 20. 로그인한 유저  정보 수정하고 세미나 입장 (rsrsup4)
+	@Test(priority = 20, enabled = true)
 	public void memberJoinSeminar() throws Exception {
 
 		// go seminar
@@ -849,6 +933,11 @@ public class AttendeesTest{
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_PHONE)).click();
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_PHONE)).sendKeys("01012345678");
 		
+		if(!memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			memberDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+		
 		// join seminar
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
 		Thread.sleep(1000);
@@ -863,8 +952,8 @@ public class AttendeesTest{
 		members.add("rsrsup4");
 	}
 
-	// 20. 2명정원 세미나에  3번째 입장 시도
-	@Test(priority = 20, dependsOnMethods = { "memberJoinSeminar", "masterRoom_channelInfo" }, alwaysRun = true, enabled = true)
+	// 21. 2명정원 세미나에  3번째 입장 시도
+	@Test(priority = 21, dependsOnMethods = { "memberJoinSeminar", "masterRoom_channelInfo" }, alwaysRun = true, enabled = true)
 	public void joinfullseminar() throws Exception {
 
 		//seminar link
@@ -881,8 +970,8 @@ public class AttendeesTest{
 	}
 
 	
-	// 20. 발표자 룸에서 멤버 확인
-	@Test(priority = 20, enabled = true)
+	// 21. 발표자 룸에서 멤버 확인
+	@Test(priority = 21, enabled = true)
 	public void memberCheck() throws Exception {
 		String failMsg = "";
 
@@ -941,8 +1030,8 @@ public class AttendeesTest{
 		}
 	}
 	
-	// 21. 비회원 참석자 재입장
-	@Test(priority = 21, dependsOnMethods = {"joinAttendeesNormalInfo"}, alwaysRun = true, enabled = true)
+	// 22. 비회원 참석자 재입장
+	@Test(priority = 22, dependsOnMethods = {"joinAttendeesNormalInfo"}, alwaysRun = true, enabled = true)
 	public void reentry_nonmember() throws Exception {
 		String failMsg = "";
 		
@@ -993,6 +1082,11 @@ public class AttendeesTest{
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_PHONE)).click();
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_PHONE)).sendKeys("01012345678");
 		
+		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+		
 		//join seminar
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
 		Thread.sleep(1000);
@@ -1019,6 +1113,8 @@ public class AttendeesTest{
 		Thread.sleep(500);
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(2000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
 		
 		String xpath_onair = "//strong[@id='user-type']";
 		// on air tag  : presenter
@@ -1447,7 +1543,7 @@ public class AttendeesTest{
 		return failMsg;
 	}
 	
-	public void takescreenshot(WebElement e, String filename) throws IOException {
+	public void takescreenshot(WebDriver e, String filename) throws IOException {
 		System.out.println("try take screenshot");
 		String filepath = System.getProperty("user.dir") + "\\test-output\\failimg\\" + filename;
 		File scrFile = ((TakesScreenshot) e).getScreenshotAs(OutputType.FILE);
