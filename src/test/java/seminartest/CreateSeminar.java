@@ -576,7 +576,7 @@ public class CreateSeminar {
 		}
 		
 		if(driver.findElement(By.xpath("//div[@id='seminar-type']")).isEnabled()) {
-			//failMsg = failMsg + "\n 3. type select box is enabled.";
+			failMsg = failMsg + "\n 3. type select box is enabled.";
 			
 			driver.findElement(By.xpath("//div[@id='seminar-type']")).click();
 			Thread.sleep(100);

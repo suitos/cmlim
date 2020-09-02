@@ -482,7 +482,7 @@ public class ChannelInvite {
 		
 		// check invite layer popup title
 		if(!memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText().contentEquals("Join the invited channel.")) {
-			failMsg = "1. invite layer popup title error : (actual) " + memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText();
+			failMsg = "invite layer popup title error : (actual) " + memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText();
 		}
 		
 		//click x button
@@ -500,7 +500,7 @@ public class ChannelInvite {
 		comm.loginseminar(memberdriver, INVITED_USER);
 		// check invite layer popup title
 		if(!memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText().contentEquals("Join the invited channel.")) {
-			failMsg = failMsg + "\n2.invite layer popup title error : (actual) " + memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText();
+			failMsg = "invite layer popup title error : (actual) " + memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText();
 		}
 		
 		//click x button
@@ -511,13 +511,9 @@ public class ChannelInvite {
 		Thread.sleep(500);
 
 		// check invite layer popup title
-		if(isElementPresent(memberdriver, By.xpath("//div[@class='modal-header']/p[1]"))) {
-			if(!memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText().contentEquals("Join the invited channel.")) {
-				failMsg = failMsg + "\n3. invite layer popup title error : (actual) " + memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText();
-			}
-		} else {
-			failMsg = failMsg + "\n3. cannot find invite layer popup. (click GNB logo)";
-		}
+		if(!memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText().contentEquals("Join the invited channel.")) {
+			failMsg = "invite layer popup title error : (actual) " + memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]")).getText();
+		}		
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -526,13 +522,11 @@ public class ChannelInvite {
 	}
 	
 	// 12. 새로 로그인(팝업 새로 뜸 확인), 채널 초대 거절하기
-	@Test(priority = 12, dependsOnMethods={"channelInvite_addemailBasic"}, enabled = true)
+	@Test(priority = 12, dependsOnMethods={"channelInvite_addemailBasic", "joinChannel_join_x"})
 	public void joinChannel_join_decline() throws Exception {
 		String failMsg = "";
 		//login
 		//memberlogin();
-		memberdriver.navigate().refresh();
-		Thread.sleep(500);
 
 		try {
 			memberdriver.findElement(By.xpath("//div[@class='modal-header']/p[1]"));
@@ -792,9 +786,6 @@ public class ChannelInvite {
 	public void joinChannel_join_joinchannel2() throws Exception {
 		String failMsg = "";
 		//login
-		memberdriver.get(CommonValues.SERVER_URL + "/logout");
-		Thread.sleep(500);
-		
 		CommonValues comm = new CommonValues();
 		comm.loginseminar(memberdriver, INVITED_USER);
 		
@@ -884,7 +875,7 @@ public class ChannelInvite {
 		memberlist = driver
 				.findElements(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']"));
 		if (memberlist.size() != 1) {
-			failMsg = failMsg + "4. added 1email [expected] 1item, " + INVITED_USER + "[Actual] "
+			failMsg = "added 1email [expected] 1item, " + INVITED_USER + "[Actual] "
 					+ memberlist.size() + "item ";
 		}		
 		
@@ -1328,15 +1319,6 @@ public class ChannelInvite {
 	      return false;
 	    }
 	  }
-	  
-	private boolean isElementPresent(WebDriver wd, By by) {
-		try {
-			wd.findElement(by);
-			return true;
-		} catch (NoSuchElementException e) {
-			return false;
-		}
-		  }	  
 
 	  private boolean isAlertPresent() {
 	    try {
