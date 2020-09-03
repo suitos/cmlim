@@ -248,6 +248,8 @@ public class OnAirRoom {
 		Thread.sleep(500);
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(1000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
 	    
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -651,6 +653,11 @@ public class OnAirRoom {
 		attendADriver.findElement(By.xpath("//input[@name='jobPosition']")).clear();
 		attendADriver.findElement(By.xpath("//input[@name='phone']")).clear();
 		
+		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+		
 		//join seminar
 		((JavascriptExecutor) attendADriver).executeScript("arguments[0].scrollIntoView(true);"
 				, attendADriver.findElement(By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']")));
@@ -722,6 +729,11 @@ public class OnAirRoom {
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_COMPANY)).clear();
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_POSITION)).clear();
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_PHONE)).clear();
+		
+		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
 		
 		//join seminar
 		((JavascriptExecutor) attendBDriver).executeScript("arguments[0].scrollIntoView(true);"
@@ -1572,11 +1584,33 @@ public class OnAirRoom {
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(2000);
 		
-		if (!findAlert(driver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = "0. cannot find alert (presenter)";
-		if (!findAlert(attendADriver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = "1. cannot find alert (attendee A)";
-		if (!findAlert(attendBDriver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = failMsg + "\n 2. cannot find alert (attendee B)";
-
-
+		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n1-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n1-2. cannot find toast (presenter)";
+		}
+		
+		if(isElementPresent_wd(attendADriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!attendADriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n2-1. toast message. (attendee A) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + attendADriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n2-2. cannot find toast (attendee A)";
+		}
+		
+		if(isElementPresent_wd(attendBDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!attendBDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n3-1. toast message. (attendee B) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + attendBDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n3-2. cannot find toast (attendee B)";
+		}
+		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e =  new Exception(failMsg);
 	    	throw e;

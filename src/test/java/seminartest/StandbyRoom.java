@@ -621,6 +621,11 @@ public class StandbyRoom {
 		attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_POSITION)).clear();
 		attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_PHONE)).clear();
 		
+		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+		
 		//join seminar
 		((JavascriptExecutor) attendADriver).executeScript("arguments[0].scrollIntoView(true);"
 				, attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
@@ -697,6 +702,11 @@ public class StandbyRoom {
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_COMPANY)).clear();
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_POSITION)).clear();
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_PHONE)).clear();
+		
+		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
 		
 		//join seminar
 		((JavascriptExecutor) attendBDriver).executeScript("arguments[0].scrollIntoView(true);"
@@ -1536,6 +1546,55 @@ public class StandbyRoom {
 			Thread.sleep(500);
 		}
 	}
+	
+	// 100. 세미나 종료하기
+	@Test(priority = 100, enabled = true)
+	public void closeSeminar() throws Exception {
+		String failMsg = "";
+		
+		driver.findElement(By.id("btn-exit")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[2]")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
+		Thread.sleep(2000);
+		
+		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n1-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n1-2. cannot find toast (presenter)";
+		}
+		
+		if(isElementPresent_wd(attendADriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!attendADriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n2-1. toast message. (attendee A) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + attendADriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n2-2. cannot find toast (attendee A)";
+		}
+		
+		if(isElementPresent_wd(attendBDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!attendBDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n3-1. toast message. (attendee B) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + attendBDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n3-2. cannot find toast (attendee B)";
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e =  new Exception(failMsg);
+	    	throw e;
+		}
+	}		
 	
 	@AfterClass(alwaysRun = true)
 	public void tearDown() throws Exception {
