@@ -148,6 +148,8 @@ public class RoomPresentation {
 		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")));
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(1000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
 	    
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);

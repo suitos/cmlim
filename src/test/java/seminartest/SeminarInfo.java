@@ -1171,6 +1171,8 @@ public class SeminarInfo {
 				Thread.sleep(500);
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 				Thread.sleep(500);
+				driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+				Thread.sleep(1000);
 			}
 
 		} else {
@@ -1188,9 +1190,13 @@ public class SeminarInfo {
 	@Test(priority=51, dependsOnMethods = {"onair_presenter"}, alwaysRun = true, enabled = true)
 	public void onair_publisher() throws Exception {
 		String failMsg = "";
+		Thread.sleep(3000);
 		
 		if(!driver_publisher.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID)) {
 			driver_publisher.get(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID);
+			Thread.sleep(500);
+		} else {
+			driver_publisher.navigate().refresh();
 			Thread.sleep(500);
 		}
 		
@@ -1546,9 +1552,16 @@ public class SeminarInfo {
 				driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 				Thread.sleep(500);
 				driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-				Thread.sleep(4000);
-				
-				if (!findAlert(driver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = failMsg + "\n 2. cannot find alert (presenter)";
+				Thread.sleep(1000);
+	
+				if(isElementPresent(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+					if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+						failMsg = failMsg + "\n2-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+								 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+					}
+				} else {
+					failMsg = failMsg + "\n2-2. cannot find toast (presenter)";
+				}
 			}
 
 		} else {
@@ -2263,6 +2276,8 @@ public class SeminarInfo {
 		Thread.sleep(500);
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(1000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
 		
 		//[게시자]
 		driver_publisher.get(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID);
@@ -2424,9 +2439,16 @@ public class SeminarInfo {
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(2000);
-		assertEquals(closeAlertAndGetItsText_webdriver(driver), CommonValues.SEMINAR_CLOSE_MSG);
-		Thread.sleep(500);
+		Thread.sleep(1000);
+	
+		if(isElementPresent(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n0-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n0-2. cannot find toast (presenter)";
+		}
 		
 		//[게시자]
 		driver_publisher.get(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID);
@@ -3178,6 +3200,8 @@ public class SeminarInfo {
 		Thread.sleep(500);
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(1000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
 		
 		//[게시자]
 		driver_publisher.get(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID);
@@ -3338,9 +3362,15 @@ public class SeminarInfo {
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(2000);
-		assertEquals(closeAlertAndGetItsText_webdriver(driver), CommonValues.SEMINAR_CLOSE_MSG);
-		Thread.sleep(500);
+		Thread.sleep(1000);
+		if(isElementPresent(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n0-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n0-2. cannot find toast (presenter)";
+		}
 		
 		//[게시자]
 		driver_publisher.get(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID);
