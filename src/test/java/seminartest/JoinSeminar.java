@@ -66,7 +66,9 @@ import org.testng.annotations.Test;
  * 62. 직책필드 길이 초과
  * 63. 직책필드 정상 포멧
  * 
- * 70. 마케팅동의 체크박스
+ * 65. 마케팅동의 체크박스
+ * 69. 필수동의 확인
+ * 
  * 71. 회원가입 정상 - 마케팅 동의 체크안함 - 내정보 확인 후 탈퇴
  * 75. 회원가입 정상 - 마케팅 동의 체크 
  * 76. 가입한 회원 채널 URL변경 - 정상케이스 - 회원탈퇴
@@ -92,6 +94,14 @@ public class JoinSeminar {
 	public static String XPATH_NICKNAME_ERROR = "//input[@name='nickname']/../../../span[@class='form__content__error-msg']";
 	public static String XPATH_COMPANY_ERROR = "//input[@name='companyName']/../../../span[@class='form__content__error-msg']";
 	public static String XPATH_POSITION_ERROR = "//input[@name='jobPosition']/../../../span[@class='form__content__error-msg']";
+	
+	public static String XPATH_JOIN_CHECKBOX1 = "//div[@class='form__content-box']/div[@class='checkbox'][1]";
+	public static String XPATH_JOIN_CHECKBOX2 = "//div[@class='form__content-box']/div[@class='checkbox'][2]";
+	public static String XPATH_JOIN_CHECKBOX3 = "//div[@class='form__content-box']/div[@class='checkbox'][3]";
+	public static String XPATH_JOIN_CHECKBOX4 = "//div[@class='form__content-box']/div[@class='checkbox'][4]"; //marketing
+	public static String XPATH_JOIN_CHECKBOX_ERROR = "//div[@class='form__content-box']/span[@class='form__content-box__error-msg']";
+	
+	public static String MSG_JOIN_AGREE_ERROR = "blabla";
 	
 	public static String CHANNEL_URI = "hello";
 	
@@ -334,6 +344,18 @@ public class JoinSeminar {
 		//check wrong format
 	    driver.findElement(By.xpath(XPATH_AUTHCODE)).sendKeys(CommonValues.TWENTY_ONE);
 	    driver.findElement(By.xpath(XPATH_PASSWORD)).click();
+	    
+		//check all
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
+		}
+		
 	    driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
 	    Thread.sleep(500);
 	    if (!driver.findElement(By.xpath(XPATH_AUTHCODE_ERROR)).getText().contentEquals(CommonValues.INVALID_AUTHCODE_MSG))
@@ -377,6 +399,17 @@ public class JoinSeminar {
 		
 		driver.findElement(By.xpath("//button[@class='form__auth-code-btn']")).click();
 		Thread.sleep(500);
+		
+		//check all
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
+		}
 
 		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
 		Thread.sleep(500);
@@ -423,6 +456,17 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(XPATH_EMAIL)).clear();
 		driver.findElement(By.xpath(XPATH_EMAIL)).sendKeys("missmatch@rsupport.com");
 		Thread.sleep(100);
+		
+		//check all
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
+		}
 		
 		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
 		Thread.sleep(500);
@@ -1041,8 +1085,8 @@ public class JoinSeminar {
 		}
 	}
 	
-	//70. 마케팅동의 체크박스
-	@Test(priority = 70, enabled = true)
+	//65. 마케팅동의 체크박스
+	@Test(priority = 65, enabled = true)
 	public void marketingCheckbox() throws Exception {
 		String failMsg = "";
 		
@@ -1081,11 +1125,11 @@ public class JoinSeminar {
 		}
 	}
 	
-	//71. 회원가입 정상 - 마케팅 동의 체크안함 (JOIN_USER) - 내정보 확인 후 탈퇴
-	@Test(priority = 71, enabled = true)
-	public void joinUser_min() throws Exception {
+	//69. 필수동의 확인
+	@Test(priority = 69, enabled = true)
+	public void essentialAgree() throws Exception {
 		String failMsg = "";
-		
+
 		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/signup/form")) {
 			driver.get(CommonValues.SERVER_URL + "/signup/form");
 			Thread.sleep(100);
@@ -1120,6 +1164,198 @@ public class JoinSeminar {
 			}
 		}
 		
+		//check default
+		if(driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
+			failMsg = "1-1. 1st checkbox is checked";
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//div")).click();
+		}
+		if(driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//input")).isSelected()) {
+			failMsg = failMsg + "\n1-2. 2nd checkbox is checked";
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
+		}
+		if(driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
+			failMsg = failMsg + "\n1-3. 3rd checkbox is checked";
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3+ "//div")).click();
+		}
+		
+		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//button[@class='form__submit-btn']")));
+		// click enter(new tab)
+		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		Thread.sleep(500);
+		//uncheck all
+		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
+			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
+				failMsg = failMsg + "\n2-0. error message [Expected]" + MSG_JOIN_AGREE_ERROR 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n2-1. cannot find error message";
+		}
+		
+		//check 1st checkbox, uncheck 2,3
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
+		Thread.sleep(500);
+		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
+			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
+				failMsg = failMsg + "\n3-0. error message [Expected]" + MSG_JOIN_AGREE_ERROR 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n3-1. cannot find error message";
+		}
+		
+		//check 2nd checkbox, uncheck 1,3
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		Thread.sleep(500);
+		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
+			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
+				failMsg = failMsg + "\n4-0. error message [Expected]" + MSG_JOIN_AGREE_ERROR 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n4-1. cannot find error message";
+		}
+		
+		//check 3nd checkbox, uncheck 1,2
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3+ "//div")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		Thread.sleep(500);
+		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
+			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
+				failMsg = failMsg + "\n5-0. error message [Expected]" + MSG_JOIN_AGREE_ERROR 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n5-1. cannot find error message";
+		}
+
+		//check 1,2 checkbox, uncheck 2
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3+ "//div")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		Thread.sleep(500);
+		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
+			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
+				failMsg = failMsg + "\n6-0. error message [Expected]" + MSG_JOIN_AGREE_ERROR 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n6-1. cannot find error message";
+		}
+		
+		//check 2,3 checkbox, uncheck 1
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3+ "//div")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		Thread.sleep(500);
+		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
+			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
+				failMsg = failMsg + "\n7-0. error message [Expected]" + MSG_JOIN_AGREE_ERROR 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n7-1. cannot find error message";
+		}		
+		
+		//check 1,3 checkbox, uncheck 2
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		Thread.sleep(500);
+		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
+			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
+				failMsg = failMsg + "\n8-0. error message [Expected]" + MSG_JOIN_AGREE_ERROR 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n8-1. cannot find error message";
+		}		
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
+	//71. 회원가입 정상 - 마케팅 동의 체크안함 (JOIN_USER) - 내정보 확인 후 탈퇴
+	@Test(priority = 71, dependsOnMethods = {"essentialAgree"}, alwaysRun = true, enabled = true)
+	public void joinUser_min() throws Exception {
+		String failMsg = "";
+		
+		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/signup/form")) {
+			driver.get(CommonValues.SERVER_URL + "/signup/form");
+			Thread.sleep(100);
+		}
+		
+		CommonValues comm = new CommonValues();
+		
+		comm.selectAll(driver.findElement(By.xpath(XPATH_PASSWORD)));
+		driver.findElement(By.xpath(XPATH_PASSWORD)).sendKeys(Keys.BACK_SPACE);
+		driver.findElement(By.xpath(XPATH_PASSWORD)).clear();
+		driver.findElement(By.xpath(XPATH_PASSWORD)).click();
+		driver.findElement(By.xpath(XPATH_PASSWORD)).sendKeys(CommonValues.USERPW);
+		
+		comm.selectAll(driver.findElement(By.xpath(XPATH_NICKNAME)));
+		driver.findElement(By.xpath(XPATH_NICKNAME)).sendKeys(Keys.BACK_SPACE);
+		driver.findElement(By.xpath(XPATH_NICKNAME)).clear();
+		driver.findElement(By.xpath(XPATH_NICKNAME)).click();
+		driver.findElement(By.xpath(XPATH_NICKNAME)).sendKeys("joinTC");
+		
+		if(driver.findElement(By.xpath(XPATH_EMAIL)).getAttribute("value").isEmpty() 
+				|| driver.findElement(By.xpath(XPATH_AUTHCODE)).getAttribute("value").isEmpty()) {
+			
+			comm.selectAll(driver.findElement(By.xpath(XPATH_EMAIL)));
+			driver.findElement(By.xpath(XPATH_EMAIL)).sendKeys(Keys.BACK_SPACE);
+			driver.findElement(By.xpath(XPATH_EMAIL)).clear();
+			driver.findElement(By.xpath(XPATH_EMAIL)).click();
+			driver.findElement(By.xpath(XPATH_EMAIL)).sendKeys(JOIN_USER);
+			
+			DBConnection connection = new DBConnection();
+			
+			ArrayList<String> beforeCode = connection.getAuthCodeForJoin(JOIN_USER);
+			
+			
+			driver.findElement(By.xpath("//button[@class='form__auth-code-btn']")).click();
+			Thread.sleep(500);
+			
+			ArrayList<String> afterCode = connection.getAuthCodeForJoin(JOIN_USER);
+			
+			for (String str : afterCode) { 
+				if (!beforeCode.contains(str)) {
+					comm.selectAll(driver.findElement(By.xpath(XPATH_AUTHCODE)));
+					driver.findElement(By.xpath(XPATH_AUTHCODE)).sendKeys(Keys.BACK_SPACE);
+					driver.findElement(By.xpath(XPATH_AUTHCODE)).clear();
+					driver.findElement(By.xpath(XPATH_AUTHCODE)).sendKeys(str);
+				}
+			}
+		}
+		
+		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//button[@class='form__submit-btn']")));
+		
+		//check all
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
+		}
+		
 		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
 		Thread.sleep(500);
 		
@@ -1133,7 +1369,6 @@ public class JoinSeminar {
 		}
 		
 		//login
-		CommonValues comm = new CommonValues();
 		comm.loginseminar(driver, JOIN_USER);
 		
 	    Thread.sleep(1000); 
@@ -1202,6 +1437,20 @@ public class JoinSeminar {
 			}
 		}
 		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//button[@class='form__submit-btn']")));
+		
+		//check all
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
+		}
+		
 		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
 		Thread.sleep(500);
 		
@@ -1232,7 +1481,7 @@ public class JoinSeminar {
 		}
 	}
 	
-	//76. 가입한 회원 채널 URL변경 - 정상케이스 - 회원탈퇴
+	//76. 가입한 회원 채널 URL변경 - 정상케이스 
 	@Test(priority = 76, enabled = true)
 	public void joinUser_channelURL() throws Exception {
 		String failMsg = "";
