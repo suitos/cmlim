@@ -104,12 +104,12 @@ public class Partners {
 	public static String MSG_PARTNER_USER_EMAIL_VALID = "이메일 이용 가능합니다.";
 	public static String MSG_PARTNER_DELETE_FAIL = "파트너 담당자, 하위 파트너사, 고객(서비스 사용자)이 없는 경우에만 삭제가 가능합니다. (42101)";
 	
-	public static String specialStr_no = "123456789!@#$%^&*()_+|";
+	public static String specialStr_no = "123456789!@#$%^&*()_+|<>?,";
 	
 	public static int partner_count = 2;
-	public static String add_partner1 = "testPA1";
-	public static String add_partner2 = "testPA2";
-	public static String add_partner2_user1 = "pa2user1";
+	public static String add_partner1 = "testPAO";
+	public static String add_partner2 = "testPAT";
+	public static String add_partner2_user1 = "paTuserO";
 	
 	public String partnerID = "";
 	
@@ -418,8 +418,8 @@ public class Partners {
 		
 		driver.findElement(By.xpath(XPATH_PARTNER_NAME)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_NAME)).sendKeys(specialStr_no + "name");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_NAME)).getAttribute("value").contentEquals("name")) {
-			failMsg = "1. name input error [Expected]name" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_NAME)).getAttribute("value").contentEquals( "123456789"+ "name")) {
+			failMsg = "1. name input error [Expected]123456789name" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_NAME)).getAttribute("value");
 		}
 		
@@ -439,8 +439,8 @@ public class Partners {
 		
 		driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).sendKeys(specialStr_no + "type");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).getAttribute("value").contentEquals("type")) {
-			failMsg = failMsg + "\n4. businessType input error [Expected]type" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).getAttribute("value").contentEquals("123456789type")) {
+			failMsg = failMsg + "\n4. businessType input error [Expected]123456789type" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).getAttribute("value");
 		}
 		
@@ -453,22 +453,22 @@ public class Partners {
 		
 		driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).sendKeys(specialStr_no + "address");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value").contentEquals("address")) {
-			failMsg = failMsg + "\n6. address input error [Expected]address" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value").contentEquals("123456789address")) {
+			failMsg = failMsg + "\n6. address input error [Expected]123456789address" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value");
 		}
 		
 		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(specialStr_no + "homepage");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals(specialStr_no + "homepage")) {
-			failMsg = failMsg + "\n7. homepage input error [Expected]" + (specialStr_no + "homepage" ) 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals( "123456789homepage")) {
+			failMsg = failMsg + "\n7. homepage input error [Expected]" + ("123456789homepage" ) 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value");
 		}
 		
 		driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).sendKeys(specialStr_no + "remark");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value").contentEquals("remark")) {
-			failMsg = failMsg + "\n8. remark input error [Expected]remark" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value").contentEquals(specialStr_no + "remark")) {
+			failMsg = failMsg + "\n8. remark input error [Expected]" + specialStr_no + "remark" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value");
 		}
 		
@@ -718,7 +718,7 @@ public class Partners {
 
 		driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).sendKeys("address");
 		
-		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(CommonValues.ADMIN_URL);
+		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(seminartest.CommonValues.SERVER_URL);
 
 		driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).sendKeys("remark");
 
@@ -784,8 +784,8 @@ public class Partners {
 			failMsg = failMsg + "\n9. saved partners address. [Expected]address [Actual]"
 					+ driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value");
 		}
-		if (!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals(CommonValues.ADMIN_URL)) {
-			failMsg = failMsg + "\n9. saved partners homepage. [Expected]" + CommonValues.ADMIN_URL +" [Actual]"
+		if (!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals(seminartest.CommonValues.SERVER_URL)) {
+			failMsg = failMsg + "\n9. saved partners homepage. [Expected]" + seminartest.CommonValues.SERVER_URL +" [Actual]"
 					+ driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value");
 		}
 		if (!driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value").contentEquals("remark")) {
@@ -855,8 +855,8 @@ public class Partners {
 		driver.findElement(By.xpath(XPATH_PARTNER_NAME)).sendKeys(Keys.BACK_SPACE);
 		driver.findElement(By.xpath(XPATH_PARTNER_NAME)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_NAME)).sendKeys(specialStr_no + "name");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_NAME)).getAttribute("value").contentEquals("name")) {
-			failMsg = "1. name input error [Expected]name" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_NAME)).getAttribute("value").contentEquals("123456789name")) {
+			failMsg = "1. name input error [Expected]123456789name" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_NAME)).getAttribute("value");
 		}
 		
@@ -882,8 +882,8 @@ public class Partners {
 		driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).sendKeys(Keys.BACK_SPACE);
 		driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).sendKeys(specialStr_no + "type");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).getAttribute("value").contentEquals("type")) {
-			failMsg = failMsg + "\n4. businessType input error [Expected]type" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).getAttribute("value").contentEquals("123456789type")) {
+			failMsg = failMsg + "\n4. businessType input error [Expected]123456789type" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_TYPE)).getAttribute("value");
 		}
 		
@@ -900,8 +900,8 @@ public class Partners {
 		driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).sendKeys(Keys.BACK_SPACE);
 		driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).sendKeys(specialStr_no + "address");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value").contentEquals("address")) {
-			failMsg = failMsg + "\n6. address input error [Expected]address" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value").contentEquals("123456789address")) {
+			failMsg = failMsg + "\n6. address input error [Expected]123456789address" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value");
 		}
 		
@@ -909,8 +909,8 @@ public class Partners {
 		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(Keys.BACK_SPACE);
 		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(specialStr_no + "homepage");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals(specialStr_no + "homepage")) {
-			failMsg = failMsg + "\n7. homepage input error [Expected]" + (specialStr_no + "homepage" ) 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals("123456789homepage")) {
+			failMsg = failMsg + "\n7. homepage input error [Expected]" + ("123456789homepage" ) 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value");
 		}
 		
@@ -918,8 +918,8 @@ public class Partners {
 		driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).sendKeys(Keys.BACK_SPACE);
 		driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).clear();
 		driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).sendKeys(specialStr_no + "remark");
-		if(!driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value").contentEquals("remark")) {
-			failMsg = failMsg + "\n8. remark input error [Expected]remark" 
+		if(!driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value").contentEquals(specialStr_no + "remark")) {
+			failMsg = failMsg + "\n8. remark input error [Expected]" + specialStr_no + "remark" 
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value");
 		}
 		
@@ -1024,7 +1024,7 @@ public class Partners {
 	}
 	
 	// 29. 파트너  삭제. delete1
-	@Test(priority = 29, dependsOnMethods = {"addpartner_valid1"}, enabled = true)
+	@Test(priority = 29, dependsOnMethods = {"addpartner_valid1"}, alwaysRun = true,  enabled = true)
 	public void addpartner_delete() throws Exception {
 		String failMsg = "";
 
@@ -1133,7 +1133,7 @@ public class Partners {
 		comm.selectAll(driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)));
 		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(Keys.BACK_SPACE);
 		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).clear();
-		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(CommonValues.ADMIN_URL);
+		driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).sendKeys(seminartest.CommonValues.SERVER_URL);
 		
 		comm.selectAll(driver.findElement(By.xpath(XPATH_PARTNER_REMARK)));
 		driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).sendKeys(Keys.BACK_SPACE);
@@ -1200,8 +1200,8 @@ public class Partners {
 				failMsg = failMsg + "\n9. saved partners address. [Expected]" + (add_partner2 + "address") +" [Actual]" 
 						+ driver.findElement(By.xpath(XPATH_PARTNER_ADDRESS)).getAttribute("value");
 			}
-			if(!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals(CommonValues.ADMIN_URL)) {
-				failMsg = failMsg + "\n9. saved partners homepage. [Expected]" + CommonValues.ADMIN_URL + " [Actual]" 
+			if(!driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value").contentEquals(seminartest.CommonValues.SERVER_URL)) {
+				failMsg = failMsg + "\n9. saved partners homepage. [Expected]" + seminartest.CommonValues.SERVER_URL + " [Actual]" 
 						+ driver.findElement(By.xpath(XPATH_PARTNER_HOMEPAGE)).getAttribute("value");
 			}
 			if(!driver.findElement(By.xpath(XPATH_PARTNER_REMARK)).getAttribute("value").contentEquals(add_partner2 + "remark")) {
@@ -1526,7 +1526,7 @@ public class Partners {
 		}
 
 		driver.findElement(By.xpath(XPATH_PARTNER_ADD_USER_NAME)).sendKeys(add_partner2_user1);
-		driver.findElement(By.xpath(XPATH_PARTNER_ADD_USER_DEP)).sendKeys(add_partner2_user1 +"dep");
+		driver.findElement(By.xpath(XPATH_PARTNER_ADD_USER_DEP)).sendKeys("dep");
 		Thread.sleep(2000);
 	
 		driver.findElement(By.xpath(XPATH_PARTNER_POPUP_SAVE_BTN)).click();
@@ -1563,8 +1563,8 @@ public class Partners {
 						+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_ADD_USER_NAME)).getAttribute("value");
 			}
 			
-			if(!driver.findElement(By.xpath(XPATH_PARTNER_ADD_USER_DEP)).getAttribute("value").contentEquals(add_partner2_user1 + "dep")) {
-				failMsg = failMsg + "\n9. added user department(popup). [Expected]" + (add_partner2_user1 + "dep")
+			if(!driver.findElement(By.xpath(XPATH_PARTNER_ADD_USER_DEP)).getAttribute("value").contentEquals("dep")) {
+				failMsg = failMsg + "\n9. added user department(popup). [Expected]" + ("dep")
 						+ " [Actual]" + driver.findElement(By.xpath(XPATH_PARTNER_ADD_USER_DEP)).getAttribute("value");
 			}
 			
@@ -1688,7 +1688,7 @@ public class Partners {
 						+ rows.get(0).findElement(By.xpath(XPATH_PARTNER_USER_LIST_ITEM_CELL + "[3]")).getText();
 			}
 			if (!rows.get(0).findElement(By.xpath(XPATH_PARTNER_USER_LIST_ITEM_CELL + "[4]")).getText()
-					.contentEquals("dep")) {
+					.contentEquals("depmod")) {
 				failMsg = failMsg + "\n6. user department. [Expected]" + "depmod" + " [Actual]"
 						+ rows.get(0).findElement(By.xpath(XPATH_PARTNER_USER_LIST_ITEM_CELL + "[4]")).getText();
 			}
