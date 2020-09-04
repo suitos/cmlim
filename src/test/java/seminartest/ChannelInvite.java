@@ -507,7 +507,8 @@ public class ChannelInvite {
 		memberdriver.findElement(By.xpath("//button[@class='backdrop__close-btn']")).click();
 		
 		//click GNB logo
-		memberdriver.findElement(By.xpath("//div[@class='logo-wrap']/a")).click();
+		//memberdriver.findElement(By.xpath("//div[@class='logo-wrap']/a")).click();
+		memberdriver.navigate().refresh();
 		Thread.sleep(500);
 
 		// check invite layer popup title
