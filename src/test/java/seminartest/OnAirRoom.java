@@ -64,6 +64,8 @@ import org.testng.annotations.Test;
  */
 public class OnAirRoom {
 
+	public static String XPATH_ROOM_SCREEN_BTN = "//div[@id='presentation-buttons']/section[1]";
+	public static String XPATH_ROOM_CAM_BTN = "//div[@id='presentation-buttons']/section[2]";
 	public static String XPATH_ROOM_DOC_BTN = "//div[@id='presentation-buttons']/section[4]";
 	public static String XPATH_ROOM_YUTUBE_BTN = "//div[@id='presentation-buttons']/section[3]";
 	public static String XPATH_ROOM_DOC_ICON = "//li[@class='document-item']";

@@ -1403,33 +1403,62 @@ public class AttendeesTest{
 			}
 		}
 		
-
+		//발표아이콘
+		if(isElementPresent_wd(wd, By.xpath(OnAirRoom.XPATH_ROOM_SCREEN_BTN + "/button"))) {
+			if(wd.findElement(By.xpath(OnAirRoom.XPATH_ROOM_SCREEN_BTN + "/button")).isEnabled()) {
+				failMsg = failMsg + "\n 1-1. screen share icon is enabled. " + user;
+			}
+		} else {
+			failMsg = failMsg + "\n 1-2. cannot find screen share icon." + user;
+		}
+		
+		if(isElementPresent_wd(wd, By.xpath(OnAirRoom.XPATH_ROOM_CAM_BTN + "/button"))) {
+			//do not anything
+		} else {
+			if(user.contentEquals(ROLE_PRESENER)) {
+				failMsg = failMsg + "\n 1-4. cannot find cam setting icon." + user;
+			}
+		}
+		
+		if(isElementPresent_wd(wd, By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN + "/button"))) {
+			//do not anything
+		} else {
+			failMsg = failMsg + "\n 1-6. cannot find youtube share icon." + user;
+		}
+		
+		if(isElementPresent_wd(wd, By.xpath(OnAirRoom.XPATH_ROOM_DOC_BTN + "/button"))) {
+			//do not anything
+		} else {
+			failMsg = failMsg + "\n 1-8. cannot find doc share icon." + user;
+		}
+		
+		
 		// 시작하기 버튼 확인
 		try {
 			wd.findElement(By.xpath("//button[@class='btn btn-primary btn-xl seminar-start']"));
 		} catch (NoSuchElementException e) {
-			failMsg = failMsg + "\n 1. cannot find start seminar button " + user;
+			failMsg = failMsg + "\n 2. cannot find start seminar button " + user;
 		}
 
 		// 참석자 인원 탭 확인
 		List<WebElement> roomTabs = wd.findElements(By.xpath("//div[@id='timeline-viewmode']/button"));
 		if (roomTabs.size() != 4) {
-			failMsg = failMsg + "\n 2. tab size error (presenter) [Expected]4 [Actual]" + roomTabs.size();
+			failMsg = failMsg + "\n 3. tab size error (presenter) [Expected]4 [Actual]" + roomTabs.size();
 		} else {
 			if (!roomTabs.get(0).getAttribute("class").contentEquals("chat active")) {
-				failMsg = failMsg + "\n 3. 1st tab error (" + user + ") [Expected]chat [Actual]"
+				failMsg = failMsg + "\n 4. 1st tab error (" + user + ") [Expected]chat [Actual]"
 						+ roomTabs.get(0).getAttribute("class");
 			}
 			if (!roomTabs.get(1).getAttribute("class").contentEquals("qna false")) {
-				failMsg = failMsg + "\n 4. 2nd tab error (" + user + ") [Expected]chat [Actual]"
+				failMsg = failMsg + "\n 5. 2nd tab error (" + user + ") [Expected]chat [Actual]"
 						+ roomTabs.get(1).getAttribute("class");
 			}
 			if (!roomTabs.get(2).getAttribute("class").contentEquals("download false")) {
-				failMsg = failMsg + "\n 5. 3rd tab error (" + user + ") [Expected]chat [Actual]"
+				failMsg = failMsg + "\n 6. 3rd tab error (" + user + ") [Expected]chat [Actual]"
 						+ roomTabs.get(2).getAttribute("class");
 			}
 			if (!roomTabs.get(3).getAttribute("class").contentEquals("attendee")) {
-				failMsg = failMsg + "\n 6. 4st tab error (" + user + ") [Expected]attendee [Actual]"
+				failMsg = failMsg + "\n 7. 4st tab error (" + user + ") [Expected]attendee [Actual]"
 						+ roomTabs.get(3).getAttribute("class");
 			}
 		}
@@ -1461,7 +1490,7 @@ public class AttendeesTest{
 		}	
 		
 		if (!findPres) {
-			failMsg = failMsg + "\n 7. cannot find " + user + " in user list";
+			failMsg = failMsg + "\n 8. cannot find " + user + " in user list";
 		}
 		
 		return failMsg;
