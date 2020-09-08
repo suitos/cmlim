@@ -340,8 +340,24 @@ public class PreviewSeminar {
 		for (String winHandle : driver.getWindowHandles()) {
 			driver.switchTo().window(winHandle); }
 		
-		driver.findElement(By.xpath("//ul[@class='tab ']/li[2]")).click();
+		WebElement Preview_StanbyBtn = driver.findElement(By.xpath("//ul[@class='tab ']/li[2]"));
+		Preview_StanbyBtn.click();
 		
+		if(!driver.findElement(By.xpath("//a[@class='ytp-title-link yt-uix-sessionlink']")).getText().contains(CommonValues.YOUTUBE_TITLE[1])) {
+			failMsg = failMsg + "1. wrong youtube title [Expected]" + CommonValues.YOUTUBE_TITLE[1] 
+						+" [Actual]" + driver.findElement(By.xpath("//a[@class='ytp-title-link yt-uix-sessionlink']")).getText();
+		}
+		
+		JavascriptExecutor js3 = (JavascriptExecutor) driver;
+		js3.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//h[@class='wrap-youtube-contents__title']")));
+		
+		
+		String Preview_StanbyTitle_VideoMode = driver.findElement(By.xpath("//h[@class='wrap-youtube-contents__title']")).getText();
+		if(!Preview_StanbyTitle_VideoMode.contentEquals(stanbyText_videomode)) {
+			failMsg = failMsg + "\n 2. Preview StanbyTitle_VideoMode_VALIDVALUE  [Expected]" + stanbyText_videomode
+					+" [Actual]" + Preview_StanbyTitle_VideoMode;
+		}
+		System.out.println(driver.findElement(By.xpath("//*[@id=\"root\"]/div[1]/div[1]/div/div/div[2]/main/div/div/div[2]/p")).getText());
 		/*to do 
 		 * 동영상모드 대기모드 미리보기 검증 (개발 미완성)
 		 */
