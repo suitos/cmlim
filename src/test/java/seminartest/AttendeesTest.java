@@ -70,7 +70,10 @@ import org.testng.annotations.Test;
  * 31. 세미나 시작하기
  * 32. 세미나 종료하기
  * 33. 종료화면 확인
- * 34. 종료 된 세미나 삭제
+ * 
+ * 40. 로그인 유저 설문 확인. 제출
+ * 41. 로그인 안한 유저 설문 확인. 제출
+ * 
  */
 
 public class AttendeesTest{
@@ -88,7 +91,12 @@ public class AttendeesTest{
 	public static String XPATH_ATTEND_AGREE_CHECKBOX2 = "//div[@class='public-apply__attendeeInfo__terms']/div[@class='checkbox'][2]";
 	public static String XPATH_ATTEND_AGREE_ERROR = "//div[@class='public-apply__attendeeInfo__terms']/span[@class='public-apply__attendeeInfo__terms__error-msg']";
 	
+	public static String XPATH_ATTEND_SURVEY_FORM = "//div[@class='SurveyFormat_boxItem__2vAeb SurveyFormat_MultiChoiceTemplate__1-K7m']";
+	public static String XPATH_ATTEND_SURVEY_SUBMIT = "//div[@class='SurveySettings_wrap-bottom-center__mntno']/button[1]";
+	public static String XPATH_ATTEND_SURVEY_CLOSE = "//div[@class='SurveySettings_wrap-bottom-center__mntno']/button[2]";
+	
 	public static String MSG_ATTEND_AGREE_ERROR = "blabla";
+	public static String MSG_ATTEND_SURVEY_SUBMIT = "Thank you for participating to the survey.";
 	
 	public static String USER_PUBLISHER = "rsrsup2";
 	public static String USER_PRESENTER = "rsrsup3";
@@ -177,32 +185,6 @@ public class AttendeesTest{
 	
 		String failMsg = "";
 		
-		/*
-		//compleate view banner
-		String compleateUri = CommonValues.SERVER_URL + CommonValues.CREATE_SUCCESS_URI + seminarID;
-
-		if(publisherDriver.getCurrentUrl().contentEquals(compleateUri))
-		{
-			if(!publisherDriver.findElement(By.xpath("//div[@class='wrap-text']/p[@class='title']")).getText().trim().contentEquals(seminarTitle))
-			{
-				failMsg = "seminar title error in compleate view [expected] " + seminarTitle
-						+ " [actual] " + publisherDriver.findElement(By.xpath("//div[@class='wrap-text']/p[@class='title']")).getText().trim();
-				
-			}
-			//date : node name error!!!
-			if(!publisherDriver.findElement(By.xpath("//div[@class='author']")).getText().trim().contentEquals(seminarDate_T1))
-			{
-				failMsg = failMsg + "\n" + "seminar date error in compleate view [expected] " + seminarDate_T1
-						+ " [actual] " + publisherDriver.findElement(By.xpath("//div[@class='author']")).getText().trim();
-			}
-			//author
-			if(!publisherDriver.findElement(By.xpath("//div[@class='date']")).getText().trim().contentEquals("rsrsup2"))
-			{
-				failMsg = failMsg + "\n" + "seminar date-author error in compleate view [expected] " + "rsrsup2"
-						+ " [actual] " + publisherDriver.findElement(By.xpath("//div[@class='date']")).getText().trim();
-			}
-		}
-		*/
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e =  new Exception(failMsg);
 	    	throw e;
@@ -1045,6 +1027,7 @@ public class AttendeesTest{
 		
 		if(!attendeesDriver.getCurrentUrl().contains(seminarLink)) {
 			failMsg = "1. not seminar link view current url : " + attendeesDriver.getCurrentUrl();
+			attendeesDriver.get(seminarLink);
 			Thread.sleep(1000);
 		}
 		
@@ -1060,11 +1043,15 @@ public class AttendeesTest{
 		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).getAttribute("value").contentEquals(ATTENDEES_NICKNAME)) {
 			failMsg = failMsg + "\n 2. nickname missmatch [Expected]" + ATTENDEES_NICKNAME 
 					+ " [Actual]" + attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).getAttribute("value");
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).clear();
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).sendKeys(ATTENDEES_NICKNAME);
 		}
 		//email check
 		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_EMAIL)).getAttribute("value").contentEquals(ATTENDEES_EMAIL)) {
 			failMsg = failMsg + "\n 2. email missmatch [Expected]" + ATTENDEES_EMAIL 
-					+ " [Actual]" + attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).getAttribute("value");
+					+ " [Actual]" + attendeesDriver.findElement(By.xpath(XPATH_ATTEND_EMAIL)).getAttribute("value");
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_EMAIL)).clear();
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_EMAIL)).sendKeys(ATTENDEES_EMAIL);
 		}	
 		
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_COMPANY)).clear();
@@ -1157,15 +1144,44 @@ public class AttendeesTest{
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(4000);
+		Thread.sleep(1000);
 		//presenter
-		//assertEquals(closeAlertAndGetItsText(), CommonValues.SEMINAR_CLOSE_MSG);
-		if (!findAlert(driver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = "0. cannot find alert (presenter)";
-		if (!findAlert(publisherDriver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = "1. cannot find alert (publisher)";
-		if (!findAlert(attendeesDriver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = failMsg + "\n 2. cannot find alert (attend)";
-		if (!findAlert(memberDriver,CommonValues.SEMINAR_CLOSE_MSG )) failMsg = failMsg + "\n 3. cannot find alert (member)";
-
-
+		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n1-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n1-2. cannot find toast (presenter)";
+		}
+		
+		if(isElementPresent_wd(publisherDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!publisherDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n2-1. toast message. (publisher) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + publisherDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n2-2. cannot find toast (publisher)";
+		}
+		
+		if(isElementPresent_wd(attendeesDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!attendeesDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n3-1. toast message. (attend) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + attendeesDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n3-2. cannot find toast (attend)";
+		}
+		
+		if(isElementPresent_wd(memberDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!memberDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n4-1. toast message. (member) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + memberDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n4-2. cannot find toast (member)";
+		}
+	
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e =  new Exception(failMsg);
 	    	throw e;
@@ -1225,6 +1241,91 @@ public class AttendeesTest{
 	    	throw e;
 		}
 	}
+	
+	// 40. 로그인 유저 설문 확인. 제출
+	@Test(priority = 40, enabled = true)
+	public void survey_loginuser() throws Exception {
+		String failMsg = "";
+		
+		if(memberDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
+			List<WebElement> surveyForms = memberDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
+			
+			surveyForms.get(1).findElement(By.xpath(".//div[@class='checkbox']")).click();
+			Thread.sleep(500);
+			
+			JavascriptExecutor js = (JavascriptExecutor) memberDriver;
+			js.executeScript("arguments[0].scrollIntoView();", memberDriver.findElement(By.xpath(XPATH_ATTEND_SURVEY_SUBMIT)));
+			memberDriver.findElement(By.xpath(XPATH_ATTEND_SURVEY_SUBMIT)).click();
+			Thread.sleep(1000);
+			
+			try {
+				Alert alert = memberDriver.switchTo().alert();
+				String alertText = alert.getText();
+				
+				if(!alertText.contentEquals(MSG_ATTEND_SURVEY_SUBMIT)) {
+					failMsg = "1. submit survey msg. [Exepcted]" + MSG_ATTEND_SURVEY_SUBMIT + " [Actual]" + alertText;
+				}
+				alert.accept();
+			} catch (NoAlertPresentException e) {
+				failMsg = "2. cannot find alert.";
+			}
+			
+			if(!memberDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.LIST_URI)) {
+				failMsg = failMsg + "\n3. not listview(after submit survey). current url : " + memberDriver.getCurrentUrl();
+			}
+			
+		} else {
+			failMsg = "0.not closed view(login user) : " + memberDriver.getCurrentUrl();
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e =  new Exception(failMsg);
+	    	throw e;
+		}
+	}
+	
+	// 41. 로그인 안한 유저 설문 확인. 제출
+	@Test(priority = 41, enabled = true)
+	public void survey_normaluser() throws Exception {
+		String failMsg = "";
+		
+		if(attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
+			List<WebElement> surveyForms = attendeesDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
+			
+			surveyForms.get(1).findElement(By.xpath(".//div[@class='checkbox']")).click();
+			Thread.sleep(500);
+			
+			JavascriptExecutor js = (JavascriptExecutor) attendeesDriver;
+			js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(XPATH_ATTEND_SURVEY_SUBMIT)));
+			attendeesDriver.findElement(By.xpath(XPATH_ATTEND_SURVEY_SUBMIT)).click();
+			Thread.sleep(1000);
+			
+			try {
+				Alert alert = attendeesDriver.switchTo().alert();
+				String alertText = alert.getText();
+				
+				if(!alertText.contentEquals(MSG_ATTEND_SURVEY_SUBMIT)) {
+					failMsg = "1. submit survey msg. [Exepcted]" + MSG_ATTEND_SURVEY_SUBMIT + " [Actual]" + alertText;
+				}
+				alert.accept();
+			} catch (NoAlertPresentException e) {
+				failMsg = "2. cannot find alert.";
+			}
+			
+			if(!attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL)) {
+				failMsg = failMsg + "\n3. not loginview(after submit survey). current url : " + attendeesDriver.getCurrentUrl();
+			}
+			
+		} else {
+			failMsg = "0.not closed view(login user) : " + attendeesDriver.getCurrentUrl();
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e =  new Exception(failMsg);
+	    	throw e;
+		}
+	}
+		
 	
 	public String createSeminar(String seminarName, String seminarTime, String attendees) throws Exception {
 		
@@ -1316,6 +1417,7 @@ public class AttendeesTest{
 		publisherDriver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
 		Thread.sleep(1000);
 		
+		comm.setCreateSeminar_setSurvey(publisherDriver);
 		
 		// save seminar
 		publisherDriver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
