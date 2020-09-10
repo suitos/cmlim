@@ -73,7 +73,7 @@ import org.testng.annotations.Test;
  * 
  * 40. 로그인 유저 설문 확인. 제출
  * 41. 로그인 안한 유저 설문 확인. 제출
- * 
+ * 50. 게시자. 통계에서 설문 응답률 확인
  */
 
 public class AttendeesTest{
@@ -1251,6 +1251,13 @@ public class AttendeesTest{
 			List<WebElement> surveyForms = memberDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
 			
 			surveyForms.get(1).findElement(By.xpath(".//div[@class='checkbox']")).click();
+			
+			if(isElementPresent_wd(memberDriver, By.xpath("//div[@class='answer-short']/input"))) {
+				memberDriver.findElement(By.xpath("//div[@class='answer-short']/input")).clear();
+				memberDriver.findElement(By.xpath("//div[@class='answer-short']/input")).sendKeys("member's answer!");;
+			} else {
+				failMsg = failMsg + "\n0. cannot find short answer box.";
+			}
 			Thread.sleep(500);
 			
 			JavascriptExecutor js = (JavascriptExecutor) memberDriver;
@@ -1263,7 +1270,7 @@ public class AttendeesTest{
 				String alertText = alert.getText();
 				
 				if(!alertText.contentEquals(MSG_ATTEND_SURVEY_SUBMIT)) {
-					failMsg = "1. submit survey msg. [Exepcted]" + MSG_ATTEND_SURVEY_SUBMIT + " [Actual]" + alertText;
+					failMsg = failMsg + "\n1. submit survey msg. [Exepcted]" + MSG_ATTEND_SURVEY_SUBMIT + " [Actual]" + alertText;
 				}
 				alert.accept();
 			} catch (NoAlertPresentException e) {
@@ -1326,6 +1333,70 @@ public class AttendeesTest{
 		}
 	}
 		
+	// 50. 게시자. 통계에서 설문 응답률 확인
+	@Test(priority = 50, enabled = true)
+	public void statistics_survey() throws Exception {
+		String failMsg = "";
+		
+		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
+			driver.get(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID);
+			Thread.sleep(500);
+		}
+		
+		driver.findElement(By.xpath("//div[@class='buttons-wrap']/button[1]")).click();
+		Thread.sleep(1000);
+		
+		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.URI_STATISTIC + seminarID)) {
+			failMsg = "1. not statistics view. current url : " + driver.getCurrentUrl();
+			driver.get(CommonValues.SERVER_URL + CommonValues.URI_STATISTIC + seminarID);
+			Thread.sleep(1000);
+		}
+		
+		// 응답 백분률 확인
+		WebElement surveyPer = driver.findElement(By.xpath("//div[@class='statistic__attendee-item-box'][2]//div[@class='statistic__percent-box']"));
+		if(!surveyPer.getText().contentEquals("66%")) {
+			failMsg = failMsg + "\n2. statistics view, servery result. [Expected]66% [Actual]" + surveyPer.getText();
+		}
+		
+		//survey tab
+		driver.findElement(By.xpath("//div[@class='Statistic_statistic__tab-box__29-NQ']/button[2]")).click();
+		Thread.sleep(500);
+		
+		//check answers
+		String answersBox = "//div[@class='Statistic_survey__mutiple-choice-box__35K5x'][%d]//span[@class='multiple-choice__answers']";
+		String answersForm = "(%d responses)";
+		
+		if(!driver.findElement(By.xpath(String.format(answersBox, 1))).getText().contentEquals(String.format(answersForm, 0))) {
+			failMsg = failMsg + "\n3. No.1 responses. [Expected]"+ String.format(answersForm, 0) 
+				+ " [Actual]" + driver.findElement(By.xpath(String.format(answersBox, 1))).getText();
+		}
+		if(!driver.findElement(By.xpath(String.format(answersBox, 2))).getText().contentEquals(String.format(answersForm, 2))) {
+			failMsg = failMsg + "\n4. No.2 responses. [Expected]"+ String.format(answersForm, 2) 
+				+ " [Actual]" + driver.findElement(By.xpath(String.format(answersBox, 2))).getText();
+		}
+		
+		//주관식
+		List<WebElement> shorts = driver.findElements(By.xpath("//li[@class='short-question__answer-item']"));
+		if(shorts.size() != 1) {
+			failMsg = failMsg + "\n5. No.3 responses size. [Expected]"+ "1"
+			+ " [Actual]" + shorts.size();
+		} else {
+			if(!shorts.get(0).findElement(By.xpath("./span[1]")).getText().contentEquals("rsrsup")) {
+				failMsg = failMsg + "\n6. No.3 responses. nickname [Expected]"+  "rsrsup4"
+				+ " [Actual]" + shorts.get(0).findElement(By.xpath("./span[1]")).getText();
+			}
+			if(!shorts.get(0).findElement(By.xpath("./span[2]")).getText().contentEquals("member's answer!")) {
+				failMsg = failMsg + "\n7. No.3 responses. short answer [Expected]"+  "member's answer!"
+				+ " [Actual]" + shorts.get(0).findElement(By.xpath("./span[2]")).getText();
+			}
+			
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e =  new Exception(failMsg);
+	    	throw e;
+		}
+	}
 	
 	public String createSeminar(String seminarName, String seminarTime, String attendees) throws Exception {
 		
