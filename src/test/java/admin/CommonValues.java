@@ -35,6 +35,7 @@ public class CommonValues {
 	public static String[] SPECIAL_CHARACTER = {"!", "*", "'", "(", ")" , ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "#", "[", "]"};
 	public static String CHARACTER_20 = "aaaaaaaaaaaaaaaaaaaa";
 	public static String NUMBER_20 = "11111111111111111111";
+	public static String NUMBER_10 = "1234567890";
 	
 	//URL
 	public static String URL_PARTNERLIST = "/partner/list";
@@ -45,10 +46,10 @@ public class CommonValues {
 	public static String URL_USEREDIT = "/user/edit?email=";
 	public static String URL_USERNEW = "/user/new";
 	public static String URL_CHANNELLIST = "/channel/list";
+	public static String URL_CHANNELINFO = "/channel/info";
 	public static String URL_SEMINARLIST = "/seminar/list";
 	public static String URL_SEMINARINFO = "/seminar/info";
-
-	public static String URL_CAHNNELNEW = "/channel/new";
+	public static String URL_CHANNELNEW = "/channel/new";
 	
 	public static String XPATH_LOGIN_EMAIL = "//input[@id='email']";
 	public static String XPATH_LOGIN_PW = "//input[@id='password']";
@@ -61,7 +62,8 @@ public class CommonValues {
 	public static String XPATH_LIST_SEARCH_BTN = "//button[@id='search']";
 	public static String XPATH_LIST_SEARCH_INPUTBOX = "//input[@id='keyword']";
 	public static String XPATH_LIST_REGISTER_BTN = "//button[@class='ant-btn ant-btn-sub ant-btn-sm']";
-	
+	public static String XPATH_LIST_CHANNELREGISTER_BTN = "//button[@class='ant-btn ant-btn-primary ant-btn-sm']";
+
 	public static String XPATH_MENU_PARTNER = "//ul[@role='menu']/li[1]";
 	public static String XPATH_MENU_USER = "//ul[@role='menu']/li[2]";
 	public static String XPATH_MENU_CHANNEL = "//ul[@role='menu']/li[3]";
@@ -165,6 +167,28 @@ public class CommonValues {
 			e.sendKeys(Keys.CONTROL,"a");
 		}
 
+	}
+	
+	public void insertData(WebElement e, int N) throws Exception {
+		switch(N) {
+		case 1:
+			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
+				e.sendKeys(Keys.BACK_SPACE);
+			e.sendKeys(CommonValues.NUMBER_10);
+		break;
+		case 2:
+			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
+				e.sendKeys(Keys.BACK_SPACE);
+			for (int i=0; i<4; i++){
+			e.sendKeys(CommonValues.NUMBER_10);}
+		break;
+		case 3:
+			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
+				e.sendKeys(Keys.BACK_SPACE);
+			for (int i=0; i<30; i++){
+			e.sendKeys(CommonValues.NUMBER_10);}
+		break;
+		}
 	}
 
 	public static WebDriver getDriver(SearchContext context) {

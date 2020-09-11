@@ -336,7 +336,7 @@ public class Users2 {
 		driver.findElement(By.xpath(XPATH_USER_INFO_CAHNNELREG)).click();
 		Thread.sleep(500);
 		
-		if(!driver.getCurrentUrl().contains(CommonValues.ADMIN_URL + CommonValues.URL_CAHNNELNEW)) {
+		if(!driver.getCurrentUrl().contains(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELNEW)) {
 			failMsg = "1. not channel new url. current url : " + driver.getCurrentUrl();
 		} else {
 			if(!driver.findElement(By.xpath(XPATH_CHANNEL_NEW_MASTER)).getAttribute("value").contentEquals(testUser + "@gmail.com")) {
