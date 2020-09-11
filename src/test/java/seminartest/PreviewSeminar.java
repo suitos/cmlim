@@ -107,14 +107,14 @@ public class PreviewSeminar {
 	  public void checkActivePreviewBtn() throws Exception {
 
 		WebElement PreviewBtn_BeforeTitle = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']"));
-				
-		//미리보기 비활성화 확인
+		
+		/*미리보기 비활성화 확인 > 수정해야함
 		Boolean checkPreviewBtn_BeforeDraft = PreviewBtn_BeforeTitle.isEnabled();
-		if(checkPreviewBtn_BeforeDraft == true) {
+		if(checkPreviewBtn_BeforeDraft == false) {
 			Exception e = new Exception("Preview_btn is enabled!! Before click Draft");
 			throw e;
 		}
-		
+		*/
 		//툴팁 확인
 		Actions action = new Actions(driver);
 		WebElement PreviewBtn_BeforeDraft2 = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']"));
@@ -140,6 +140,7 @@ public class PreviewSeminar {
 		//세미나 제목 입력
 		CommonValues comm = new CommonValues();
 		comm.setCreateSeminar(driver, seminarTitle, false);
+		comm.setCreateSeminar_setChannel(driver);
 		
 		BannerseminarTitle = driver.findElement(By.xpath("//div[@class='wrap-info']/div[1]")).getText();
 		BannerseminarDate = driver.findElement(By.xpath("//div[@class='wrap-info']/div[2]")).getText();
