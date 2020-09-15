@@ -1531,7 +1531,7 @@ public class CreateSeminar_member {
 		
 		// 배너 발표자 확인
 		String bannerMem = driver.findElement(By.xpath("//p[@class='info-date-author date']")).getText().split("\n")[1];
-		String memInfo = mem_pres1.replace("@gmail.com", "") + "," + CommonValues.USERNICKNAME_JOIN;
+		String memInfo = mem_pres1.replace("@gmail.com", "") + ", " + CommonValues.USERNICKNAME_JOIN;
 		if(!bannerMem.contentEquals(memInfo)) {
 			failMsg = failMsg + "1. Presenters error (detail view Banner) [Expected]" + memInfo + " [Actual]" + bannerMem;
 		}
