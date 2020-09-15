@@ -59,9 +59,12 @@ public class PreviewSeminar {
 	public String BannerseminarTitle = "";
 	public String BannerseminarDate = "";
 	public String PresentList = "";
+	public String PresentList2 = "";
+
 	public String seminarInfo = "";
-	
-	
+	public String seminarInfo2 = "";
+	public String seminarInfo3 = "";
+
 	private boolean acceptNextAlert = true;
 	private StringBuffer verificationErrors = new StringBuffer();
 	 
@@ -108,13 +111,12 @@ public class PreviewSeminar {
 
 		WebElement PreviewBtn_BeforeTitle = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']"));
 		
-		/*미리보기 비활성화 확인 > 수정해야함
-		Boolean checkPreviewBtn_BeforeDraft = PreviewBtn_BeforeTitle.isEnabled();
-		if(checkPreviewBtn_BeforeDraft == false) {
-			Exception e = new Exception("Preview_btn is enabled!! Before click Draft");
+		if(!driver.findElements(By.xpath("//div[@class='btn btn-transparent btn-auto preview ']")).isEmpty())
+		{
+			Exception e = new Exception("Preview_btn is enabled!! Before enter seminartitle");
 			throw e;
 		}
-		*/
+		
 		//툴팁 확인
 		Actions action = new Actions(driver);
 		WebElement PreviewBtn_BeforeDraft2 = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']"));
@@ -144,20 +146,20 @@ public class PreviewSeminar {
 		
 		BannerseminarTitle = driver.findElement(By.xpath("//div[@class='wrap-info']/div[1]")).getText();
 		BannerseminarDate = driver.findElement(By.xpath("//div[@class='wrap-info']/div[2]")).getText();
-			
+		
 		WebElement PreviewBtn_AfterDraft = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview ']"));
 		Boolean checkPreviewBtn_AfterDraft = PreviewBtn_AfterDraft.isEnabled();
-		if(checkPreviewBtn_AfterDraft == false) {
-			Exception e = new Exception("Preview_btn is not enabled!! After click Draft");
+		if(checkPreviewBtn_AfterDraft == false 
+			&& !driver.findElements(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']")).isEmpty()) 
+		{
+			Exception e = new Exception("Preview_btn is not enabled!! After enter seminartitle");
 			throw e;
 		}
 	
-		String parentHandle = driver.getWindowHandle();
-		
 		PreviewBtn_AfterDraft.click();
 		
-		for (String winHandle : driver.getWindowHandles()) {
-		    driver.switchTo().window(winHandle); }
+		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+		driver.switchTo().window(tabs.get(1));
 		
 		if(!driver.getCurrentUrl().contains(CommonValues.SERVER_URL + CommonValues.PREVIEW_DETAILED_URI))
 		{
@@ -176,9 +178,9 @@ public class PreviewSeminar {
 			  throw e;
 		}
 		
-		driver.close();
 		Thread.sleep(1000);
-		driver.switchTo().window(parentHandle);
+		driver.switchTo().window(tabs.get(0));
+		
 	}
 
 	@Test(priority=3) //RST-615
@@ -192,21 +194,16 @@ public class PreviewSeminar {
 		String Present = allPresent.get(0).getText();
 		String Present1 = allPresent.get(1).getText();
 		String Present2 = allPresent.get(2).getText();
-		
-		PresentList = Present + "," + Present1 + "," + Present2;
+		PresentList = Present + ", " + Present1 + ", " + Present2;
+		PresentList2 = Present + " " + Present1 + " " + Present2;
 		seminarInfo = BannerseminarDate + "\n" + PresentList;
+		seminarInfo2 = BannerseminarDate + "   |   " + PresentList2;
+		seminarInfo3 = BannerseminarDate + "\n" + PresentList2;
 		
-		WebElement DraftBtn = driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']"));
-		DraftBtn.click();
 		Thread.sleep(1000);
-		WebElement PreviewBtn_AfterDraft = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview ']"));
 		
-		String parentHandle = driver.getWindowHandle();
-		
-		PreviewBtn_AfterDraft.click();
-		
-		for (String winHandle : driver.getWindowHandles()) {
-		    driver.switchTo().window(winHandle); }
+		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+		driver.switchTo().window(tabs.get(1));
 		
 		String Preview_seminarTitle = driver.findElement(By.xpath("//p[@class='text title']")).getText();
 		
@@ -223,16 +220,21 @@ public class PreviewSeminar {
 					+" [Actual]" + Preview_seminarInfo;
 		}
 
-		driver.close();
 		Thread.sleep(1000);
-		driver.switchTo().window(parentHandle);
+		driver.switchTo().window(tabs.get(0));
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
 	}
+	
 	@Test(priority=4) //RST-608
 	  public void checkStanbyScreen_ImageMode() throws Exception{
 		String failMsg = "";
 		String stanbyText_imagemode = "Check_Standbyview_Imagemode";
 		
-		driver.findElement(By.xpath("//ul[@class='tab ']/li[2]")).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB2)).click();
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//div[@class='ql-container ql-snow']")).click();
 		Thread.sleep(500);
@@ -245,14 +247,10 @@ public class PreviewSeminar {
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//div[@class='ql-container ql-snow']/div")).sendKeys(stanbyText_imagemode);
 		Thread.sleep(1000);
-		driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")).click();
-		Thread.sleep(1000);
-			
-		String parentHandle = driver.getWindowHandle();
-		driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto preview ']")).click();
-		for (String winHandle : driver.getWindowHandles()) {
-			driver.switchTo().window(winHandle); }
-			
+	
+		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+		driver.switchTo().window(tabs.get(1));	
+		
 		WebElement Preview_StanbyBtn = driver.findElement(By.xpath("//ul[@class='tab ']/li[2]"));
 		Preview_StanbyBtn.click();
 		
@@ -271,16 +269,16 @@ public class PreviewSeminar {
 			failMsg = failMsg + "\n 3. Different Seminar Date and Present in StanbyScreen [Expected]" + seminarInfo
 					+" [Actual]" + Preview_StanbyInfo;
 		}
-		driver.close();
+		
 		Thread.sleep(1000);
-		driver.switchTo().window(parentHandle);	
+		driver.switchTo().window(tabs.get(0));
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
 	}
-	@Test(priority=5) //RST-613(개발 미완성)
+	@Test(priority=5) //RST-613
 	  public void checkStanbyScreen_VideoMode() throws Exception{
 		String failMsg = "";
 		String stanbyText_videomode = "Check_Standbyview_Videomode";
@@ -307,15 +305,7 @@ public class PreviewSeminar {
 		driver.findElement(By.xpath("//div[@class='linkBox']/input")).click();
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//div[@class='linkBox']/input")).sendKeys(CommonValues.YOUTUBE_URL[1]);
-		/*
-		WebDriverWait youtubetitle = new WebDriverWait(driver, 20);
-		youtubetitle.until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.xpath("//div[@class='ytp-title-text']/a")), CommonValues.YOUTUBE_TITLE[1]));
-		System.out.println(driver.findElement(By.xpath("///*[@id=\"player_uid_340996391_1\"]/div[3]/div[2]/div/a")).getText());
-		if(!driver.findElement(By.xpath("//div[@class='ytp-title-text']/a")).getText().contentEquals(CommonValues.YOUTUBE_TITLE[1])) {
-			failMsg = failMsg + "\n 2. youtube link can't insert [Expected]" + CommonValues.YOUTUBE_TITLE[1] 
-					+" [Actual]" + driver.findElement(By.xpath("//div[@class='ytp-title-text']/a")).getText();
-		}
-		*/
+		
 		WebElement editor = driver.findElement(By.xpath("//div[@class='ql-editor']"));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].scrollIntoView();", editor);
@@ -332,38 +322,37 @@ public class PreviewSeminar {
 		JavascriptExecutor js2 = (JavascriptExecutor) driver;
 		js2.executeScript("arguments[0].scrollIntoView();", DraftBtn);
 		
-		DraftBtn.click();
-		Thread.sleep(1000);
-		
-		String parentHandle = driver.getWindowHandle();
-		PreviewBtn_AfterDraft.click();
-		
-		for (String winHandle : driver.getWindowHandles()) {
-			driver.switchTo().window(winHandle); }
-		
+		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+		driver.switchTo().window(tabs.get(1));
+		/*
 		WebElement Preview_StanbyBtn = driver.findElement(By.xpath("//ul[@class='tab ']/li[2]"));
 		Preview_StanbyBtn.click();
-		
+		*/
+		/*
 		if(!driver.findElement(By.xpath("//a[@class='ytp-title-link yt-uix-sessionlink']")).getText().contains(CommonValues.YOUTUBE_TITLE[1])) {
 			failMsg = failMsg + "1. wrong youtube title [Expected]" + CommonValues.YOUTUBE_TITLE[1] 
 						+" [Actual]" + driver.findElement(By.xpath("//a[@class='ytp-title-link yt-uix-sessionlink']")).getText();
 		}
+		*/
 		
 		JavascriptExecutor js3 = (JavascriptExecutor) driver;
-		js3.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//h[@class='wrap-youtube-contents__title']")));
+		js3.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//h3[@class='wrap-youtube-contents__title']")));
 		
-		
-		String Preview_StanbyTitle_VideoMode = driver.findElement(By.xpath("//h[@class='wrap-youtube-contents__title']")).getText();
+		String Preview_StanbyTitle_VideoMode = driver.findElement(By.xpath("//h3[@class='wrap-youtube-contents__title']")).getText();
 		if(!Preview_StanbyTitle_VideoMode.contentEquals(stanbyText_videomode)) {
 			failMsg = failMsg + "\n 2. Preview StanbyTitle_VideoMode_VALIDVALUE  [Expected]" + stanbyText_videomode
 					+" [Actual]" + Preview_StanbyTitle_VideoMode;
 		}
 		System.out.println(driver.findElement(By.xpath("//*[@id=\"root\"]/div[1]/div[1]/div/div/div[2]/main/div/div/div[2]/p")).getText());
-		/*to do 
-		 * 동영상모드 대기모드 미리보기 검증 (개발 미완성)
-		 */
 		
-		driver.switchTo().window(parentHandle);
+		String Preview_StanbyInfo = driver.findElement(By.xpath("//p[@class='wrap-youtube-contents__display-contents']")).getText();
+		if(!(Preview_StanbyInfo.contentEquals(seminarInfo2)))
+		{
+			failMsg = failMsg + "\n 3. Different Seminar Date and Present in StanbyScreen [Expected]" + seminarInfo2
+					+" [Actual]" + Preview_StanbyInfo;
+		}
+		
+		driver.switchTo().window(tabs.get(0));
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -373,12 +362,11 @@ public class PreviewSeminar {
 	@Test(priority=6) //RST-614
 	  public void checkEmptySurvey() throws Exception{
 		String failMsg = "";
-		String parentHandle = driver.getWindowHandle();
 		
-		for (String winHandle : driver.getWindowHandles()) {
-			driver.switchTo().window(winHandle); }
+		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+		driver.switchTo().window(tabs.get(1));
 		
-		driver.findElement(By.xpath("//ul[@class='tab ']/li[3]")).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB3)).click();
 		
 		if(!driver.getCurrentUrl().contains(CommonValues.SERVER_URL + CommonValues.PREVIEW_SURVEY_URI))
 		{
@@ -386,79 +374,83 @@ public class PreviewSeminar {
 					+" [Actual]" + driver.getCurrentUrl();
 			  
 		}
-		String Preview_emptySurvey = driver.findElement(By.xpath("//div[@class='wrap-contents']/h1")).getText();
-		if(!(Preview_emptySurvey.contentEquals(CommonValues.SURVEY_DEFAULT)))
+		Thread.sleep(1000);
+		
+		String Preview_emptySurvey = driver.findElement(By.id("surveyTitle")).getAttribute("value");
+		//null체크
+		if(!(Preview_emptySurvey == null || Preview_emptySurvey.equals("") ))
 		{
-			failMsg = failMsg + "\n 2. Different Default Survey msg [Expected]" + CommonValues.SURVEY_DEFAULT 
-					+" [Actual]" + driver.findElement(By.xpath("//div[@class='wrap-contents']/h1")).getText();
+			failMsg = failMsg + "\n 2. Different Default Survey msg [Expected]" + "null" 
+					+" [Actual]" + driver.findElement(By.id("surveyTitle")).getAttribute("value");
 		}
 		
-		driver.switchTo().window(parentHandle);
+		driver.switchTo().window(tabs.get(0));
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
 	}
+	
 	@Test(priority=7) //RST-385, RST-388
 	  public void checkValueableSurvey() throws Exception{
 		String failMsg = "";
-		String parentHandle = driver.getWindowHandle();
+		CommonValues comm = new CommonValues();
+		comm.setCreateSeminar_setSurvey(driver);
 		
-		WebElement DraftBtn = driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']"));
-		
-		driver.findElement(By.xpath("//ul[@class='tab ']/li[5]")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.id("surveyTitle")).clear();
-		driver.findElement(By.id("surveyTitle")).sendKeys(CommonValues.SURVEY_TITLE);
-		driver.findElement(By.id("surveyDescription")).sendKeys(CommonValues.SURVEY_DESCRIPTION);
-		
-		driver.findElement(By.xpath("//button[@class='btn btn-basic btn-s ']")).click();
-		driver.findElement(By.id("question1")).sendKeys(CommonValues.SURVEY_QUESTION[0]);
-		
-		DraftBtn.click();
-		Thread.sleep(3000);
-		
-		for (String winHandle : driver.getWindowHandles()) {
-			driver.switchTo().window(winHandle); }
+		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+		driver.switchTo().window(tabs.get(1));
 		
 		WebElement RefreshBtn = driver.findElement(By.xpath("//div[@class='btn btn-transparent btn-auto l-right ']"));
 		RefreshBtn.click();
-		driver.findElement(By.xpath("//ul[@class='tab ']/li[2]")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//ul[@class='tab ']/li[3]")).click();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		Thread.sleep(3000);
 		
-		String Preview_surveyTitle = driver.findElement(By.id("surveyTitle")).getText();
-		String Preview_surveyDescription = driver.findElement(By.name("surveyDescription")).getText();
-		String Preview_surveyQuestion = driver.findElement(By.id("question1")).getText();
-		
-		if(!Preview_surveyTitle.contentEquals(CommonValues.SURVEY_TITLE) && (!Preview_surveyDescription.contentEquals(CommonValues.SURVEY_DESCRIPTION)
-			&&(!Preview_surveyQuestion.contentEquals(CommonValues.SURVEY_QUESTION[0]))))
+		String Preview_surveyseminarTitle = driver.findElement(By.xpath("//p[@class='title']")).getText(); 
+		if(!Preview_surveyseminarTitle.contentEquals(seminarTitle))
 		{
-			failMsg = failMsg + "\n 1.wrong Preview Survey value [Expected]" + CommonValues.SURVEY_TITLE + CommonValues.SURVEY_DESCRIPTION + CommonValues.SURVEY_QUESTION[0]
-					+" [Actual]" + Preview_surveyTitle + Preview_surveyDescription + Preview_surveyQuestion;  
-		}
-		
-		String Preview_surveyseminarTitle = driver.findElement(By.xpath("//p[@class='title']")).getText();
-		
-		if(!(Preview_surveyseminarTitle.contentEquals(seminarTitle)) && !(Preview_surveyseminarTitle.contentEquals(BannerseminarTitle)))
-		{
-			failMsg = failMsg + "\n 2.Different Preview Seminar Title in Survey [Expected]" + seminarTitle + "and" + BannerseminarTitle
+			failMsg = "1.Different Preview Seminar Title in Survey [Expected]" + seminarTitle 
 					+" [Actual]" + Preview_surveyseminarTitle;
 		}
 		
 		String Preview_surveyseminarInfo = driver.findElement(By.xpath("//div[@class='author']")).getText() + "\n" 
-		+ driver.findElement(By.xpath("//div[@class='date']")).getText().replace(" ",",");
-		System.out.println(Preview_surveyseminarInfo);
-		if(!(Preview_surveyseminarInfo.contentEquals(seminarInfo)))
+				+ driver.findElement(By.xpath("//div[@class='date']")).getText();
+		if(!Preview_surveyseminarInfo.contentEquals(seminarInfo3))
 		{
-			failMsg = failMsg + "\n 3.Different Seminar Date and Present in Survey [Expected]" + seminarInfo
+			failMsg = failMsg + "\n 2.Different Seminar Date and Present in Survey [Expected]" + seminarInfo3
 					+" [Actual]" + Preview_surveyseminarInfo;
 		}
+		System.out.println(seminarInfo3);
+		System.out.println(Preview_surveyseminarInfo);
 		
-		driver.close();
+		String Preview_surveyTitle = driver.findElement(By.id("surveyTitle")).getText();
+		String Preview_surveyDescription = driver.findElement(By.name("surveyDescription")).getText();
+		
+		if((!Preview_surveyTitle.contentEquals(CommonValues.SURVEY_TITLE)) && (!Preview_surveyDescription.contentEquals(CommonValues.SURVEY_DESCRIPTION)))
+		{
+			failMsg = failMsg + "\n 3.Different Seminar Survey Title and Description [Expected]" + CommonValues.SURVEY_TITLE
+					+ "," + CommonValues.SURVEY_DESCRIPTION +" [Actual]" + Preview_surveyTitle + "," + Preview_surveyDescription;
+		}
+		
+		List<WebElement> PreviewSurveyQuestion = driver.findElements(By.id("question1"));
+		String Preview_surveyQuestion = PreviewSurveyQuestion.get(0).getText();
+		String Preview_surveyQuestion1 = PreviewSurveyQuestion.get(1).getText();
+		String Preview_surveyQuestion2 = PreviewSurveyQuestion.get(2).getText();
+		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.id("surveyTitle")));
+		
+		if((!Preview_surveyQuestion.contentEquals(CommonValues.SURVEY_QUESTION[0])) && (!Preview_surveyQuestion1.contentEquals(CommonValues.SURVEY_QUESTION[2]))
+				&&(!Preview_surveyQuestion2.contentEquals(CommonValues.SURVEY_QUESTION[2])))
+		{
+			failMsg = failMsg + "\n 4.Different Seminar Survey Question [Expected]" + CommonValues.SURVEY_QUESTION[0]
+					+ "," + CommonValues.SURVEY_QUESTION[1] + "," + CommonValues.SURVEY_QUESTION[2] 
+							+ " [Actual]" + Preview_surveyQuestion + "," + Preview_surveyQuestion1 + "," + Preview_surveyQuestion2;
+		}
+		
 		Thread.sleep(1000);
-		driver.switchTo().window(parentHandle);
+		driver.close();
+		driver.switchTo().window(tabs.get(0));
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -466,42 +458,41 @@ public class PreviewSeminar {
 		}
 	}
 	
-	@Test(priority=8)
+	@Test(priority=8) //RST-386
 	public void checkPreviewBtnAfterPost() throws Exception{
 		String failMsg = "";
-		driver.findElement(By.xpath("//button[@class='btn btn-secondary-light btn-l ']")).click();
-
-		WebDriverWait wait = new WebDriverWait(driver, 20);
-		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@class='btn btn-primary btn-m ']")));
-		driver.findElement(By.xpath("//button[@class='btn btn-primary btn-m ']")).click();
-		WebDriverWait wait2 = new WebDriverWait(driver, 20);
-		wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@class='btn btn-secondary-light btn-xl']")));
 		
-		String PostURL = CommonValues.SERVER_URL + CommonValues.POST_URI;
-		seminarID = driver.getCurrentUrl().replace(PostURL, "");
+		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
+		Thread.sleep(2000);
 		
-		driver.findElement(By.xpath("//a[@class='btn btn-secondary-light btn-xl']")).click();
-		driver.findElement(By.xpath("//ul[@class='user-seminar-list']/li[1]/div[2]/button[2]/i")).click();
-
+		CommonValues comm = new CommonValues();
+		
+		seminarID = comm.findSeminarIDInList(driver, seminarTitle);
+		Thread.sleep(2000);
+		comm.postSeminar(driver, seminarID);
+		
+		driver.findElement(By.xpath("//div[@class='ricon ricon-edit']")).click();
+		
 		String editURL = driver.getCurrentUrl();
 		
 		if(!editURL.contentEquals(CommonValues.SERVER_URL + CommonValues.CREATE_URI + seminarID))
 		{
-			failMsg = failMsg + "\n 1.Can't Enter EDIT page [Expected]" + editURL
+			failMsg = "1.Can't Enter EDIT page [Expected]" + editURL
 					+" [Actual]" + driver.getCurrentUrl();
 		}
+		
 		if(!driver.findElements(By.xpath("//div[@class='btn btn-transparent btn-auto preview disabled']")).isEmpty() 
-			&& !driver.findElements(By.xpath("//div[@class='btn btn-transparent btn-auto preview ']")).isEmpty())
-		{
-			failMsg = failMsg + "\n 2.Preview Btn is exist";  
-		}
+				&& !driver.findElements(By.xpath("//div[@class='btn btn-transparent btn-auto preview ']")).isEmpty())
+			{
+				failMsg = failMsg + "\n 2.Preview Btn is exist";  
+			}
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
 	}
-	
+
 	@AfterClass(alwaysRun = true)
 	  public void tearDown() throws Exception {
 		  
