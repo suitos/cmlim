@@ -36,6 +36,9 @@ public class CommonValues {
 	public static String CHARACTER_20 = "aaaaaaaaaaaaaaaaaaaa";
 	public static String NUMBER_20 = "11111111111111111111";
 	public static String NUMBER_10 = "1234567890";
+	public static String SPECIAL_10 = "AaBb123!@#$";
+	
+	public static String WRONG_EMAIL = "abcd123@rsupport.com";
 	
 	//URL
 	public static String URL_PARTNERLIST = "/partner/list";
@@ -174,19 +177,34 @@ public class CommonValues {
 		case 1:
 			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
 				e.sendKeys(Keys.BACK_SPACE);
-			e.sendKeys(CommonValues.NUMBER_10);
+			e.sendKeys(SPECIAL_10);
 		break;
 		case 2:
 			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
 				e.sendKeys(Keys.BACK_SPACE);
 			for (int i=0; i<4; i++){
-			e.sendKeys(CommonValues.NUMBER_10);}
+			e.sendKeys(SPECIAL_10);}
 		break;
 		case 3:
 			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
 				e.sendKeys(Keys.BACK_SPACE);
 			for (int i=0; i<30; i++){
-			e.sendKeys(CommonValues.NUMBER_10);}
+			e.sendKeys(SPECIAL_10);}
+		break;
+		case 4:
+			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
+			e.sendKeys(Keys.BACK_SPACE);
+			e.sendKeys(NUMBER_10);
+		break;
+		case 5:
+			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
+			e.sendKeys(Keys.BACK_SPACE);	
+			e.sendKeys(WRONG_EMAIL);
+		break;
+		case 6:
+			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
+			e.sendKeys(Keys.BACK_SPACE);	
+			e.sendKeys(USER_PARTNER_KR);
 		break;
 		}
 	}
