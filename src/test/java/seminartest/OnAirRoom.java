@@ -50,7 +50,7 @@ import org.testng.annotations.Test;
  * part3
  * 21. 참석자A 질믄 입력, 발표자, 참석자B 질문 뱃지확인 
  * 22. 참석자B 질믄 입력 (참석자A,참석자B 질믄), 참석자A가 본인 질문 삭제
- * 23. 참석자A 질믄 입력 (참석자A,참석자B 질믄), 발표자가  참석자B 질문 삭제
+ * 23. 참석자A 질믄 입력 (참석자A 질믄,참석자B), 발표자가  참석자B 질문 삭제
  * 24. 참석자B 비공개 질믄 입력 (참석자A 공개1 ,참석자B 비공개1)
  * 25. 참석자A 비공개1 ,참석자B 비공개1. 참석자A가 비공개 질문 삭제
  * 26. 참석자A 비공개1 ,참석자B 비공개1. 발표자가 참석자B 비공개 질문 삭제
@@ -74,7 +74,7 @@ public class OnAirRoom {
 	public static String XPATH_ROOM_TOAST = "//div[@class='wrap-toast-outer']";
 	
 	public static String XPATH_ROOM_TAB_QNA = "//div[@id='timeline-viewmode']/button[2]";
-	public static String XPATH_ROOM_TAB_CAHT = "//div[@id='timeline-viewmode']/button[1]";
+	public static String XPATH_ROOM_TAB_CHAT = "//div[@id='timeline-viewmode']/button[1]";
 	public static String XPATH_ROOM_TAB_QNA_BEDGE = "//div[@id='timeline-viewmode']/button[2]//div[@class='count-bedge']";
 	public static String XPATH_ROOM_QNA_LIST = "//li[@class='Qna_qna-list-item__hId6u ']";
 	
@@ -656,9 +656,9 @@ public class OnAirRoom {
 		attendADriver.findElement(By.xpath("//input[@name='phone']")).clear();
 		
 		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//join seminar
 		((JavascriptExecutor) attendADriver).executeScript("arguments[0].scrollIntoView(true);"
@@ -733,9 +733,9 @@ public class OnAirRoom {
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_PHONE)).clear();
 		
 		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//join seminar
 		((JavascriptExecutor) attendBDriver).executeScript("arguments[0].scrollIntoView(true);"
@@ -1059,11 +1059,11 @@ public class OnAirRoom {
 		
 		// 발표자, 참석자A 채팅탭으로 이동해놓음
 		if(driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna active")) {
-			driver.findElement(By.xpath(XPATH_ROOM_TAB_CAHT)).click();
+			driver.findElement(By.xpath(XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(100);
 		}
 		if(attendBDriver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna active")) {
-			attendBDriver.findElement(By.xpath(XPATH_ROOM_TAB_CAHT)).click();
+			attendBDriver.findElement(By.xpath(XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(100);
 		}
 		
@@ -1325,15 +1325,18 @@ public class OnAirRoom {
 	@Test(priority = 31, dependsOnMethods = { "SeminarRoom_Pres", "qnaPublic_answer" }, alwaysRun = true, enabled = true)
 	public void qnaPrivate_answer() throws Exception {
 		String failMsg = "";
-		driver.navigate().refresh();
-		Thread.sleep(1000);
-		
+
 		checkSettingpopup(driver);
 		
 		List<String> ans = new ArrayList<String>();
 		
 		// 발표자가  비공개질문에 답변 작성
 		if (driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
+			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
+			Thread.sleep(1000);
+		} else {
+			driver.findElement(By.xpath(XPATH_ROOM_TAB_CHAT)).click();
+			Thread.sleep(500);
 			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
 			Thread.sleep(1000);
 		}
@@ -1345,7 +1348,6 @@ public class OnAirRoom {
 			ans.add(QNA_ANSWER+"1");
 			addAnswer(qnas.get(1), QNA_ANSWER+"1");
 		}
-		
 		//참석자A 답변확인
 		if(attendADriver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
 			attendADriver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
@@ -1374,7 +1376,7 @@ public class OnAirRoom {
 			String msg =  checkAnswer(qnas2.get(0), ATTENDEES_NICKNAME + "1", tmp);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n4." + msg));
 		}
-		
+
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -1391,7 +1393,7 @@ public class OnAirRoom {
 			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
 			Thread.sleep(500);
 		} else {
-			driver.findElement(By.xpath(XPATH_ROOM_TAB_CAHT)).click();
+			driver.findElement(By.xpath(XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(200);
 			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
 		}
@@ -1433,7 +1435,7 @@ public class OnAirRoom {
 			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
 			Thread.sleep(500);
 		} else {
-			driver.findElement(By.xpath(XPATH_ROOM_TAB_CAHT)).click();
+			driver.findElement(By.xpath(XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(200);
 			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
 		}
@@ -1484,7 +1486,7 @@ public class OnAirRoom {
 		wd.findElement(By.xpath("//div[@class='qna-question__btn-box']/button[@class='btn btn-primary btn-m ']")).click();
 		
 		Thread.sleep(500);
-		wd.findElement(By.xpath(XPATH_ROOM_TAB_CAHT)).click();
+		wd.findElement(By.xpath(XPATH_ROOM_TAB_CHAT)).click();
 	}
 	
 	public void addAnswer(WebElement ee, String msg) throws InterruptedException {
@@ -1584,7 +1586,7 @@ public class OnAirRoom {
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 		
 		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {

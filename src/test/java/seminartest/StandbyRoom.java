@@ -330,7 +330,7 @@ public class StandbyRoom {
 		
 		//refresh window
 		driver.navigate().refresh();
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		Thread.sleep(1000);
 		
 		checkSettingpopup(driver);
 		//click doc icon
@@ -622,9 +622,9 @@ public class StandbyRoom {
 		attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_PHONE)).clear();
 		
 		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1 + "//div")).click();
 		if(!attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendADriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2 + "//div")).click();
 		
 		//join seminar
 		((JavascriptExecutor) attendADriver).executeScript("arguments[0].scrollIntoView(true);"
@@ -704,9 +704,9 @@ public class StandbyRoom {
 		attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_PHONE)).clear();
 		
 		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendBDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//join seminar
 		((JavascriptExecutor) attendBDriver).executeScript("arguments[0].scrollIntoView(true);"
@@ -1030,11 +1030,11 @@ public class StandbyRoom {
 		
 		// 발표자, 참석자A 채팅탭으로 이동해놓음
 		if(driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna active")) {
-			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CAHT)).click();
+			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(100);
 		}
 		if(attendBDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna active")) {
-			attendBDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CAHT)).click();
+			attendBDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(100);
 		}
 		
@@ -1297,12 +1297,15 @@ public class StandbyRoom {
 	public void qnaPrivate_answer() throws Exception {
 		String failMsg = "";
 		List<String> ans = new ArrayList<String>();
-		driver.navigate().refresh();
-		Thread.sleep(500);
 		checkSettingpopup(driver);
 		
 		// 발표자가  비공개질문에 답변 작성
 		if (driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
+			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
+			Thread.sleep(500);
+		} else {
+			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CHAT)).click();
+			Thread.sleep(500);
 			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
 			Thread.sleep(500);
 		}
@@ -1360,7 +1363,7 @@ public class StandbyRoom {
 			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
 			Thread.sleep(500);
 		} else {
-			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CAHT)).click();
+			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(200);
 			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
 		}
@@ -1402,7 +1405,7 @@ public class StandbyRoom {
 			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
 			Thread.sleep(500);
 		} else {
-			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CAHT)).click();
+			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CHAT)).click();
 			Thread.sleep(200);
 			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
 		}
@@ -1453,7 +1456,7 @@ public class StandbyRoom {
 		wd.findElement(By.xpath("//div[@class='qna-question__btn-box']/button[@class='btn btn-primary btn-m ']")).click();
 		
 		Thread.sleep(500);
-		wd.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CAHT)).click();
+		wd.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_CHAT)).click();
 	}
 	
 	public void addAnswer(WebElement ee, String msg) throws InterruptedException {
