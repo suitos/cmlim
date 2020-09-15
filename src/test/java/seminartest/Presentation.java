@@ -435,18 +435,15 @@ public class Presentation {
 			}
 		}
 		
-		// save as..
+		// save..
 		driver.findElement(By.xpath("//div[@class='CommandButtons_commandButtons__1sy0n']//button[1]")).click();
 		Thread.sleep(1000);
 		
-		String createViewUri = CommonValues.SERVER_URL + CommonValues.CREATE_URI;
-		if(driver.getCurrentUrl().contains(createViewUri)) {
-			// 임시저장 세미나 ID
-			seminarID = driver.getCurrentUrl().replace(createViewUri, "");
-		} else {
-			seminarID = driver.getCurrentUrl().replace(CommonValues.SERVER_URL + CommonValues.CREATE_PRESENTATION_URI, "");
-		}
+		CommonValues comm = new CommonValues();
+		seminarID = comm.findSeminarIDInList(driver, seminarTitle);
 		
+		String createViewUri = CommonValues.SERVER_URL + CommonValues.CREATE_URI;
+	
 		// go to detail view
 		driver.get(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID);
 		Thread.sleep(500);
@@ -758,14 +755,14 @@ public class Presentation {
 		docs_before.get(1).findElement(By.xpath(".//textarea[@class='input-content']")).click();
 		Thread.sleep(1000);
 		
-		//save as..
+		//save..
 		driver.findElement(By.xpath("//div[@class='CommandButtons_commandButtons__1sy0n']//button[1]")).click();
 		Thread.sleep(1000);
 		
 		String createViewUri = CommonValues.SERVER_URL + CommonValues.CREATE_URI;
 		if(driver.getCurrentUrl().contains(createViewUri)) {
-			// 임시저장 세미나 ID
-			seminarID = driver.getCurrentUrl().replace(createViewUri, "");
+			driver.get(createViewUri + seminarID);
+			Thread.sleep(1000);
 		}
 		
 		// click member tab
