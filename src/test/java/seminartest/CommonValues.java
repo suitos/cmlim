@@ -72,7 +72,7 @@ public class CommonValues {
 	public static String INCORRECT_AUTHCODE_FORMAT = "Invalid authentication code format"; 
 	public static String INVALID_AUTHCODE_MSG = "Invalid verification number."; 
 	public static String EMAIL_SEND_MSG = "Authentication code has been sent."; 
-	public static String MSG_MARKETING_AGREEMENT = "I agree to receive marketing information.(Select)";
+	public static String MSG_MARKETING_AGREEMENT = "I agree to receive product updates and event newsletters from Rsupport.(Select)";
 	
 	public static String AUTH_CODE = "1111111";
 

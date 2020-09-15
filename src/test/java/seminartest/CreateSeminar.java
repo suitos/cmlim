@@ -59,6 +59,7 @@ public class CreateSeminar {
 	public static String CHECKBOX_SECRETMODE = "Incognito mode (seminar will not be listed on the channel)";
 	
 	public static String XPATH_CREATESEMINAR_SEMINARYTPE = "//div[@id='seminar-type']/div[@class='text']";
+	public static String XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE = "//input[@name='dropzone']";
 	
 	public static WebDriver driver;
 	private boolean acceptNextAlert = true;
@@ -204,7 +205,7 @@ public class CreateSeminar {
 		// check title placeholder
 		if (!driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getAttribute("placeholder")
 				.contentEquals(CommonValues.PLACEHOLDER_TITLE)) {
-			failMsg = "Wrong title place holder : "
+			failMsg = "1. Wrong title place holder : "
 					+ driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE));
 		}
 
@@ -215,7 +216,7 @@ public class CreateSeminar {
 		assertEquals(closeAlertAndGetItsText(), CommonValues.LONG_TITEL_ERROR);
 
 		if (driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getText().contentEquals(longtitle)) {
-			failMsg = failMsg + "\n" + "wrong seminar title : "
+			failMsg = failMsg + "\n2.wrong seminar title : "
 					+ driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getText();
 
 		}
@@ -226,7 +227,7 @@ public class CreateSeminar {
 		Thread.sleep(1000);
 		// 배너에서 제목 확인
 		if (!driver.findElement(By.xpath("//div[@class='title']")).getText().contentEquals(CommonValues.VALID_SNAME)) {
-			failMsg = failMsg + "\n" + "wrong banner title : "
+			failMsg = failMsg + "\n3.wrong banner title : "
 					+ driver.findElement(By.xpath("//div[@class='title']")).getText();
 		}
 
@@ -321,7 +322,7 @@ public class CreateSeminar {
 
 		for (int i = 0; i < CommonValues.TESTFILE_INVALID_LIST.length; i++) {
 			testpng = filePath + CommonValues.TESTFILE_INVALID_LIST[i];
-			driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testpng);
+			driver.findElement(By.xpath(XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)).sendKeys(testpng);
 			Thread.sleep(1000);
 
 			WebElement web = driver.findElement(By.xpath("//div[@class='box-upload']/following::p[@class='error']"));
@@ -350,7 +351,7 @@ public class CreateSeminar {
 		String testpng = "";
 		for (int i = 0; i < CommonValues.TESTFILE_LIST.length; i++) {
 			testpng = filePath + CommonValues.TESTFILE_LIST[i];
-			driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testpng);
+			driver.findElement(By.xpath(XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)).sendKeys(testpng);
 
 			if (i >= 10) {
 				assertEquals(closeAlertAndGetItsText(), CommonValues.OVER_FILES_ERROR);

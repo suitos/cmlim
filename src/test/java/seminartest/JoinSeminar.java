@@ -7,7 +7,9 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -101,9 +103,7 @@ public class JoinSeminar {
 	public static String XPATH_JOIN_CHECKBOX4 = "//div[@class='form__content-box']/div[@class='checkbox'][4]"; //marketing
 	public static String XPATH_JOIN_CHECKBOX_ERROR = "//div[@class='form__content-box']/span[@class='form__content-box__error-msg']";
 	
-	public static String MSG_JOIN_AGREE_ERROR = "blabla";
-	
-	public static String CHANNEL_URI = "hello";
+	public static String MSG_JOIN_AGREE_ERROR = "Please agree to the terms of service and privacy policy, as well as the guidance on handling personal information of the channel.";
 	
 	public String seminarID = "";
 	
@@ -1499,6 +1499,14 @@ public class JoinSeminar {
 	    	Thread.sleep(500);
 		}
 		
+		Date time = new Date();
+		Calendar cal = Calendar.getInstance();
+		Calendar cal_today = Calendar.getInstance();
+		cal_today.setTime(time);
+		cal.setTime(time);
+		SimpleDateFormat format1 = new SimpleDateFormat("MMddHHmmss");
+		String testurl = format1.format(cal.getTime());
+		
 		//click Change URL button
 		driver.findElement(By.xpath("//button[@class='btn btn-basic btn-s btn-edit-ChannelId']")).click();
 		Thread.sleep(500);
@@ -1506,7 +1514,7 @@ public class JoinSeminar {
 		driver.findElement(By.xpath("//input[@class='Input_basic__3hycH Input_input__mcpaw  input']")).click();
 		driver.findElement(By.xpath("//input[@class='Input_basic__3hycH Input_input__mcpaw  input']")).clear();
 		
-		driver.findElement(By.xpath("//input[@class='Input_basic__3hycH Input_input__mcpaw  input']")).sendKeys("hello");
+		driver.findElement(By.xpath("//input[@class='Input_basic__3hycH Input_input__mcpaw  input']")).sendKeys(testurl);
 		Thread.sleep(500);
 		
 		if(!driver.findElement(By.xpath("//div[@class='desc valid']")).getText().contentEquals("This URL can be used.")) {
@@ -1522,10 +1530,11 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
 		Thread.sleep(2000);
 		
-		String channelURL = CommonValues.SERVER_URL + CommonValues.CHANNEL_VIEW_URL + "/" + CHANNEL_URI;
+		String channelURL = CommonValues.SERVER_URL + CommonValues.CHANNEL_VIEW_URL + "/" + testurl;
 		
 		//channel url
-		if(!driver.findElement(By.xpath("//span[@class='ChannelTitle_channel-url__1I1Qh']")).getText().contentEquals(channelURL)) {
+		if(!driver.findElement(By.xpath("//span[@class='ChannelTitle_channel-url__1I1Qh']")).getText().contentEquals(channelURL)
+				&& !driver.findElement(By.xpath("//span[@class='ChannelTitle_channel-url__1I1Qh']")).getText().contentEquals(channelURL.replace("https://", ""))) {
 			failMsg = failMsg + "\n3.channel url : [Expected]" + channelURL + " [Actual] " + driver.findElement(By.xpath("//span[@class='ChannelTitle_channel-url__1I1Qh']")).getText();
 		}	
 		
