@@ -173,13 +173,13 @@ public class CommonValues {
 
 	
 	//CreateSeminar Invite
+	public static String INVITETEMP_VIEW ="/seminar/invite-temp";
 	public static String INVITE_VIEW ="/seminar/invite";
 	public static String INVITE_LIST ="/seminar/invite-list";
 	public static String INVITE_ERROR_EMAIL ="Incorrect email format.";
 	public static String INVITE_ERROR_EMAIL_DUPLICATE ="This email already exists. Duplicate emails will be deleted and registered.";
 	public static String INVITE_ERROR_EMPTYLIST ="There is no email added.\nInvite attendees by adding emails.";
-	public static String INVITE_MSG_SEND ="Invitation has been sent to the participants.\nDuplicate emails will be deleted before sending the invitation."
-			+ "\nDo you want to go to the invitee list?";
+	public static String INVITE_MSG_SEND ="Do you want to send the email to the participants?";
 	public static String MSG_SELCECT_EMAIL ="Select the email.";
 	public static String MSG_SEND_EMAIL ="Email has been sent.";
 	
