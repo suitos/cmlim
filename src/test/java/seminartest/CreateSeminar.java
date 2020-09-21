@@ -206,7 +206,7 @@ public class CreateSeminar {
 		if (!driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getAttribute("placeholder")
 				.contentEquals(CommonValues.PLACEHOLDER_TITLE)) {
 			failMsg = "1. Wrong title place holder : "
-					+ driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE));
+					+ driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getAttribute("placeholder");
 		}
 
 		// send 41 strings in title

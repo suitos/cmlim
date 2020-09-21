@@ -130,7 +130,7 @@ public class CommonValues {
 	public static String CREATE_MEMBER_URI = "/seminar/members";
 	public static String CREATE_WAITING_URI = "/seminar/waiting";
 	
-	public static String PLACEHOLDER_TITLE = "Enter title for the seminar";
+	public static String PLACEHOLDER_TITLE = "example) Building a Telework environment by Rsupport";
 	public static String DEFAULT_ATTEND = "1000";
 	public static String VALUE_GUIDE = "Enter the required information.";
 	public static String LONG_TITEL_ERROR = "Seminar title cannot be longer than 40 characters.";
