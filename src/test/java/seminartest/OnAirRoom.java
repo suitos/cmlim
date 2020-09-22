@@ -829,9 +829,10 @@ public class OnAirRoom {
 	@Test(priority = 21, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
 	public void qnaPublic() throws Exception {
 		String failMsg = "";
-				
+		
+		QnATest qna = new QnATest();
 		//참석자A 질문작성
-		addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
+		qna.addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
 		
 		//발표자 질문탭 뱃지 및 질문 확인
 		try {
@@ -848,7 +849,7 @@ public class OnAirRoom {
 		if(qnas.size() != 1) {
 			failMsg = failMsg + "\n 1. QnA count [Expected]1 [Actual]" + qnas.size();
 		} else {
-			String msg = checkQuestion(qnas.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
+			String msg = qna.checkQuestion(qnas.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n2." + msg));
 		}
 		
@@ -868,7 +869,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 1) {
 			failMsg = failMsg + "\n 4. QnA count [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg = checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
+			String msg = qna.checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n5." + msg));
 		}		
 		
@@ -883,9 +884,11 @@ public class OnAirRoom {
 	@Test(priority = 22, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
 	public void qnaPublic_delete1() throws Exception {
 		String failMsg = "";
-				
+			
+		QnATest qna = new QnATest();
+		
 		//참석자B 질문작성
-		addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
+		qna.addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
 		
 		//참석자A 본인질문 삭제
 		if(attendADriver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
@@ -933,7 +936,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 1) {
 			failMsg = failMsg + "\n 3. QnA count(presenter) [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg = checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PUBLIC, true);
+			String msg = qna.checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n4." + msg));
 		}
 		
@@ -949,7 +952,7 @@ public class OnAirRoom {
 		if(qnas3.size() != 1) {
 			failMsg = failMsg + "\n 5. QnA count(attendeeB) [Expected]1 [Actual]" + qnas3.size();
 		} else {
-			String msg =  failMsg + checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PUBLIC, true);
+			String msg =  failMsg + qna.checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n6." + msg));
 		}		
 		
@@ -963,9 +966,11 @@ public class OnAirRoom {
 	@Test(priority = 23, dependsOnMethods = { "SeminarRoom_Pres", "qnaPublic_delete1" }, alwaysRun = true, enabled = true)
 	public void qnaPublic_delete2() throws Exception {
 		String failMsg = "";
-				
+		
+		QnATest qna = new QnATest();
+		
 		//참석자A 질문작성
-		addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
+		qna.addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
 		
 		//발표자가  참석자B 질문 삭제
 		if(driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
@@ -1016,7 +1021,7 @@ public class OnAirRoom {
 		if(qnas3.size() != 1) {
 			failMsg = failMsg + "\n 1. QnA count(attendee2) [Expected]1 [Actual]" + qnas3.size();
 		} else {
-			String msg =  failMsg + checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
+			String msg =  failMsg + qna.checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n2." + msg));
 		}		
 		
@@ -1029,7 +1034,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 1) {
 			failMsg = failMsg + "\n 3. QnA count(presenter) [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg =  checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
+			String msg =  qna.checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n4." + msg));
 	
 			// 나머지도 삭제
@@ -1067,8 +1072,10 @@ public class OnAirRoom {
 			Thread.sleep(100);
 		}
 		
+		QnATest qna = new QnATest();
+		
 		//참석자A 비공개 질문작성
-		addQuestion(attendADriver, QNA_QUESTION_PRIVATE, false);
+		qna.addQuestion(attendADriver, QNA_QUESTION_PRIVATE, false);
 		
 		//발표자 질문탭 뱃지 및 질문 확인
 		try {
@@ -1085,7 +1092,7 @@ public class OnAirRoom {
 		if(qnas.size() != 1) {
 			failMsg = failMsg + "\n 2. QnA count(presenter) [Expected]1 [Actual]" + qnas.size();
 		} else {
-			String msg =  checkQuestion(qnas.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PRIVATE, false);
+			String msg =  qna.checkQuestion(qnas.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PRIVATE, false);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n3." + msg));
 		}
 		
@@ -1117,7 +1124,9 @@ public class OnAirRoom {
 	public void qnaPrivate_delete1() throws Exception {
 		String failMsg = "";
 		
-		addQuestion(attendBDriver, QNA_QUESTION_PRIVATE, false);
+		QnATest qna = new QnATest();
+		
+		qna.addQuestion(attendBDriver, QNA_QUESTION_PRIVATE, false);
 		
 		// 참석자A 본인 비공개 질문 삭제
 		if(attendADriver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
@@ -1165,7 +1174,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 1) {
 			failMsg = failMsg + "\n 3. QnA count(Presenter) [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg =  checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PRIVATE, false);
+			String msg =  qna.checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PRIVATE, false);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n4." + msg));
 		}
 		
@@ -1181,7 +1190,7 @@ public class OnAirRoom {
 		if(qnas3.size() != 1) {
 			failMsg = failMsg + "\n5. QnA count(attendeeB) [Expected]1 [Actual]" + qnas3.size();
 		} else {
-			String msg =  checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PRIVATE, false);
+			String msg =  qna.checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PRIVATE, false);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n6." + msg));
 		}		
 		
@@ -1196,7 +1205,9 @@ public class OnAirRoom {
 	public void qnaPrivate_delete2() throws Exception {
 		String failMsg = "";
 		
-		addQuestion(attendADriver, QNA_QUESTION_PRIVATE, false);
+		QnATest qna = new QnATest();
+		
+		qna.addQuestion(attendADriver, QNA_QUESTION_PRIVATE, false);
 		
 		// 발표자가 참석자B 비공개 질문 삭제
 		if(driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
@@ -1244,7 +1255,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 1) {
 			failMsg = failMsg + "\n 3. QnA count(Presenter) [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg =  checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PRIVATE, false);
+			String msg =  qna.checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "1", QNA_QUESTION_PRIVATE, false);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n4." + msg));
 		}
 		
@@ -1272,8 +1283,11 @@ public class OnAirRoom {
 	public void qnaPublic_answer() throws Exception {
 		String failMsg = "";
 		List<String> ans = new ArrayList<String>();
+		
+		QnATest qna = new QnATest();
+		
 		//참석자A 공개질믄 입력
-		addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
+		qna.addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
 		Thread.sleep(500);
 		
 		// 발표자가 공개질문에 답변 작성
@@ -1286,7 +1300,7 @@ public class OnAirRoom {
 			failMsg = failMsg + "\n 1. QnA count(presenter) [Expected]2 [Actual]" + qnas.size();
 		} else {
 			ans.add(QNA_ANSWER+"0");
-			addAnswer(qnas.get(0), QNA_ANSWER+"0");
+			qna.addAnswer(qnas.get(0), QNA_ANSWER+"0");
 		}
 		
 		//참석자A 답변확인
@@ -1298,7 +1312,7 @@ public class OnAirRoom {
 		if(qnas1.size() != 2) {
 			failMsg = failMsg + "\n2. QnA count(attendeeA) [Expected]2 [Actual]" + qnas1.size();
 		} else {
-			String msg =  checkAnswer(qnas1.get(0), ATTENDEES_NICKNAME + "1", ans);
+			String msg =  qna.checkAnswer(qnas1.get(0), ATTENDEES_NICKNAME + "1", ans);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n3." + msg));
 		}	
 		
@@ -1311,7 +1325,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 1) {
 			failMsg = failMsg + "\n4. QnA count(attendeeB) [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg =  checkAnswer(qnas2.get(0), ATTENDEES_NICKNAME + "1", ans);
+			String msg =  qna.checkAnswer(qnas2.get(0), ATTENDEES_NICKNAME + "1", ans);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n5." + msg));
 		}
 		
@@ -1341,12 +1355,14 @@ public class OnAirRoom {
 			Thread.sleep(1000);
 		}
 		
+		QnATest qna = new QnATest();
+		
 		List<WebElement> qnas = driver.findElements(By.xpath(XPATH_ROOM_QNA_LIST));
 		if (qnas.size() != 2) {
 			failMsg = failMsg + "1. QnA count(presenter) [Expected]2 [Actual]" + qnas.size();
 		} else {
 			ans.add(QNA_ANSWER+"1");
-			addAnswer(qnas.get(1), QNA_ANSWER+"1");
+			qna.addAnswer(qnas.get(1), QNA_ANSWER+"1");
 		}
 		//참석자A 답변확인
 		if(attendADriver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
@@ -1357,7 +1373,7 @@ public class OnAirRoom {
 		if(qnas1.size() != 2) {
 			failMsg = failMsg + "\n2. QnA count(attendeeA) [Expected]2 [Actual]" + qnas1.size();
 		} else {
-			String msg =  checkAnswer(qnas1.get(1), ATTENDEES_NICKNAME + "1", ans);
+			String msg =  qna.checkAnswer(qnas1.get(1), ATTENDEES_NICKNAME + "1", ans);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n3." + msg));
 		}	
 		
@@ -1373,7 +1389,7 @@ public class OnAirRoom {
 			List<String> tmp = new ArrayList<String>();
 			tmp.add(QNA_ANSWER+"0");
 			
-			String msg =  checkAnswer(qnas2.get(0), ATTENDEES_NICKNAME + "1", tmp);
+			String msg =  qna.checkAnswer(qnas2.get(0), ATTENDEES_NICKNAME + "1", tmp);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n4." + msg));
 		}
 
@@ -1398,11 +1414,12 @@ public class OnAirRoom {
 			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
 		}
 		
+		QnATest qna = new QnATest();
 		List<WebElement> qnas = driver.findElements(By.xpath(XPATH_ROOM_QNA_LIST));
 		if (qnas.size() != 2) {
 			failMsg = failMsg + "\n 1. QnA count(presenter) [Expected]2 [Actual]" + qnas.size();
 		} else {
-			String msg =  deleteAnswer(driver, qnas.get(0));
+			String msg =  qna.deleteAnswer(driver, qnas.get(0));
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n2." + msg));
 		}
 		
@@ -1415,7 +1432,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 2) {
 			failMsg = failMsg + "\n5. QnA count(attendeeB) [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg =  checkAnswer(qnas2.get(0), ATTENDEES_NICKNAME + "1", null);
+			String msg =  qna.checkAnswer(qnas2.get(0), ATTENDEES_NICKNAME + "1", null);
 			failMsg = failMsg + (msg.contentEquals("empty")?"":("\n4." + msg));
 		}
 		
@@ -1440,11 +1457,12 @@ public class OnAirRoom {
 			driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
 		}
 		
+		QnATest qna = new QnATest();
 		List<WebElement> qnas = driver.findElements(By.xpath(XPATH_ROOM_QNA_LIST));
 		if (qnas.size() != 2) {
 			failMsg = failMsg + "\n 1. QnA count(presenter) [Expected]2 [Actual]" + qnas.size();
 		} else {
-			String msg =  deleteAnswer(driver, qnas.get(1));
+			String msg =  qna.deleteAnswer(driver, qnas.get(1));
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n2." + msg));
 		}
 		
@@ -1457,7 +1475,7 @@ public class OnAirRoom {
 		if(qnas2.size() != 2) {
 			failMsg = failMsg + "\n5. QnA count(attendeeB) [Expected]1 [Actual]" + qnas2.size();
 		} else {
-			String msg =  checkAnswer(qnas2.get(1), ATTENDEES_NICKNAME + "1", null);
+			String msg =  qna.checkAnswer(qnas2.get(1), ATTENDEES_NICKNAME + "1", null);
 			failMsg = failMsg + (msg.contentEquals("empty")?"":("\n4." + msg));
 		}
 		
@@ -1466,111 +1484,6 @@ public class OnAirRoom {
 			throw e;
 		}
 	}	
-	
-	public void addQuestion(WebDriver wd, String msg, boolean ispublic) throws InterruptedException {
-		
-		if(wd.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
-			wd.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
-			Thread.sleep(100);
-		}
-		
-		wd.findElement(By.xpath("//i[@class='ricon-write-black']")).click();
-		Thread.sleep(100);
-		
-		if(!ispublic)
-			wd.findElement(By.xpath("//div[@class='qna-question__btn-box']//div[@class='checkbox']")).click();
-		Thread.sleep(100);
-		
-		wd.findElement(By.xpath("//textarea[@class='Qna_qna-textarea__2bvZA scrollbar']")).clear();
-		wd.findElement(By.xpath("//textarea[@class='Qna_qna-textarea__2bvZA scrollbar']")).sendKeys(msg);
-		wd.findElement(By.xpath("//div[@class='qna-question__btn-box']/button[@class='btn btn-primary btn-m ']")).click();
-		
-		Thread.sleep(500);
-		wd.findElement(By.xpath(XPATH_ROOM_TAB_CHAT)).click();
-	}
-	
-	public void addAnswer(WebElement ee, String msg) throws InterruptedException {
-		
-		ee.findElement(By.xpath(".//div[@class='qna-list-item__button-box']/button[1]")).click();
-		Thread.sleep(500);
-		ee.findElement(By.xpath(".//textarea[@class='Qna_qna-textarea__2bvZA scrollbar']")).clear();
-		ee.findElement(By.xpath(".//textarea[@class='Qna_qna-textarea__2bvZA scrollbar']")).sendKeys(msg);
-		ee.findElement(By.xpath(".//div[@class='qna-list-item__inner-box answer']/button[1]")).click();
-		Thread.sleep(500);
-	}	
-	
-	public String deleteAnswer(WebDriver wd, WebElement ee) throws InterruptedException {
-		String failMsg = "";
-		List<WebElement> replys = ee.findElements(By.xpath(".//li[@class='Qna_qna-reply__1zRc7']"));
-		
-		for (int i = 0; i < replys.size(); i++) {
-			replys.get(i).findElement(By.xpath(".//button[@class='qna-reply__close-btn']")).click();
-			Thread.sleep(500);
-			
-			if(!wd.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_ANSWER)) {
-				failMsg = failMsg + "\n delete popup message [Expected]" + MSG_DELETE_ANSWER 
-						+ " [Actual]" + wd.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
-			}
-			
-			//cancel 
-			wd.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
-			Thread.sleep(500);
-			replys.get(i).findElement(By.xpath(".//button[@class='qna-reply__close-btn']")).click();
-			Thread.sleep(500);
-			//confirm 
-			wd.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
-			Thread.sleep(500);
-		}
-		return failMsg;
-	}
-	
-	public String checkQuestion(WebElement ee, String nickname, String msg, boolean ispublic) {
-		String failMsg = "";
-		
-		if(!ee.findElement(By.xpath(".//span[@class='content-box__nickname']")).getText().contentEquals(nickname)) {
-			failMsg = "\n qan writer [Expected]" + nickname 
-					+ " [Actual]" + ee.findElement(By.xpath(".//span[@class='content-box__nickname']")).getText();
-		}
-	
-		if(!ee.findElement(By.xpath(".//p[@class='content-box__content']")).getText().contentEquals(msg)) {
-			failMsg = failMsg + "\n qan content [Expected]" + msg 
-					+ " [Actual]" + ee.findElement(By.xpath(".//p[@class='content-box__content']")).getText();
-		}
-		
-		if(ispublic) {
-			if(!ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class").contentEquals("ricon-unlock")) {
-				failMsg = failMsg + "\n qna lock icon [Expected]" + "ricon-unlock" 
-						+ " [Actual]" + ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class");
-			}
-		
-		} else {
-			if(!ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class").contentEquals("ricon-lock")) {
-				failMsg = failMsg + "\n qna lock icon [Expected]" + "ricon-lock" 
-						+ " [Actual]" + ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class");
-			}
-		}
-		
-		return failMsg;
-	}
-	
-	public String checkAnswer(WebElement ee, String nickname, List<String> msg) {
-		String failMsg = "";
-		List<WebElement> replys = ee.findElements(By.xpath(".//li[@class='Qna_qna-reply__1zRc7']"));
-		
-		if (msg == null || replys.size() == 0) {
-			failMsg = "empty";
-		} else if(replys.size() == msg.size()) {
-			for (int i = 0; i < replys.size() ; i++) {
-				if(!replys.get(i).findElement(By.xpath(".//div[@class='qna-reply__contents']/p")).getText().contentEquals(msg.get(i))) {
-					failMsg = failMsg + "\n reply [Expected]" + msg.get(i) 
-							+ " [Actual]" + replys.get(i).findElement(By.xpath(".//div[@class='qna-reply__contents']/p")).getText();
-				}
-				
-			}
-		}
-		
-		return failMsg;
-	}		
 	
 	// 100. 세미나 종료하기
 	@Test(priority = 100, enabled = true)
