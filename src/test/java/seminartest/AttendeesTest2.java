@@ -671,9 +671,9 @@ public class AttendeesTest2{
 		Thread.sleep(100);
 		
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
 		Thread.sleep(1000);
@@ -698,9 +698,9 @@ public class AttendeesTest2{
 		JavascriptExecutor js = (JavascriptExecutor) attendeesDriver;
 		
 		if(attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).click();
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).clear();
@@ -736,7 +736,7 @@ public class AttendeesTest2{
 			failMsg = failMsg + "\n3. not find error message.";
 		}
 		//1check
-		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		Thread.sleep(100);
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
@@ -752,8 +752,8 @@ public class AttendeesTest2{
 		}
 		
 		// upcheck a, check b
-		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
-		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
 		Thread.sleep(500);
@@ -792,9 +792,9 @@ public class AttendeesTest2{
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode);
 
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//join seminar
 		
@@ -869,9 +869,9 @@ public class AttendeesTest2{
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode);
 		
 		if(!memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		// 입장
 		// join seminar
@@ -967,9 +967,9 @@ public class AttendeesTest2{
 		}
 		
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//join seminar
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
@@ -1034,9 +1034,9 @@ public class AttendeesTest2{
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode_old);
 		
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//try to join seminar
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
@@ -1055,9 +1055,9 @@ public class AttendeesTest2{
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode_new);
 		
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//try to join seminar
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
@@ -1089,7 +1089,7 @@ public class AttendeesTest2{
 		String inviteID = dbconn.getInviteID(seminarID.replace("/", ""), USER_INVITED_N + "@gmail.com");
 		String entranceCode = dbconn.getEntranceCode(seminarID.replace("/", ""), USER_INVITED_N + "@gmail.com");
 		String privateURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_LINK + seminarID + URL_PRIVATE + inviteID;
-		
+
 		sameuserDriver.get(privateURL);
 		Thread.sleep(2000);
 		
@@ -1108,9 +1108,9 @@ public class AttendeesTest2{
 		sameuserDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode);
 		
 		if(!sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		//click join
 		sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
@@ -1149,9 +1149,9 @@ public class AttendeesTest2{
 		sameuserDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode);
 		
 		if(!sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
-			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1)).click();
+			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
 		if(!sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
-			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2)).click();
+			sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		// 입장
 		// join seminar
@@ -1587,8 +1587,8 @@ public class AttendeesTest2{
 		//설정팝업 확인
 		if(isElementPresent_wd(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
 			if(user.contentEquals(ROLE_PRESENER)) {
-				wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-				Thread.sleep(500);
+				CommonValues comm = new CommonValues();
+				comm.checkSettingpopup(wd);
 			} else {
 				failMsg = failMsg + "\n 0-1. find seminar setting popup " + user;
 			}
