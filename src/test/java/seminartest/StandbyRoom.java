@@ -237,7 +237,8 @@ public class StandbyRoom {
 		
 		String failMsg = "";
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click doc button
 		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_BTN)).click();
@@ -332,7 +333,8 @@ public class StandbyRoom {
 		driver.navigate().refresh();
 		Thread.sleep(1000);
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		//click doc icon
 		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_BTN)).click();
 		
@@ -377,7 +379,8 @@ public class StandbyRoom {
 		
 		String failMsg = "";
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click youtube icon
 		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN)).click();
@@ -471,7 +474,8 @@ public class StandbyRoom {
 		driver.navigate().refresh();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click youtube icon
 		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN)).click();
@@ -537,7 +541,8 @@ public class StandbyRoom {
 		driver.navigate().refresh();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click youtube icon
 		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN)).click();
@@ -1297,7 +1302,8 @@ public class StandbyRoom {
 	public void qnaPrivate_answer() throws Exception {
 		String failMsg = "";
 		List<String> ans = new ArrayList<String>();
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		// 발표자가  비공개질문에 답변 작성
 		if (driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
@@ -1541,14 +1547,6 @@ public class StandbyRoom {
 		
 		return failMsg;
 	}	
-	
-	public void checkSettingpopup(WebDriver wd) throws InterruptedException {
-		// 설정팝업 확인
-		if(isElementPresent_wd(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
-			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-			Thread.sleep(500);
-		}
-	}
 	
 	// 100. 세미나 종료하기
 	@Test(priority = 100, enabled = true)

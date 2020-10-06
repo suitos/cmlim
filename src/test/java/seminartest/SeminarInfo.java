@@ -952,7 +952,7 @@ public class SeminarInfo {
 		
 		// 입장하기 버튼 클릭
 		if (buttonTest(driver_publisher, "enter", true)) {
-			Thread.sleep(500);
+			Thread.sleep(1000);
 			
 			String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 			ArrayList<String> tabs2 = new ArrayList<String> (driver_publisher.getWindowHandles());
@@ -1164,7 +1164,7 @@ public class SeminarInfo {
 				//switch room tab
 				driver.switchTo().window(tabs2.get(1));
 
-				checkSettingpopup(driver);
+				comm.checkSettingpopup(driver);
 				
 				// start seminar
 				driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_BTN)).click();
@@ -1319,7 +1319,7 @@ public class SeminarInfo {
 		
 		// 입장하기 버튼 클릭
 		if (buttonTest(driver_publisher, "enter", true)) {
-			Thread.sleep(500);
+			Thread.sleep(1000);
 		
 			String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 			ArrayList<String> tabs2 = new ArrayList<String> (driver_publisher.getWindowHandles());
@@ -1543,7 +1543,8 @@ public class SeminarInfo {
 				driver.switchTo().window(tabs2.get(1));
 				
 				//설정팝업 확인
-				checkSettingpopup(driver);
+				CommonValues comm = new CommonValues();
+				comm.checkSettingpopup(driver);
 				Thread.sleep(500);
 				
 				//종료
@@ -2267,9 +2268,8 @@ public class SeminarInfo {
 		}
 		
 		//설정팝업 확인
-		if (isElementPresent(driver, By.xpath("//div[@id='device-setting-wrap']"))) {
-			driver.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-		}
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//start seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_BTN)).click();
@@ -2429,9 +2429,8 @@ public class SeminarInfo {
 		}
 		
 		//설정팝업 확인
-		if (isElementPresent(driver, By.xpath("//div[@id='device-setting-wrap']"))) {
-			driver.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-		}
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//close seminar
 		driver.findElement(By.id("btn-exit")).click();
@@ -3191,9 +3190,8 @@ public class SeminarInfo {
 		}
 		
 		//설정팝업 확인
-		if (isElementPresent(driver, By.xpath("//div[@id='device-setting-wrap']"))) {
-			driver.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-		}
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//start seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_BTN)).click();
@@ -3352,9 +3350,8 @@ public class SeminarInfo {
 		}
 		
 		//설정팝업 확인
-		if (isElementPresent(driver, By.xpath("//div[@id='device-setting-wrap']"))) {
-			driver.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-		}
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//close seminar
 		driver.findElement(By.id("btn-exit")).click();
@@ -3780,15 +3777,6 @@ public class SeminarInfo {
 		}
 	}
 	
-	public void checkSettingpopup(WebDriver wd) throws InterruptedException{
-		
-		try {
-			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-			Thread.sleep(500);
-		} catch (NoSuchElementException e) {
-			
-		}
-	}
 	
 	public void takescreenshot(WebDriver e, String filename) throws IOException {
 		System.out.println("try take screenshot");

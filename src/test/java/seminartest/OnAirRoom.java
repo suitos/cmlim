@@ -243,7 +243,8 @@ public class OnAirRoom {
 
 		}
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 
 	    //start seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_BTN)).click();
@@ -265,7 +266,8 @@ public class OnAirRoom {
 		
 		String failMsg = "";
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click doc icon
 		driver.findElement(By.xpath(XPATH_ROOM_DOC_BTN)).click();
@@ -359,7 +361,8 @@ public class OnAirRoom {
 		driver.navigate().refresh();
 		Thread.sleep(500);
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click doc icon
 		driver.findElement(By.xpath(XPATH_ROOM_DOC_BTN)).click();
@@ -406,7 +409,8 @@ public class OnAirRoom {
 		
 		String failMsg = "";
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click youtube icon
 		driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
@@ -498,7 +502,8 @@ public class OnAirRoom {
 		
 		Thread.sleep(500);
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click youtube icon
 		driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
@@ -566,7 +571,8 @@ public class OnAirRoom {
 	public void youtube_add2() throws Exception {
 		String failMsg = "";
 				
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		//click youtube icon
 		driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
@@ -1340,7 +1346,8 @@ public class OnAirRoom {
 	public void qnaPrivate_answer() throws Exception {
 		String failMsg = "";
 
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 		
 		List<String> ans = new ArrayList<String>();
 		
@@ -1569,15 +1576,6 @@ public class OnAirRoom {
 		String verificationErrorString = verificationErrors.toString();
 		if (!"".equals(verificationErrorString)) {
 			fail(verificationErrorString);
-		}
-	}
-
-	
-	public void checkSettingpopup(WebDriver wd) throws InterruptedException {
-		// 설정팝업 확인
-		if(isElementPresent_wd(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
-			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-			Thread.sleep(500);
 		}
 	}
 	

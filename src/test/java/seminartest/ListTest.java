@@ -779,7 +779,8 @@ public class ListTest {
 	    }
 	    
 		// 설정팝업 확인
-	    checkSettingpopup(driver);
+	    CommonValues comm = new CommonValues();
+	    comm.checkSettingpopup(driver);
 
 	    //close seminar
 		driver.findElement(By.id("btn-exit")).click();
@@ -827,7 +828,7 @@ public class ListTest {
 
 			Actions actions = new Actions(driver);
 			actions.moveToElement(we).perform();
-			Thread.sleep(100);
+			Thread.sleep(500);
 			
 			//버튼 확인 : 수정만 노출
 			if(buttonTest(we, "link", false)) {
@@ -989,7 +990,7 @@ public class ListTest {
 
 			Actions actions = new Actions(driver);
 			actions.moveToElement(we).perform();
-			Thread.sleep(100);
+			Thread.sleep(500);
 	
 			//버튼 확인
 			if(!buttonTest(we, "lock", false)) {
@@ -1228,7 +1229,7 @@ public class ListTest {
 
 			Actions actions = new Actions(driver);
 			actions.moveToElement(we).perform();
-			Thread.sleep(100);
+			Thread.sleep(500);
 	
 			//버튼 확인
 			if(!buttonTest(we, "lock", false)) {
@@ -1612,8 +1613,9 @@ public class ListTest {
 			driver.switchTo().window(tabs2.get(1));
 		}
 		
-		//설정팝업 확인
-		checkSettingpopup(driver);
+		// 설정팝업 확인
+	    CommonValues comm = new CommonValues();
+	    comm.checkSettingpopup(driver);
 		
 		//start seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_BTN)).click();
@@ -1721,7 +1723,8 @@ public class ListTest {
 		}
 
 		// 설정팝업 확인
-		checkSettingpopup(driver);
+	    CommonValues comm = new CommonValues();
+	    comm.checkSettingpopup(driver);
 		
 		//close seminar
 		driver.findElement(By.id("btn-exit")).click();
@@ -2520,8 +2523,9 @@ public class ListTest {
 			driver.switchTo().window(tabs2.get(1));
 		}
 		
-		//설정팝업 확인
-		checkSettingpopup(driver);
+		// 설정팝업 확인
+	    CommonValues comm = new CommonValues();
+	    comm.checkSettingpopup(driver);
 		
 		//start seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_BTN)).click();
@@ -2629,7 +2633,8 @@ public class ListTest {
 		}
 
 		// 설정팝업 확인
-		checkSettingpopup(driver);
+	    CommonValues comm = new CommonValues();
+	    comm.checkSettingpopup(driver);
 		
 		//close seminar
 		driver.findElement(By.id("btn-exit")).click();
@@ -2817,12 +2822,6 @@ public class ListTest {
 		}
 	}
 	
-	private void checkSettingpopup(WebDriver wd) {
-		if (isElementPresent_wd(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
-			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-		}
-	}
-	
 	@AfterClass(alwaysRun = true)
 	  public void tearDown() throws Exception {
 		  
@@ -2834,7 +2833,7 @@ public class ListTest {
 	    }
 	  }
 
-	public void takescreenshot(WebElement e, String filename) throws IOException {
+	public void takescreenshot(WebDriver e, String filename) throws IOException {
 		System.out.println("try take screenshot");
 		String filepath = System.getProperty("user.dir") + "\\test-output\\failimg\\" + filename;
 		File scrFile = ((TakesScreenshot) e).getScreenshotAs(OutputType.FILE);
