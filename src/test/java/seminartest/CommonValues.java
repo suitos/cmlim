@@ -3,7 +3,9 @@ package seminartest;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -297,7 +299,24 @@ public class CommonValues {
 		    //options.addArguments("headless");
 		    options.addArguments("disable-gpu");
 		    
-			driver = new ChromeDriver(options);
+		    
+		    Map<String, Object> prefs = new HashMap<>();
+
+		    // with this chrome still asks for permission
+			prefs.put("profile.managed_default_content_settings.media_stream", 1);
+			prefs.put("profile.managed_default_content_settings.media_stream_camera", 1);
+			prefs.put("profile.managed_default_content_settings.media_stream_mic", 1);
+
+			// and this prevents chrome from starting
+			prefs.put("profile.content_settings.exceptions.media_stream_mic.https://*,*.setting", 1);
+			prefs.put("profile.content_settings.exceptions.media_stream_mic.https://*,*.last_used", 1);
+			prefs.put("profile.content_settings.exceptions.media_stream_camera.https://*,*.setting", 1);
+			prefs.put("profile.content_settings.exceptions.media_stream_camera.https://*,*.last_used", 1);
+		    
+			options.setExperimentalOption("prefs", prefs);
+			
+		    
+		    driver = new ChromeDriver(options);
 		} else {
 			driver = new FirefoxDriver();
 		}
@@ -554,6 +573,16 @@ public class CommonValues {
 		
 		driver.findElement(By.xpath(XPATH_MODAL_FOOTER + "/button[1]")).click();
 		Thread.sleep(500);
+	}
+	
+	public void checkSettingpopup(WebDriver wd) throws InterruptedException {
+		// 설정팝업 확인
+		if(isElementPresent(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
+			
+			Thread.sleep(5000);
+			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
+			Thread.sleep(500);
+		}
 	}
 	
 	private boolean isElementPresent(WebDriver driver, By by) {
