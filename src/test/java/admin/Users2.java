@@ -34,8 +34,8 @@ public class Users2 {
 	public static String XPATH_POPUP_SUBMIT = "//div[@class='ant-modal-footer']/button[1]";
 	public static String XPATH_POPUP_CANCEL = "//div[@class='ant-modal-footer']/button[2]";
 	
-	public static String XPATH_USER_TAB_CHANNEL = "//div[@class='ant-tabs-nav ant-tabs-nav-animated']//div[@role='tab'][4]";
-	public static String XPATH_USER_TAB_SEMINAR = "//div[@class='ant-tabs-nav ant-tabs-nav-animated']//div[@role='tab'][5]";
+	public static String XPATH_USER_TAB_CHANNEL = "//div[@class='ant-tabs-nav']//div[@class='ant-tabs-nav-list']//div[4]";
+	public static String XPATH_USER_TAB_SEMINAR = "//div[@class='ant-tabs-nav']//div[@class='ant-tabs-nav-list']//div[5]";
 	
 	public static String XPATH_USER_INFO_LIST = "//tbody[@class='ant-table-tbody']/tr";
 	public static String XPATH_USER_INFO_INPUTBOX = "//div[@class='ant-form-item-control-input']//input";
@@ -258,7 +258,7 @@ public class Users2 {
 			driver.get(CommonValues.ADMIN_URL + CommonValues.URL_USERINFO + userID);
 		}
 		
-		if(driver.findElement(By.xpath(XPATH_USER_TAB_CHANNEL)).getAttribute("aria-selected").contentEquals("false")) {
+		if(driver.findElement(By.xpath(XPATH_USER_TAB_CHANNEL)).getAttribute("class").contains("active")) {
 			driver.findElement(By.xpath(XPATH_USER_TAB_CHANNEL)).click();
 			Thread.sleep(500);
 		}
@@ -328,7 +328,7 @@ public class Users2 {
 			driver.get(CommonValues.ADMIN_URL + CommonValues.URL_USERINFO + userID);
 		}
 		
-		if(driver.findElement(By.xpath(XPATH_USER_TAB_CHANNEL)).getAttribute("aria-selected").contentEquals("false")) {
+		if(driver.findElement(By.xpath(XPATH_USER_TAB_CHANNEL)).getAttribute("class").contains("active")) {
 			driver.findElement(By.xpath(XPATH_USER_TAB_CHANNEL)).click();
 			Thread.sleep(500);
 		}
@@ -385,7 +385,7 @@ public class Users2 {
 			driver.get(CommonValues.ADMIN_URL + CommonValues.URL_USERINFO + userID);
 		}
 		
-		if(driver.findElement(By.xpath(XPATH_USER_TAB_SEMINAR)).getAttribute("aria-selected").contentEquals("false")) {
+		if(driver.findElement(By.xpath(XPATH_USER_TAB_SEMINAR)).getAttribute("class").contains("active")) {
 			driver.findElement(By.xpath(XPATH_USER_TAB_SEMINAR)).click();
 			Thread.sleep(500);
 		}

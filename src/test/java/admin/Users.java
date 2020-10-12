@@ -54,8 +54,8 @@ public class Users {
 	public static String XPATH_USER_INFO_DELETEUSER_BTN = "//button[@class='ant-btn ant-btn-primary ant-btn-dangerous']";
 	
 	public static String XPATH_USER_INFO_PROFILE_NEME = "//div[@class='__profile']//h5";
-	public static String XPATH_USER_INFO_PROFILE_EMAIL = "//div[@class='ant-descriptions']//tr[@class='ant-descriptions-row'][1]/td/span[2]";
-	public static String XPATH_USER_INFO_PROFILE_PARTNER = "//div[@class='ant-descriptions']//tr[@class='ant-descriptions-row'][2]/td/span[2]";
+	public static String XPATH_USER_INFO_PROFILE_EMAIL = "//div[@class='ant-descriptions']//tr[@class='ant-descriptions-row'][1]/td//span[@class='ant-descriptions-item-content']";
+	public static String XPATH_USER_INFO_PROFILE_PARTNER = "//div[@class='ant-descriptions']//tr[@class='ant-descriptions-row'][2]/td//span[@class='ant-descriptions-item-content']";
 	public static String XPATH_USER_INFO_PROFILE_PARTNER_BTN = "//div[@class='ant-descriptions']//tr[@class='ant-descriptions-row'][2]//button";
 	public static String XPATH_USER_INFO_PROFILE_MARKETING  = "//div[@class='ant-descriptions']//tr[@class='ant-descriptions-row'][3]//input";
 	public static String XPATH_USER_INFO_PROFILE_IMPORTANTUSER  = "//div[@class='ant-descriptions']//tr[@class='ant-descriptions-row'][4]//input";

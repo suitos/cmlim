@@ -27,11 +27,11 @@ public class LoginTest {
 	public static String WARNING_PW_EMPTY = "비밀번호를 입력하세요.";
 	public static String WARNING_LOGOIN_INVALID_FORMAT = "이메일 형식이 올바르지 않습니다.";
 	public static String WARNING_LOGOIN_FAIL = "로그인을 실패하였습니다.";
-	public static String WARNING_LOGOIN_FAIL2 = "로그인이 불가능한 계정입니다.";
+	public static String WARNING_LOGOIN_FAIL2 = "로그인이 불가능 계정입니다.";
 
 	public static String XPATH_EMAIL_ERROR = "//div[@class='ant-row ant-form-item ant-form-item-with-help ant-form-item-has-error'][1]//div[@class='ant-form-item-explain']/div";
 	public static String XPATH_PW_ERROR = "//div[@class='ant-row ant-form-item ant-form-item-with-help ant-form-item-has-error'][2]//div[@class='ant-form-item-explain']/div";
-	public static String XPATH_LOGIN_TOAST = "//div[@class='ant-message-custom-content ant-message-error']/span";
+	public static String XPATH_LOGIN_TOAST = "//div[@class='ant-message-custom-content ant-message-error']/span[2]";
 	
 	public static WebDriver driver;
 	private boolean acceptNextAlert = true;
@@ -110,7 +110,7 @@ public class LoginTest {
 						+ " [Actual]" + driver.findElement(By.xpath(XPATH_LOGIN_TOAST)).getText();
 			}
 		} else {
-			failMsg = "1-0. cannot find error toast";
+			failMsg = failMsg + "1-0. cannot find error toast";
 		}
 		Thread.sleep(3000);
 
@@ -130,11 +130,11 @@ public class LoginTest {
 
 		if (isElementPresent(By.xpath(XPATH_LOGIN_TOAST))) {
 			if (!driver.findElement(By.xpath(XPATH_LOGIN_TOAST)).getText().contentEquals(WARNING_LOGOIN_FAIL)) {
-				failMsg = "\n2. login fail message error (wrong email). [Expected]" + WARNING_LOGOIN_FAIL + " [Actual]"
+				failMsg = failMsg + "\n2. login fail message error (wrong email). [Expected]" + WARNING_LOGOIN_FAIL + " [Actual]"
 						+ driver.findElement(By.xpath(XPATH_LOGIN_TOAST)).getText();
 			}
 		} else {
-			failMsg = "\n2-0. cannot find error toast";
+			failMsg = failMsg + "\n2-0. cannot find error toast";
 		}
 		Thread.sleep(3000);
 
@@ -150,15 +150,15 @@ public class LoginTest {
 
 		// click login
 		driver.findElement(By.xpath(CommonValues.XPATH_LOGIN_BUTTON)).click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
 		if (isElementPresent(By.xpath(XPATH_LOGIN_TOAST))) {
 			if (!driver.findElement(By.xpath(XPATH_LOGIN_TOAST)).getText().contentEquals(WARNING_LOGOIN_FAIL)) {
-				failMsg = "\n3. login fail message error (wrong email). [Expected]" + WARNING_LOGOIN_FAIL + " [Actual]"
+				failMsg = failMsg + "\n3. login fail message error (wrong email). [Expected]" + WARNING_LOGOIN_FAIL + " [Actual]"
 						+ driver.findElement(By.xpath(XPATH_LOGIN_TOAST)).getText();
 			}
 		} else {
-			failMsg = "\n3-0. cannot find error toast";
+			failMsg = failMsg + "\n3-0. cannot find error toast";
 		}
 
 		Thread.sleep(3000);
@@ -177,14 +177,13 @@ public class LoginTest {
 		driver.findElement(By.xpath(CommonValues.XPATH_LOGIN_BUTTON)).click();
 		Thread.sleep(1000);
 
-		String xpath = XPATH_LOGIN_TOAST + "[2]";
-		if (isElementPresent(By.xpath(xpath))) {
-			if (!driver.findElement(By.xpath(xpath)).getText().contentEquals(WARNING_LOGOIN_FAIL2)) {
-				failMsg = "\n4. login fail message error (wrong email). [Expected]" + WARNING_LOGOIN_FAIL2 + " [Actual]"
-						+ driver.findElement(By.xpath(xpath)).getText();
+		if (isElementPresent(By.xpath(XPATH_LOGIN_TOAST))) {
+			if (!driver.findElement(By.xpath(XPATH_LOGIN_TOAST)).getText().contentEquals(WARNING_LOGOIN_FAIL2)) {
+				failMsg = failMsg + "\n4. login fail message error (wrong email). [Expected]" + WARNING_LOGOIN_FAIL2 + " [Actual]"
+						+ driver.findElement(By.xpath(XPATH_LOGIN_TOAST)).getText();
 			}
 		} else {
-			failMsg = "\n4-0. cannot find error toast";
+			failMsg = failMsg + "\n4-0. cannot find error toast";
 		}
 
 		if (failMsg != null && !failMsg.isEmpty()) {

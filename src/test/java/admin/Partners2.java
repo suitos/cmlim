@@ -121,11 +121,14 @@ public class Partners2 {
 			String item = String.format(findItem, PARTNER_TESTD);
 			for(int i = 0 ; i < 10 ; i++) {
 				if (isElementPresent(tree, By.xpath(item))) {
+					js.executeScript("arguments[0].scrollIntoView(true);", tree.findElement(By.xpath(item)));
+					Thread.sleep(200);
 					break;	
 				} else {
 					List<WebElement> pas = driver.findElements(By.xpath(XPATH_PARTNER_SELECTBOX_ITEM));
 					js.executeScript("arguments[0].scrollIntoView(true);", pas.get(pas.size()-1));
-					Thread.sleep(100);
+					Thread.sleep(200);
+					
 				}
 			}
 			tree.findElement(By.xpath(item)).click();
@@ -281,6 +284,8 @@ public class Partners2 {
 			String item = String.format(findItem, PARTNER_TESTD);
 			for(int i = 0 ; i < 10 ; i++) {
 				if (isElementPresent(tree, By.xpath(item))) {
+					js.executeScript("arguments[0].scrollIntoView(true);", tree.findElement(By.xpath(item)));
+					Thread.sleep(100);
 					break;	
 				} else {
 					List<WebElement> pas = driver.findElements(By.xpath(XPATH_PARTNER_SELECTBOX_ITEM));
@@ -680,6 +685,15 @@ public class Partners2 {
 			el.sendKeys(Keys.BACK_SPACE);
 	}
 
+	
+	public void takescreenshot(WebElement e, String filename) throws IOException {
+		System.out.println("try take screenshot");
+		String filepath = System.getProperty("user.dir") + "\\test-output\\failimg\\" + filename;
+		File scrFile = ((TakesScreenshot) e).getScreenshotAs(OutputType.FILE);
+		// Now you can do whatever you need to do with it, for example copy somewhere
+		FileUtils.copyFile(scrFile, new File(filepath));
+	}
+	
 	@AfterClass(alwaysRun = true)
 	public void tearDown() throws Exception {
 

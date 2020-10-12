@@ -19,7 +19,7 @@ public class CommonValues {
 	public static final String WEB_FIREFOX_DRIVER_PATH = System.getProperty("user.dir") + "/driver/geckodriver.exe";
 	public static final String WEB_FIREFOX_DRIVER_LINUX_PATH = "/tools/webdriver/geckodriver";
 	
-	public static String ADMIN_URL = "https://alphaadmin.remoteseminar.com/#";
+	public static String ADMIN_URL = "https://alphaadmin.remoteseminar.com";
 	
 	/*user
 	 * 
