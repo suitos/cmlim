@@ -534,25 +534,16 @@ public class QnATest {
 		
 		
 		List<WebElement> qnas_pre = driver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_QNA_LIST));
-		if(qnas_pre.size() > 0) {
-			driver.navigate().refresh();
-			Thread.sleep(500);
-			checkSettingpopup(driver);
-			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
-			Thread.sleep(500);
-			
-			qnas_pre = driver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_QNA_LIST));
-			if(qnas_pre.size() == 0) {
-				addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
-				addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
-				addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
-			} else if(qnas_pre.size() == 1) {
-				addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
-				addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
-			} else if(qnas_pre.size() == 2) {
-				addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
-			}
-		} 
+		if(qnas_pre.size() == 0) {
+			addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
+			addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
+			addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
+		} else if(qnas_pre.size() == 1) {
+			addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
+			addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
+		} else if(qnas_pre.size() == 2) {
+			addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
+		}
 		
 		//발표자가 질문 두개 고정
 		int qnasize = driver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_QNA_LIST)).size();
