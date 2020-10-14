@@ -962,7 +962,7 @@ public class AttendeesTest{
 
 		// 발표자가 인원탭에서 발표자 확인
 		if (!driver.findElement(By.xpath("//div[@class='Participants_header__fsxhk']")).isDisplayed()) {
-			driver.findElement(By.xpath("//i[@class='ricon-user-friends']")).click();
+			driver.findElement(By.xpath("//div[@id='timeline-viewmode']/button[4]")).click();
 		}
 		Thread.sleep(1000);
 		List<WebElement> membersList = driver.findElements(By.xpath("//div[@class='ParticipantsList_container-list__29aAV']/div"));
@@ -1544,6 +1544,7 @@ public class AttendeesTest{
 				js.executeScript("arguments[0].scrollIntoView();", wd.findElement(By.xpath(".//div[@class='img-box']")));
 				channels.get(i).findElement(By.xpath(".//div[@class='img-box']")).click();
 				Thread.sleep(500);
+				break;
 			}
 		}
 		
@@ -1661,7 +1662,7 @@ public class AttendeesTest{
 
 		// 발표자가 인원탭에서 발표자 확인
 		if (!wd.findElement(By.xpath("//div[@class='Participants_header__fsxhk']")).isDisplayed()) {
-			wd.findElement(By.xpath("//i[@class='ricon-user-friends']")).click();
+			wd.findElement(By.xpath("//div[@id='timeline-viewmode']/button[4]")).click();
 		}
 		Thread.sleep(1000);
 		List<WebElement> membersList = wd.findElements(By.xpath("//div[@class='ParticipantsList_container-list__29aAV']/div"));
@@ -1744,7 +1745,7 @@ public class AttendeesTest{
 		
 		// 발표자가 인원탭에 게시자 찾을수 없음 확인
 		if(!driver.findElement(By.xpath("//div[@class='Participants_header__fsxhk']")).isDisplayed()) {
-			driver.findElement(By.xpath("//i[@class='ricon-user-friends']")).click();
+			driver.findElement(By.xpath("//div[@id='timeline-viewmode']/button[4]")).click();
 		}
 		Thread.sleep(1000);
 		List<WebElement> membersList = driver.findElements(By.xpath("//div[@class='ParticipantsList_container-list__29aAV']/div"));
