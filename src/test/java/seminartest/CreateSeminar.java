@@ -309,7 +309,7 @@ public class CreateSeminar {
 
 			
 	// 10. 상세화면 파일 첨부에 잘못된 형식의 파일 첨부 시도
-	@Test(priority = 10)
+	@Test(priority = 10, enabled = false)
 	public void checkSharefile_invalid() throws Exception {
 		String failMsg = "";
 
@@ -323,9 +323,9 @@ public class CreateSeminar {
 		for (int i = 0; i < CommonValues.TESTFILE_INVALID_LIST.length; i++) {
 			testpng = filePath + CommonValues.TESTFILE_INVALID_LIST[i];
 			driver.findElement(By.xpath(XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)).sendKeys(testpng);
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 
-			WebElement web = driver.findElement(By.xpath("//div[@class='box-upload']/following::p[@class='error']"));
+			WebElement web = driver.findElement(By.xpath("//div[@class='UploadDocument_upload-box__jvaP3']/p[@class='error']"));
 
 			if (web == null || !web.getText().contentEquals(CommonValues.ERROR_FILEFORMAT)) {
 				failMsg = failMsg + "\n" + "error add file, invalid fileformat : "
@@ -340,7 +340,7 @@ public class CreateSeminar {
 	}
 
 	// 11. 세미나 상세화면 파일 첨부에 정상 파일 첨부, 10개 초과 파일 첨부 시도
-	@Test(priority = 11)
+	@Test(priority = 11, enabled = true)
 	public void checkSharefile_valid() throws Exception {
 		String failMsg = "";
 
@@ -348,11 +348,15 @@ public class CreateSeminar {
 		if(System.getProperty("os.name").toLowerCase().contains("mac"))
 			filePath = CommonValues.TESTFILE_PATH_MAC;
 		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)));
+		
 		String testpng = "";
 		for (int i = 0; i < CommonValues.TESTFILE_LIST.length; i++) {
 			testpng = filePath + CommonValues.TESTFILE_LIST[i];
 			driver.findElement(By.xpath(XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)).sendKeys(testpng);
-
+			Thread.sleep(500);
+			
 			if (i >= 10) {
 				assertEquals(closeAlertAndGetItsText(), CommonValues.OVER_FILES_ERROR);
 				System.out.println("check add file count 11");

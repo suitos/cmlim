@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
@@ -82,7 +83,6 @@ public class CreateSeminar2 {
 	public static String XPATH_CREATESEMINAR_TITLE = "//div[@class='seminar-title']/input[1]";
 	public static String XPATH_SEMINARVIEW_EDIT_BTN = "//div[@class='ricon ricon-edit']";
 	public static String XPATH_SEMINARVIEW_DELETE_BTN = "//div[@class='ricon ricon-trash']";
-	public static String XPATH_SEMINARVIEW_UPLOADFILE = "//div[@class='box-upload']/input[@class='file']";
 	public static String XPATH_SEMINARVIEW_WAITING_MSG = "//div[@class='ql-container ql-snow']";
 	public static String XPATH_SEMINARVIEW_WAITING_TIME = "//div[@id='waiting-display-time']/div[1]";
 	
@@ -278,20 +278,24 @@ public class CreateSeminar2 {
 		String filePath = CommonValues.TESTFILE_PATH;
 		if(System.getProperty("os.name").toLowerCase().contains("mac"))
 			filePath = CommonValues.TESTFILE_PATH_MAC;
+		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(CreateSeminar.XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)));
+		
 		//add 3 files
 		String[] addedfils = {CommonValues.TESTFILE_LIST[0], CommonValues.TESTFILE_LIST[5], CommonValues.TESTFILE_LIST[7]};
 		
-		driver.findElement(By.xpath(XPATH_SEMINARVIEW_UPLOADFILE)).sendKeys(filePath+ addedfils[0]);
+		driver.findElement(By.xpath(CreateSeminar.XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)).sendKeys(filePath+ addedfils[0]);
 		Thread.sleep(1000);
-		driver.findElement(By.xpath(XPATH_SEMINARVIEW_UPLOADFILE)).sendKeys(filePath + addedfils[1]);
+		driver.findElement(By.xpath(CreateSeminar.XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)).sendKeys(filePath + addedfils[1]);
 		Thread.sleep(1000);
-		driver.findElement(By.xpath(XPATH_SEMINARVIEW_UPLOADFILE)).sendKeys(filePath + addedfils[2]);
+		driver.findElement(By.xpath(CreateSeminar.XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)).sendKeys(filePath + addedfils[2]);
 		Thread.sleep(1000);
 
 
 		List<WebElement> items = driver.findElements(By.xpath(xpath_createview_fileitem));
 		if(items.size() != 3) {
-			failMsg = "1. added file count error : " + items.size();
+			failMsg = "1. added file count error : [Expected]3 [Actual]" + items.size();
 		} else {
 			
 			for(int i = 0 ; i < items.size() ; i++) {
@@ -304,7 +308,7 @@ public class CreateSeminar2 {
 
 		// save as..
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		
 		//go to detail view
 		String detailview = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
@@ -327,6 +331,8 @@ public class CreateSeminar2 {
 		//edit
 		driver.findElement(By.xpath(XPATH_SEMINARVIEW_EDIT_BTN)).click();
 		Thread.sleep(500);
+		
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(CreateSeminar.XPATH_CREATESEMINAR_SHAREDFILE_DROPZONE)));
 		
 		items = driver.findElements(By.xpath(xpath_createview_fileitem));
 		if(items.size() != 3) {
@@ -785,7 +791,8 @@ public class CreateSeminar2 {
 		driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_MSG + "/div")).sendKeys(Keys.BACK_SPACE);
 		driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_MSG + "/div")).clear();
 		Thread.sleep(500);
-
+		seminarTitle = "a";
+		
 		// click save..
 		Thread.sleep(500);
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
@@ -796,15 +803,15 @@ public class CreateSeminar2 {
 		String listView = CommonValues.SERVER_URL + CommonValues.LIST_URI;
 		driver.get(listView);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 
 		// click saved tab
 		driver.findElement(By.xpath(CommonValues.XPATH_SEMINARLIST_TAB + "[1]")).click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
 		String listitem = "//*/text()[normalize-space(.)='" + seminarTitle + "']/parent::*";
 		if (!isElementPresent(By.xpath(listitem))) {
-			failMsg = "1. can not find seminar in draft tab";
+			failMsg = "1. can not find seminar in saved tab";
 			driver.get(CommonValues.SERVER_URL + CommonValues.CREATE_URI + seminarID);
 		} else {
 			WebElement el = driver.findElement(By.xpath(listitem));
