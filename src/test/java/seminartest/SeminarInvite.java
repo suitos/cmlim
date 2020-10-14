@@ -135,7 +135,7 @@ public class SeminarInvite {
 	}
 	
 	//2. 세미나 리스트에서 이동. 세미나 로고 클릭
-	@Test (priority=2, dependsOnMethods = {"seminarInvitationView"}, enabled = true)
+	@Test (priority=2, dependsOnMethods = {"seminarSave"}, enabled = true)
 	public void seminarInviteTempView() throws Exception {
 		String failMsg = "";
 		
@@ -186,7 +186,7 @@ public class SeminarInvite {
 	}
 	
 	//3. 초대관리 - 이메일 추가1
-	@Test (priority=3, dependsOnMethods = {"seminarInvitationView"}, enabled = true)
+	@Test (priority=3, dependsOnMethods = {"seminarSave"}, enabled = true)
 	public void inviteTemp_addemail() throws Exception {
 		String failMsg = "";
 		
@@ -255,7 +255,7 @@ public class SeminarInvite {
 	}
 	
 	//4. 초대관리 - 이메일 추가2 - 다중추가
-	@Test (priority=4, dependsOnMethods = {"seminarInvitationView"}, enabled = true)
+	@Test (priority=4, dependsOnMethods = {"seminarSave"}, enabled = true)
 	public void inviteTemp_addemail2() throws Exception {
 		String failMsg = "";
 		
@@ -323,7 +323,7 @@ public class SeminarInvite {
 	}
 	
 	//5. 초대관리 - 이메일 검색
-	@Test (priority=5, dependsOnMethods = {"seminarInvitationView"}, enabled = true)
+	@Test (priority=5, dependsOnMethods = {"seminarSave"}, enabled = true)
 	public void inviteTemp_search() throws Exception {
 		String failMsg = "";
 		
@@ -375,7 +375,7 @@ public class SeminarInvite {
 	}
 	
 	//6. 초대관리 - 이메일 삭제
-	@Test (priority=6, dependsOnMethods = {"seminarInvitationView"}, enabled = true)
+	@Test (priority=6, dependsOnMethods = {"seminarSave"}, enabled = true)
 	public void inviteTemp_delete() throws Exception {
 		String failMsg = "";
 		
@@ -431,7 +431,7 @@ public class SeminarInvite {
 	}
 		
 	//7. 초대관리 - 이메일 저장
-	@Test (priority=7, dependsOnMethods = {"seminarInvitationView"}, enabled = true)
+	@Test (priority=7, dependsOnMethods = {"seminarSave"}, enabled = true)
 	public void inviteTemp_save() throws Exception {
 		String failMsg = "";
 		
@@ -462,7 +462,7 @@ public class SeminarInvite {
 						+ " [Actual]" + driver.findElement(By.xpath(XPATH_INVITETEMP_TOAST)).getText();
 			}
 		} else {
-			failMsg = "2. cannot find save toast";
+			failMsg = failMsg + "\n2. cannot find save toast";
 			
 			if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))){
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
@@ -565,7 +565,7 @@ public class SeminarInvite {
 	}
 	
 	//8. 초대관리 - 게시완료후 초대화면 확인
-	@Test (priority=8, dependsOnMethods = {"seminarInvitationView"}, enabled = true)
+	@Test (priority=8, dependsOnMethods = {"seminarSave"}, enabled = true)
 	public void inviteTemp_post() throws Exception {
 		String failMsg = "";
 		
@@ -1127,7 +1127,7 @@ public class SeminarInvite {
 			failMsg = failMsg + "\n 3. send 3 : total mail count [Exepcted]" + sendoutEmail.size() 
 				+ " [Actual]" + driver.findElement(By.xpath(XPATH_INVITE_STATUS_TOTAL)).getText();
 		
-		if(!driver.findElement(By.xpath(XPATH_INVITE_EMAIL_INVITE_TAB)).getAttribute("class").contentEquals("active"))
+		if(!driver.findElement(By.xpath(XPATH_INVITE_EMAIL_SEND_TAB)).getAttribute("class").contentEquals("active"))
 			failMsg = failMsg + "\n 4. send list tab is active(Expected active send tab)";
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
@@ -1145,6 +1145,9 @@ public class SeminarInvite {
 		if (!invitation.equalsIgnoreCase(driver.getCurrentUrl())) {
 			driver.get(invitation);
 			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		} else {
+			driver.navigate().refresh();
+			Thread.sleep(1000);
 		}
 		
 		if(!driver.findElement(By.xpath(XPATH_INVITE_EMAIL_SEND_TAB)).getAttribute("class").contentEquals("active")) {
