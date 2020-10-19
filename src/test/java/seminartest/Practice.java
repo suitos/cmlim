@@ -53,20 +53,20 @@ import org.testng.annotations.Test;
  * 7.리허설룸 UI 체크 (RST-753)
  * 8.리허설 뱃지 확인 (/view)
  * 9.리허설 시작 > 11분 대기 (RST-756)
- * 10.리허설 종료 Alert확인(RST-758)
+ * 10.리허설 종료 url확인(RST-758)
  * 11.발표자 리허설 종료 화면 UI 체크(RST-907)
  * 12.운영자 리허설 종료 화면 UI 체크(RST-902)
  * 13.리허설 종료 후 뱃지 확인(/view)
  * 14.연습하기 가능한 세미나 생성2
  * 15.세미나 세팅(채널 변경,멤버설정(발표자, 운영자=게시자))
- * 16.발표자료 세팅
+ * 16.발표자료 세팅 > 일부 spec out으로 주석처리
  * 17.운영자 리허설룸 진입(/list)(RST-738)
  * 18.발표자 리허설룸 진입(/view)
- * 19.기존 발표자료 삭제 시도
+ * 19.기존 발표자료 삭제 시도 > 일부 spec out으로 주석처리
  * 20.유튜브 발표자료 등록 및 일부 삭제(연습모드 내 다수)
- * 21.문서 발표자료 등록 및 일부 삭제(연습모드 내 다수)
+ * 21.문서 발표자료 등록 및 일부 삭제(연습모드 내 다수) > 사용안함처리
  * 22.연습모드 종료
- * 23.해당 세미나 수정 페이지에서 발표자료 확인(RST-911)
+ * 23.해당 세미나 수정 페이지에서 발표자료 확인(RST-911) > docs size 1로 수정
 */
 
 public class Practice {
@@ -80,9 +80,11 @@ public class Practice {
 	public String createViewURL = "";
 	public String seminarID = "";
 	public String seminarAuthor = "";
+	public String seminarAuthor2 = "";
 	public String seminarDate = "";
 	public String seminarDetailURL = "";
 	public String seminarRoomURL = "";
+	public String closedURL = "";
 	public String Present = "";
 	public String Publisher = "";
 	public String Organizer = "";
@@ -202,6 +204,7 @@ public class Practice {
 	    System.out.println(info[0]);
 	    seminarDate = info[0];
 	    seminarAuthor = info[1];
+	    seminarAuthor2 = seminarAuthor.replace(",", ""); //쉼표 없음
 	    
 	    
 	    System.out.println(seminarAuthor);
@@ -411,21 +414,20 @@ public class Practice {
 		WebDriverWait wait = new WebDriverWait(Present_driver, 20);
 	    wait.until(ExpectedConditions.textToBePresentInElement(Present_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)), "Do you want to start the seminar?"));
 	    Present_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
-		TimeUnit.MINUTES.sleep(11);
+		TimeUnit.MINUTES.sleep(12);
 	}
 	
 	@Test(priority=10)
 	  public void checkRehearsalEndAlert() throws Exception {
 		String failMsg = "";
-
-		Alert alert = Present_driver.switchTo().alert();
-		String alert_msg = alert.getText();
-		alert.accept();
-		Thread.sleep(1000);
-		if(!alert_msg.contentEquals(REHEARSAL_END_MSG)) {
-			failMsg = failMsg + "\n 1.different alertMSG  [Expected]" + REHEARSAL_END_MSG
-					+" [Actual]" + alert_msg;
+		
+		closedURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID;
+		
+		if(!Present_driver.getCurrentUrl().contentEquals(closedURL)) {
+			Exception e =  new Exception("Seminar not exit : " +  Present_driver.getCurrentUrl());
+			throw e;
 		}
+	
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -442,7 +444,7 @@ public class Practice {
 		String date = Present_driver.findElement(By.xpath("//div[@class='wrap-text']/div[1]")).getText();
 		String author = Present_driver.findElement(By.xpath("//div[@class='wrap-text']/div[2]")).getText();
 		WebElement GOviewBTN = Present_driver.findElement(By.xpath("//button[@class='btn btn-secondary-light btn-xl ']"));
-		
+	
 		if(!endtitle.contentEquals(REHEARSAL_END_TITLE)) 
 		{
 			failMsg = failMsg + "\n 1.different End Title  [Expected]" + REHEARSAL_END_TITLE
@@ -458,7 +460,7 @@ public class Practice {
 			failMsg = failMsg + "\n 3.different Seminar Date  [Expected]" + seminarDate
 					+" [Actual]" + date;
 		}
-		if(!author.contentEquals(seminarAuthor)) 
+		if(!author.contentEquals(seminarAuthor) && !author.contentEquals(seminarAuthor2)) 
 		{
 			failMsg = failMsg + "\n 4.different Seminar Author  [Expected]" + seminarAuthor
 					+" [Actual]" + author;
@@ -507,7 +509,7 @@ public class Practice {
 			failMsg = failMsg + "\n 3.different Seminar Date  [Expected]" + seminarDate
 					+" [Actual]" + date;
 		}
-		if(!author.contentEquals(seminarAuthor)) 
+		if(!author.contentEquals(seminarAuthor) && !author.contentEquals(seminarAuthor2))
 		{
 			failMsg = failMsg + "\n 4.different Seminar Author  [Expected]" + seminarAuthor
 					+" [Actual]" + author;
@@ -535,7 +537,8 @@ public class Practice {
 		Present_driver.get(seminarDetailURL);
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
-		if(!Present_driver.findElement(By.xpath("//div[@class='undefined wrap-marks ']")).isDisplayed()){
+		if(!Present_driver.findElement(By.xpath("//div[@class='no-tag wrap-marks']")).isDisplayed()
+				&& (Present_driver.findElements(By.xpath("//div[@class='wrap-marks']")).isEmpty()) ){
 			System.out.println("Badge is not displayed");
 		}
 		else{
@@ -596,7 +599,7 @@ public class Practice {
 	@Test(priority=16)
 	  public void CreateRehearsalSeminar_SettingPresentation() throws Exception{
 		String failMsg = "";
-		
+		/*
 		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB4)).click();
 		
 		int docs_beforeS = Publisher_driver.findElements(By.xpath("//li[@class='DocItem_doc-item__2bSNb']")).size();
@@ -612,7 +615,7 @@ public class Practice {
 		}  else {
 			addedItem.add(CommonValues.TESTFILE_LIST[0]);
 		}
-		
+		*/
 		Publisher_driver.findElement(By.xpath("//input[@id='input-youtube-link']")).sendKeys(CommonValues.YOUTUBE_URL[0]);
 		Publisher_driver.findElement(By.xpath("//label[@for='input-youtube-link']/button")).click();
 		Thread.sleep(500);
@@ -777,7 +780,7 @@ public class Practice {
 		}
 		
 		TimeUnit.SECONDS.sleep(10);
-		
+		/*
 		//delete document
 		Present_driver.findElement(By.xpath("//button[@title='Share document']")).click();
 		String Documenttitle = Present_driver.findElement(By.xpath("//div[@class='title']")).getAttribute("title");
@@ -821,7 +824,7 @@ public class Practice {
 		}
 		
 		TimeUnit.SECONDS.sleep(10);
-		
+		*/
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -906,7 +909,7 @@ public class Practice {
 		}
 	}
 	
-	@Test(priority=21, dependsOnMethods = { "CheckAndTryToDelete_defaultPresentation"})
+	@Test(priority=21, dependsOnMethods = { "CheckAndTryToDelete_defaultPresentation"}, enabled = false)
 	  public void InsertPresentation_document() throws Exception{
 		String failMsg = "";
 		
@@ -986,7 +989,12 @@ public class Practice {
 		Present_driver.findElement(By.xpath("//div[@class='buttons']/div/button[1]")).click();
 		Thread.sleep(1000);
 		
-		Present_driver.switchTo().alert().accept();
+		closedURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID;
+		
+		if(!Present_driver.getCurrentUrl().contentEquals(closedURL)) {
+			Exception e =  new Exception("Seminar not exit : " +  Present_driver.getCurrentUrl());
+			throw e;
+		}
 		
 		Present_driver.close();
 		Thread.sleep(1000);
@@ -1006,8 +1014,8 @@ public class Practice {
 		
 		List<WebElement> docs = Publisher_driver.findElements(By.xpath("//li[@class='DocItem_doc-item__2bSNb']"));
 		
-		if(docs.size() != 2) {
-			failMsg = "Presentation count error [Expected]2 [Actual]" + docs.size();
+		if(docs.size() != 1) {
+			failMsg = "Presentation count error [Expected]1 [Actual]" + docs.size();
 		} 
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
