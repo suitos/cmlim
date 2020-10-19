@@ -26,6 +26,9 @@ public class DBConnection {
 	
 	private String setpw_query = "update mt_user set password='{bcrypt}$2a$10$P8LSA3E700EBvJWT8VilmuwPvMZmk9JWCU6weu/foF/9CjpJFov.u' where email='%s'";
 	
+	private String delete_channelmember_query = "delete from mt_channel_member where channel_id='%s'";
+	private String delete_channel_query = "delete from mt_channel where id='%s'";
+			
 	private Connection connect(){
 
 		try {
@@ -252,4 +255,47 @@ public class DBConnection {
 			}
 		}
 	}
+	
+	public void deleteChannel(String channelID) {
+		
+		ResultSet rs = null;
+		String query = String.format(delete_channelmember_query, channelID);
+		String query2 = String.format(delete_channel_query, channelID);
+		System.out.println("query :" + query);
+		System.out.println("query :" + query2);
+		Connection conn = connect();
+		if(conn != null) {
+			try {
+
+				pstmt = conn.prepareStatement(query);
+				rs = pstmt.executeQuery();
+				
+				pstmt.clearParameters();
+				pstmt = conn.prepareStatement(query2);
+				rs = pstmt.executeQuery();
+				System.out.println(rs.next());
+					if(rs.next() == true) {
+						Exception e = new Exception("query failed");
+						throw e;
+						}
+					
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					conn.close();
+					if(pstmt != null) {
+	                    pstmt.close(); // 선택사항이지만 호출 추천
+	                }
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // 필수 사항
+				
+			}
+		}
+		
+	}
+	
 }
