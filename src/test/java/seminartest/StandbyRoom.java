@@ -231,8 +231,8 @@ public class StandbyRoom {
 		}
 	}
 	
-	// 2. 발표자 standby 룸에서 발표문서 확인 (툴팁 확인) 후 삭제
-	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" },  enabled = true)
+	// 2. 발표자 standby 룸에서 발표문서 확인 (툴팁 확인) 후 삭제 : 스펙아웃 사용안함
+	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" },  enabled = false)
 	public void doc_checkDelete() throws Exception {
 		
 		String failMsg = "";
@@ -324,8 +324,8 @@ public class StandbyRoom {
 		}
 	}
 	
-	// 3. 발표자 standby 룸에서 발표문서 추가
-	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	// 3. 발표자 standby 룸에서 발표문서 추가  : 스펙아웃 사용안함
+	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
 	public void doc_addFile() throws Exception {
 		String failMsg = "";
 		
@@ -367,8 +367,8 @@ public class StandbyRoom {
 		}
 	}
 	
-	// 4. 발표자 standby 룸에서 발표문서 추가 초과(10개 초과)
-	@Test(priority = 4, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	// 4. 발표자 standby 룸에서 발표문서 추가 초과(10개 초과) :  : 스펙아웃 사용안함
+	@Test(priority = 4, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
 	public void doc_addFileMax() throws Exception {
 		//기획안됨
 	}

@@ -32,9 +32,9 @@ import org.testng.annotations.Test;
 /* OnAirRoom
  * 0.세미나 생성
  * 1. 게시자겸 발표자 세미나 룸입장, 세미나 시작
- * 2. 문서 파일 확인 (툴팁포함), 삭제
- * 3. 발표자 onair 룸에서 발표문서 추가
- * 4. 발표자 onair 룸에서 발표문서 추가 초과(10개 초과)
+ * 2. 문서 파일 확인 (툴팁포함), 삭제 (사용안함. spec out)
+ * 3. 발표자 onair 룸에서 발표문서 추가 (사용안함. spec out)
+ * 4. 발표자 onair 룸에서 발표문서 추가 초과(10개 초과) (사용안함. spec out)
  * 5. 발표자 onair 룸에서 유튜브 확인 삭제
  * 6. 발표자 onair 룸에서 유튜브 추가 : invalid case
  * 7. 발표자 onair 룸에서 유튜브 추가
@@ -261,7 +261,7 @@ public class OnAirRoom {
 	}
 	
 	//2. 문서 파일 확인 (툴팁포함), 삭제
-	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
 	public void doc_checkDelete() throws Exception {
 		
 		String failMsg = "";
@@ -353,7 +353,7 @@ public class OnAirRoom {
 	}
 	
 	// 3. 발표자 onair 룸에서 발표문서 추가
-	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres", "doc_checkDelete" }, alwaysRun = true, enabled = true)
+	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres", "doc_checkDelete" }, enabled = false)
 	public void doc_addFile() throws Exception {
 		String failMsg = "";
 		
@@ -397,14 +397,14 @@ public class OnAirRoom {
 	}
 	
 	// 4. 발표자 onair 룸에서 발표문서 추가 초과(10개 초과)
-	@Test(priority = 4, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 4, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
 	public void doc_addFileMax() throws Exception {
 		//기획안됨
 	}
 	
 	
 	// 5. 발표자 onair 룸에서 유튜브 확인 삭제
-	@Test(priority = 5, dependsOnMethods = { "SeminarRoom_Pres", "doc_addFileMax" }, alwaysRun = true, enabled = true)
+	@Test(priority = 5, dependsOnMethods = { "SeminarRoom_Pres" }, alwaysRun = true, enabled = true)
 	public void youtube_checkDelete() throws Exception {
 		
 		String failMsg = "";
