@@ -27,6 +27,7 @@ public class CommonValues {
 
 	public static String USER_SYSADMIN="rsp@rsupport.com";
 	public static String USER_PARTNER_KR="testkr03@rsupport.com";
+	public static String USER_PARTNER_KR2 ="testkr02@rsupport.com";
 	public static String USER_PARTNER_1="patest01@rsupport.com";
 	public static String USER_PARTNER_1_NAME="seleniumTest";
 	
@@ -49,7 +50,7 @@ public class CommonValues {
 	public static String URL_USEREDIT = "/user/edit?email=";
 	public static String URL_USERNEW = "/user/new";
 	public static String URL_CHANNELLIST = "/channel/list";
-	public static String URL_CHANNELINFO = "/channel/info";
+	public static String URL_CHANNELINFO = "/channel/info/";
 	public static String URL_SEMINARLIST = "/seminar/list";
 	public static String URL_SEMINARINFO = "/seminar/info";
 	public static String URL_CHANNELNEW = "/channel/new";
@@ -172,39 +173,24 @@ public class CommonValues {
 
 	}
 	
-	public void insertData(WebElement e, int N) throws Exception {
+	public void insertData(WebElement e, int N, String data) throws Exception {
 		switch(N) {
 		case 1:
 			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
 				e.sendKeys(Keys.BACK_SPACE);
-			e.sendKeys(SPECIAL_10);
+			e.sendKeys(data);
 		break;
 		case 2:
 			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
 				e.sendKeys(Keys.BACK_SPACE);
 			for (int i=0; i<4; i++){
-			e.sendKeys(SPECIAL_10);}
+			e.sendKeys(data);}
 		break;
 		case 3:
 			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
 				e.sendKeys(Keys.BACK_SPACE);
 			for (int i=0; i<51; i++){
-			e.sendKeys(SPECIAL_10);}
-		break;
-		case 4:
-			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
-			e.sendKeys(Keys.BACK_SPACE);
-			e.sendKeys(NUMBER_10);
-		break;
-		case 5:
-			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
-			e.sendKeys(Keys.BACK_SPACE);	
-			e.sendKeys(WRONG_EMAIL);
-		break;
-		case 6:
-			while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
-			e.sendKeys(Keys.BACK_SPACE);	
-			e.sendKeys(USER_PARTNER_KR);
+			e.sendKeys(data);}
 		break;
 		}
 	}

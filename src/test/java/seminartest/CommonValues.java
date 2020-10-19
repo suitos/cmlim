@@ -61,6 +61,13 @@ public class CommonValues {
 	public static String USEREMAIL_PRES= "rsrsup2@gmail.com"; //joined email & channel member
 	public static String USEREMAIL_PRES2= "rsrsup3@gmail.com"; //joined email & channel member
 	
+	//for admin test
+	public static String USEREMAIL_ADMIN = "adm.rsrsup@gmail.com"; //for channel
+	public static String USERNICKNAME_ADMIN = "adminnickname";
+	public static String USEREMAIL_JP = "rsrsupjp@gmail.com";
+	public static String USERNICKNAME_JP = "rsrsupjpnickname";
+	public static String CHANNELNAME_JP = "rsrsupjp";
+	
 	//login test
 	public static String PASSWORD_FIND_URL = "/account/password-find";
 	public static String PASSWORD_CHANGE_URL = "/account/password-change?key=";
