@@ -215,9 +215,9 @@ public class CreateSeminar {
 		Thread.sleep(1000);
 		assertEquals(closeAlertAndGetItsText(), CommonValues.LONG_TITEL_ERROR);
 
-		if (driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getText().contentEquals(longtitle)) {
+		if (!driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getAttribute("value").contentEquals(longtitle)) {
 			failMsg = failMsg + "\n2.wrong seminar title : "
-					+ driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getText();
+					+ driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).getAttribute("value");
 
 		}
 
