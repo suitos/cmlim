@@ -1586,17 +1586,16 @@ public class AttendeesTest{
 		}
 		
 		//설정팝업 확인
-		if(isElementPresent_wd(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
-			if(user.contentEquals(ROLE_PRESENER)) {
-				CommonValues comm = new CommonValues();
-				comm.checkSettingpopup(wd);
-			} else {
+		CommonValues comm = new CommonValues();
+		String ret = comm.checkSettingpopup(wd);
+		
+		if(ret.isEmpty()) {
+			if(!user.contentEquals(ROLE_PRESENER)) {
 				failMsg = failMsg + "\n 0-1. find seminar setting popup " + user;
 			}
-			
-		} else {
+		}else {
 			if(user.contentEquals(ROLE_PRESENER)) {
-				failMsg = failMsg + "\n 0-1. cannot find seminar setting popup " + user;
+				failMsg = failMsg + "\n 0-2. " + ret + user;
 			}
 		}
 		
@@ -1623,11 +1622,13 @@ public class AttendeesTest{
 			failMsg = failMsg + "\n 1-6. cannot find youtube share icon." + user;
 		}
 		
+		/*
 		if(isElementPresent_wd(wd, By.xpath(OnAirRoom.XPATH_ROOM_DOC_BTN + "/button"))) {
 			//do not anything
 		} else {
 			failMsg = failMsg + "\n 1-8. cannot find doc share icon." + user;
 		}
+		*/
 		
 		
 		// 시작하기 버튼 확인
