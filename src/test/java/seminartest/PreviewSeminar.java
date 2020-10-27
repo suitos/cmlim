@@ -376,12 +376,12 @@ public class PreviewSeminar {
 		}
 		Thread.sleep(1000);
 		
-		String Preview_emptySurvey = driver.findElement(By.id("surveyTitle")).getAttribute("value");
-		//null체크
-		if(!(Preview_emptySurvey == null || Preview_emptySurvey.equals("") ))
+		String Preview_emptySurvey = driver.findElement(By.xpath("//h1")).getText();
+		
+		if(!Preview_emptySurvey.contentEquals(CommonValues.SURVEY_DEFAULT) )
 		{
-			failMsg = failMsg + "\n 2. Different Default Survey msg [Expected]" + "null" 
-					+" [Actual]" + driver.findElement(By.id("surveyTitle")).getAttribute("value");
+			failMsg = failMsg + "\n 2. Different Default Survey msg [Expected]" + "There is no seminar survey" 
+					+" [Actual]" + CommonValues.SURVEY_DEFAULT;
 		}
 		
 		driver.switchTo().window(tabs.get(0));
