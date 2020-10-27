@@ -582,19 +582,21 @@ public class CommonValues {
 		Thread.sleep(500);
 	}
 	
-	public void checkSettingpopup(WebDriver wd) throws InterruptedException {
+	public String checkSettingpopup(WebDriver wd) throws InterruptedException {
 		// 설정팝업 확인
+		Thread.sleep(5000);
 		if(isElementPresent(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
-			
-			Thread.sleep(5000);
 			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
 			Thread.sleep(500);
+			return "";
+		} else {
+			return "cannot find seminar setting popup.";
 		}
 	}
 	
-	private boolean isElementPresent(WebDriver driver, By by) {
+	private boolean isElementPresent(WebDriver wd, By by) {
 		try {
-			driver.findElement(by);
+			wd.findElement(by);
 			return true;
 		} catch (NoSuchElementException e) {
 			return false;
