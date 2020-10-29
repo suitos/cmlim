@@ -40,6 +40,13 @@
       <class name="admin.Users2"/>
     </classes>
   </test> 
+  
+  <test name="Seminars_sysadmin_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="admin.Seminars_sysadmin"/>
+    </classes>
+  </test> 
        
 </suite> <!-- Suite -->
 
