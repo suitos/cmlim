@@ -74,9 +74,9 @@ public class Users2 {
 		
 		System.out.println("End BeforeTest!!!");
 	}
-
+	
 	// 10. 유저 파트너 변경(변경후 원복) : TestEUser
-	@Test(priority = 10, enabled = false)
+	@Test(priority = 10, enabled = true)
 	public void user_changePartner() throws Exception {
 		String failMsg = "";
 		
@@ -441,6 +441,52 @@ public class Users2 {
 			}
 		}
 
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+
+	// 22. 유저 세미나 탭에서 세미나 항목 클릭. 세미나정보확인 : rsrsup2
+	@Test(priority = 22, enabled = true)
+	public void user_seminar_click() throws Exception {
+		String failMsg = "";
+		
+		if(!driver.getCurrentUrl().contentEquals(CommonValues.ADMIN_URL + CommonValues.URL_USERINFO + userID)) {
+			driver.get(CommonValues.ADMIN_URL + CommonValues.URL_USERINFO + userID);
+		}
+		
+		driver.findElement(By.xpath(XPATH_USER_TAB_SEMINAR)).click();
+		Thread.sleep(500);
+		
+		CommonValues comm = new CommonValues();
+		comm.selectAll(driver.findElement(By.xpath(XPATH_USER_INFO_INPUTBOX)));
+		driver.findElement(By.xpath(XPATH_USER_INFO_INPUTBOX)).sendKeys(Keys.BACK_SPACE);
+		driver.findElement(By.xpath(XPATH_USER_INFO_INPUTBOX)).clear();
+		driver.findElement(By.xpath(XPATH_USER_INFO_INPUTBOX)).sendKeys(Keys.ENTER);
+		Thread.sleep(500);
+		
+		List<WebElement> seminars = driver.findElements(By.xpath(XPATH_USER_INFO_LIST));
+		
+		//list defaout rows : 30rows
+		if (seminars.size() != 30) {
+			failMsg = failMsg + "1. seminar count error. [Expected]" + "30" + " [Actual]" + seminars.size();
+		}
+		
+		// click 1st row
+		String seminarTitle = seminars.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+		seminars.get(0).click();
+		Thread.sleep(500);
+		
+		if(!driver.getCurrentUrl().contains(CommonValues.ADMIN_URL + CommonValues.URL_SEMINARINFO)) {
+			failMsg = failMsg + "\n2. no seminar info view." + " [Actual]" + driver.getCurrentUrl();
+		} else {
+			if(!driver.findElement(By.xpath(Seminars_sysadmin.XPATH_SEMINAR_VIEW_TITLE)).getText().contentEquals(seminarTitle)) {
+				failMsg = failMsg + "\n3. seminar title error in seminar info view. [Expected]" + seminarTitle 
+						+ " [Actual]" + driver.findElement(By.xpath(Seminars_sysadmin.XPATH_SEMINAR_VIEW_TITLE)).getText();
+			}
+		}
+		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
