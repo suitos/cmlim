@@ -66,7 +66,7 @@ import org.testng.annotations.Test;
  * 20.유튜브 발표자료 등록 및 일부 삭제(연습모드 내 다수)
  * 21.문서 발표자료 등록 및 일부 삭제(연습모드 내 다수) > 사용안함처리
  * 22.연습모드 종료
- * 23.해당 세미나 수정 페이지에서 발표자료 확인(RST-911) > docs size 1로 수정
+ * 23.해당 세미나 수정 페이지에서 발표자료 확인(RST-911) > docs size 2>0로 수정
 */
 
 public class Practice {
@@ -1014,7 +1014,7 @@ public class Practice {
 		
 		List<WebElement> docs = Publisher_driver.findElements(By.xpath("//li[@class='DocItem_doc-item__2bSNb']"));
 		
-		if(docs.size() != 1) {
+		if(docs.size() != 0) {
 			failMsg = "Presentation count error [Expected]1 [Actual]" + docs.size();
 		} 
 		
