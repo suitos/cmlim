@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -56,10 +57,17 @@ public class Channel {
 	public static String XPATH_CHANNEL_INFO_CHANNELPLAN = "//tbody/tr[6]/th";
 	public static String XPATH_CHANNEL_INFO_CHANNELNUMBEROFSEMINARS = "//tbody/tr[7]/th";
 	public static String XPATH_CHANNEL_INFO_CHANNELRUNNINGTIME = "//tbody/tr[8]/th";
-	public static String XPATH_CHANNEL_INFO_TAB1 = "//div[@class='ant-tabs-nav-list']/div[1]/div";
-	public static String XPATH_CHANNEL_INFO_TAB2 = "//div[@class='ant-tabs-nav-list']/div[2]/div";
-	public static String XPATH_CHANNEL_INFO_TAB3 = "//div[@class='ant-tabs-nav-list']/div[3]/div";
-	public static String XPATH_CHANNEL_INFO_TAB4 = "//div[@class='ant-tabs-nav-list']/div[4]/div";
+	//채널 정보 하단탭
+	public static String XPATH_CHANNEL_INFO_TAB1 = "//div[@id='rc-tabs-0-tab-1']";
+	public static String XPATH_CHANNEL_INFO_TAB2 = "//div[@id='rc-tabs-0-tab-2']";
+	public static String XPATH_CHANNEL_INFO_TAB3 = "//div[@id='rc-tabs-0-tab-3']";
+	public static String XPATH_CHANNEL_INFO_TAB4 = "//div[@id='rc-tabs-0-tab-4']";
+	public static String XPATH_CHANNEL_INFO_TAB1_PANEL = "//div[@id='rc-tabs-0-panel-1']";
+	public static String XPATH_CHANNEL_INFO_TAB2_PANEL = "//div[@id='rc-tabs-0-panel-2']";
+	public static String XPATH_CHANNEL_INFO_TAB3_PANEL = "//div[@id='rc-tabs-0-panel-3']";
+	public static String XPATH_CHANNEL_INFO_TAB4_PANEL = "//div[@id='rc-tabs-0-panel-4']";
+	
+	public static String XPATH_CHANNEL_TAB_NODATA = "//p[@class='ant-empty-description']";
 	
 	//채널 등록 시 
 	public static String XPATH_CHANNEL_REGIST_NAME = "//input[@id='channelName']";
@@ -205,7 +213,6 @@ public class Channel {
 		admin.CommonValues comm = new admin.CommonValues();
 		comm.setCalender(driver);
 		
-		seminartest.CommonValues comm2 = new seminartest.CommonValues();
 		
 		//채널명 일부 입력 후 검색
 		insertKeywordSearch("rsrsup");
@@ -217,49 +224,47 @@ public class Channel {
 		Thread.sleep(1000);
 		
 		//채널 마스터 닉네임 입력 후 검색
-		insertKeywordSearch(comm2.USERNICKNAME_JOIN);
+		insertKeywordSearch(seminartest.CommonValues.USERNICKNAME_JOIN);
 		
 		Thread.sleep(1000);
 		
-		CountCheckandDataCheck(comm2.USERNICKNAME_JOIN);
+		CountCheckandDataCheck(seminartest.CommonValues.USERNICKNAME_JOIN);
 		
 		Thread.sleep(1000);
 
 		//채널 마스터 이메일 입력 후 검색
-		insertKeywordSearch(comm2.USEREMAIL_PRES);
+		insertKeywordSearch(seminartest.CommonValues.USEREMAIL_PRES);
 		
 		Thread.sleep(1000);
 		
-		CountCheckandDataCheck(comm2.USEREMAIL_PRES);
+		CountCheckandDataCheck(seminartest.CommonValues.USEREMAIL_PRES);
 			
 	}
 	
 	@Test(priority=11)
 	public void keywordSearch_invalid1() throws Exception {
 		
-		seminartest.CommonValues comm2 = new seminartest.CommonValues();
-		
-		insertKeywordSearch(comm2.CHANNELNAME_JP);
+		insertKeywordSearch(seminartest.CommonValues.CHANNELNAME_JP);
 		
 		Thread.sleep(1000);
 		
-		CountCheckandDataCheck(comm2.CHANNELNAME_JP);
+		CountCheckandDataCheck(seminartest.CommonValues.CHANNELNAME_JP);
 		
 		Thread.sleep(1000);
 		
-		insertKeywordSearch(comm2.USERNICKNAME_JP);
+		insertKeywordSearch(seminartest.CommonValues.USERNICKNAME_JP);
 		
 		Thread.sleep(1000);
 		
-		CountCheckandDataCheck(comm2.USERNICKNAME_JP);
+		CountCheckandDataCheck(seminartest.CommonValues.USERNICKNAME_JP);
 		
 		Thread.sleep(1000);
 		
-		insertKeywordSearch(comm2.USEREMAIL_JP);
+		insertKeywordSearch(seminartest.CommonValues.USEREMAIL_JP);
 		
 		Thread.sleep(1000);
 		
-		CountCheckandDataCheck(comm2.USEREMAIL_JP);
+		CountCheckandDataCheck(seminartest.CommonValues.USEREMAIL_JP);
 		
 		Thread.sleep(1000);
 	}
@@ -736,7 +741,7 @@ public class Channel {
 		cellClick("[1]");
 		
 		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
-		
+		System.out.println(channelID);
 		seminartest.DBConnection DB = new seminartest.DBConnection();
 		DB.deleteChannel(channelID);
 		
@@ -821,11 +826,12 @@ public class Channel {
 		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
 		
 		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
-		
+		/*
 		if(driver.findElement(By.xpath(XPATH_CHANNEL_INFO_BIGNAME)).getText().contentEquals(channelName)){
 			failMsg = "1.Channel info big name is wrong [Expected]" + channelName + " [Actual]" +
 						driver.findElement(By.xpath(XPATH_CHANNEL_INFO_BIGNAME)).getText();
 		}
+		*/
 		
 		if(driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELNAME)).getText().contentEquals(channelName)){
 			failMsg = failMsg + "\n 2.Channel info channel name is wrong [Expected]" + channelName + " [Actual]" +
@@ -861,11 +867,61 @@ public class Channel {
 			failMsg = failMsg + "\n 8.Channel info channel Number of Seminars is wrong [Expected]" + numberofSeminars + " [Actual]" +
 						driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELNUMBEROFSEMINARS)).getText();
 		}
+		/*
+		if(!driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB1)).isSelected()) {
+			failMsg = failMsg + "\n 8. seminar tab is not default Channel info tab ";
+		}
+		*/
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
+	}
+	
+	@Test(priority=29) 
+	public void Channel_infoTAB() throws Exception {
+		String failMsg = "";
+		
+		channelDisclosure = "PRIVATE";
+		
+		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB1)));
+		
+		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB1)).click();
+		
+		if(!driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB1_PANEL + XPATH_CHANNEL_TAB_NODATA)).getText().contentEquals("데이터가 없습니다.")) {
+			failMsg = "1. seminar tab exist data" ; 
+		}
+		
+		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB2)).click();
+		
+		if(!driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB2_PANEL + XPATH_CHANNEL_TAB_NODATA)).getText().contentEquals("데이터가 없습니다.")) {
+			failMsg = failMsg + "\n 2. channel Member tab exist data" ; 
+		}
+		
+		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB3)).click();
+
+		/*개발 진행중
+		if(!driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB3 + XPATH_CHANNEL_TAB_NODATA)).getText().contentEquals("데이터가 없습니다.")) {
+			failMsg = failMsg + "\n 3. payment tab exist data" ; 
+		}
+		*/
+		
+		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB4)).click();
+		
+		if(!driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB4_PANEL + "//span[@class='ant-radio ant-radio-checked']/input")).getAttribute("value").contentEquals(channelDisclosure)) {
+			failMsg = failMsg + "\n 4.channelDisclosure is different + [Expected]" + channelDisclosure
+					+ " [Acutal]" + driver.findElement(By.xpath(XPATH_CHANNEL_INFO_TAB4_PANEL + "//span[@class='ant-radio ant-radio-checked']/input")).getAttribute("value");
+			
+		}
+		
+		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		seminartest.DBConnection DB = new seminartest.DBConnection();
+		DB.deleteChannel(channelID);
+		
 	}
 	
 	@AfterClass(alwaysRun = true)
@@ -961,7 +1017,7 @@ public class Channel {
 			failMsg = failMsg + "\n 1-2.channelName is wrong [Expected]" + channelName + " [Actual]"  + channel_name;
 		}
 		
-		if(!channel_master.contentEquals(channelMaster) ) {
+		if(!channel_master.contains(channelMaster) ) {
 			failMsg = failMsg + "\n 1-3.channelMaster is wrong [Expected]" + channelMaster + " [Actual]"  + channel_master;
 		}
 		
