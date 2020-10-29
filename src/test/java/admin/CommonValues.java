@@ -1,5 +1,10 @@
 package admin;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -67,7 +72,13 @@ public class CommonValues {
 	public static String XPATH_LIST_SEARCH_INPUTBOX = "//input[@id='keyword']";
 	public static String XPATH_LIST_REGISTER_BTN = "//button[@class='ant-btn ant-btn-sub ant-btn-sm']";
 	public static String XPATH_LIST_CHANNELREGISTER_BTN = "//button[@class='ant-btn ant-btn-primary ant-btn-sm']";
-
+	public static String XPATH_LIST_SEARCHED_ITEM_COUNT = "//section[@id='index-page-wrap']//span[@class='total']";
+	public static String XPATH_LIST_PAGING = "//ul[@class='ant-pagination ant-table-pagination ant-table-pagination-right']/li";
+	public static String XPATH_LIST_ROWS = "//div[@class='ant-radio-group ant-radio-group-outline list-view-size']/label";
+	public static String XPATH_LIST_DATERADIO = "//div[@id='dateRadio']/label";
+	public static String XPATH_LIST_DATEPICKER_START = "//input[@placeholder='Start date']";
+	public static String XPATH_LIST_DATEPICKER_END = "//input[@placeholder='End date']";
+	
 	public static String XPATH_MENU_PARTNER = "//ul[@role='menu']/li[1]";
 	public static String XPATH_MENU_USER = "//ul[@role='menu']/li[2]";
 	public static String XPATH_MENU_CHANNEL = "//ul[@role='menu']/li[3]";
@@ -152,13 +163,43 @@ public class CommonValues {
 		Thread.sleep(500);
 	}
 	
-	public void setCalender(WebDriver e) {
-		String xpath_startDate = "//input[@placeholder='Start date']"; 
+	public void setCalender(WebDriver e) throws InterruptedException {
 		
-		selectAll(e.findElement(By.xpath(xpath_startDate)));
-		e.findElement(By.xpath(xpath_startDate)).sendKeys("2019/01/01");
+		selectAll(e.findElement(By.xpath(XPATH_LIST_DATEPICKER_START)));
+		e.findElement(By.xpath(XPATH_LIST_DATEPICKER_START)).sendKeys("2019/01/01");
+		Thread.sleep(500);
 		
 		e.findElement(By.xpath(XPATH_LIST_SEARCH_BTN)).click();
+		e.findElement(By.xpath(XPATH_LIST_SEARCH_BTN)).sendKeys(Keys.ENTER);
+	}
+	
+	public String checkSearchedItemInRow(int num, WebDriver wd, Calendar start, Calendar end) throws ParseException {
+		String ret = "";
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		
+		String failForm = "\n%d-%d. %s. [Expected]%s [Actual]%s";
+		String searchDate = format.format(start.getTime()) + "~" + format.format(end.getTime());
+		
+		if(!wd.findElement(By.xpath(XPATH_LIST_DATEPICKER_START)).getAttribute("value").contentEquals(format.format(start.getTime()))) {
+			ret = ret + String.format(failForm, num, 1, "check last month, start date error"
+					, format.format(start.getTime()), wd.findElement(By.xpath(XPATH_LIST_DATEPICKER_START)).getAttribute("value"));
+		}
+		if(!wd.findElement(By.xpath(XPATH_LIST_DATEPICKER_END)).getAttribute("value").contentEquals(format.format(end.getTime()))) {
+			ret = ret + String.format(failForm, num, 2, "check last month, end date error"
+					, format.format(start.getTime()), wd.findElement(By.xpath(XPATH_LIST_DATEPICKER_START)).getAttribute("value"));
+		}
+		List<WebElement> rows = wd.findElements(By.xpath(XPATH_LIST_ROW_ITEM));
+		for (WebElement webElement : rows) {
+			Date date = format.parse(webElement.findElement(By.xpath(XPATH_LIST_ROW_CELL+"[1]")).getText());
+		
+			if(!date.before(end.getTime()) || !date.after(start.getTime())) {
+				ret = ret + String.format(failForm, num, 3, "searched date error"
+						, searchDate, format.parse(webElement.findElement(By.xpath(XPATH_LIST_ROW_CELL+"[1]")).getText()));
+			}
+		}		
+		
+		return ret;
 	}
 
 	public void selectAll(WebElement e) {

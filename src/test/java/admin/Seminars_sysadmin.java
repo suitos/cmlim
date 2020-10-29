@@ -3,6 +3,9 @@ package admin;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -26,10 +29,55 @@ import org.testng.annotations.Test;
 
 public class Seminars_sysadmin {
 	
+	public static String XPATH_SEMINAR_SELECTOR_PROPERTY = "//form[@id='seminar-searchbar']//div[@class='ant-row']/div[1]";
+	public static String XPATH_SEMINAR_SELECTOR_STATE = "//form[@id='seminar-searchbar']//div[@class='ant-row']/div[2]";
+	public static String XPATH_SEMINAR_SELECTOR_TIMEZONE = "//form[@id='seminar-searchbar']//div[@class='ant-row']/div[3]";
+	
+	public static String XPATH_SEMINAR_SELECTOR_PROPERTY_ALL = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[1]";
+	public static String XPATH_SEMINAR_SELECTOR_PROPERTY_PUBLIC = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[2]";
+	public static String XPATH_SEMINAR_SELECTOR_PROPERTY_PRIVATE = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[3]";
+	
+	public static String XPATH_SEMINAR_SELECTOR_STATE_TEMP = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[2]";
+	public static String XPATH_SEMINAR_SELECTOR_STATE_NOTREADY = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[3]";
+	public static String XPATH_SEMINAR_SELECTOR_STATE_STANDBY = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[4]";
+	public static String XPATH_SEMINAR_SELECTOR_STATE_ONAIR = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[5]";
+	public static String XPATH_SEMINAR_SELECTOR_STATE_END = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[6]";
+	
+	public static String XPATH_SEMINAR_SELECTOR_TIMEZONE_KR = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[2]";
+	public static String XPATH_SEMINAR_SELECTOR_TIMEZONE_JP = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[3]";
+	public static String XPATH_SEMINAR_SELECTOR_TIMEZONE_US = "//div[@class='ant-select-dropdown ant-select-dropdown-placement-bottomLeft ']//div[@class='rc-virtual-list-holder-inner']/div[4]";
+	
+	public static String XPATH_SEMINAR_VIEW_TITLE = "//div[@class='__profile__desc']//span";
+	public static String XPATH_SEMINAR_VIEW_INFO_DATA = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][%d]/td";
+	public static String XPATH_SEMINAR_VIEW_INFO_CHANNEL = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][1]";
+	public static String XPATH_SEMINAR_VIEW_INFO_TITLE = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][2]";
+	public static String XPATH_SEMINAR_VIEW_INFO_STATUS = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][3]";
+	public static String XPATH_SEMINAR_VIEW_INFO_PROPERTY = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][4]";
+	public static String XPATH_SEMINAR_VIEW_INFO_TIMEZONE = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][5]";
+	public static String XPATH_SEMINAR_VIEW_INFO_EXCPECTEDTIME = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][6]";
+	public static String XPATH_SEMINAR_VIEW_INFO_REALTIME = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][7]";
+	public static String XPATH_SEMINAR_VIEW_INFO_PRESENTER = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][8]";
+	public static String XPATH_SEMINAR_VIEW_INFO_EXCUTETIME = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][9]";
+	public static String XPATH_SEMINAR_VIEW_INFO_AUTHOR = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][10]";
+	public static String XPATH_SEMINAR_VIEW_INFO_POSTDATE = "//div[@class='ant-descriptions-view']//tr[@class='ant-descriptions-row'][11]";
+	
+	
+	
+	public static String PUBLIC = "PUBLIC";
+	public static String PRIVATE = "PRIVATE";
+	public static String TEMP = "TEMP";
+	public static String NOTREADY = "NOT_READY";
+	public static String STANDBY = "STANDBY";
+	public static String ONAIR = "STANDBY";
+	public static String END = "END";
+	public static String TIMEZONE_KR = "Asia/Seoul";
+	public static String TIMEZONE_JP = "Asia/Tokyo";
+	public static String TIMEZONE_US = "US/Eastern";
+	
+	
 	public static WebDriver driver;
 	private boolean acceptNextAlert = true;
 	private StringBuffer verificationErrors = new StringBuffer();
-
 
 	@Parameters({ "browser" })
 	@BeforeClass(alwaysRun = true)
@@ -45,15 +93,210 @@ public class Seminars_sysadmin {
 
 		context.setAttribute("webDriver", driver);
 		driver.get(CommonValues.ADMIN_URL);
-		comm.logintadmin(driver, CommonValues.USER_PARTNER_KR);
+		comm.logintadmin(driver, CommonValues.USER_SYSADMIN);
 		
 		System.out.println("End BeforeTest!!!");
 	}
+	
+	// 8. 세미나 리스트, 날짜 선택 
+	@Test(priority = 8, enabled = true)
+	public void search_date() throws Exception {
+		String failMsg = "";
+		
+		driver.get(CommonValues.ADMIN_URL + CommonValues.URL_SEMINARLIST);
+		Thread.sleep(500);
+		
+		Date time = new Date();
+		Calendar cal_today = Calendar.getInstance();
+		cal_today.setTime(time);
 
+		//defalut checked button
+		if(!driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[4]//input")).isSelected()) {
+			failMsg = "1. defalut checked button is not 'this month'.";
+		}
+		
+		//3months
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[2]")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		Calendar cal_startday = Calendar.getInstance();
+		cal_startday.setTime(time);
+		cal_startday.add(Calendar.MONTH, -3);
+		CommonValues comm = new CommonValues();
+		String ret = comm.checkSearchedItemInRow(2, driver, cal_startday, cal_today);
+		if(!ret.isEmpty())
+			failMsg = failMsg + ret;
+		
+		//all
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[1]")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		cal_startday = Calendar.getInstance();
+		cal_startday.setTime(time);
+		cal_startday.set(Calendar.YEAR, 1990);
+		
+		comm.checkSearchedItemInRow(3, driver, cal_startday, cal_today);
+		if(!ret.isEmpty())
+			failMsg = failMsg + ret;
+		
+		//last month
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[3]")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		cal_startday = Calendar.getInstance();
+		cal_startday.setTime(time);
+		cal_startday.add(Calendar.MONTH, -1);
+		cal_startday.set(Calendar.DAY_OF_MONTH, 1);
+		
+		Calendar cal_temp = (Calendar)cal_startday.clone();
+		cal_temp.set(Calendar.DAY_OF_MONTH, cal_temp.getActualMaximum(Calendar.DAY_OF_MONTH));
+		
+		comm.checkSearchedItemInRow(4, driver, cal_startday, cal_temp);
+		if(!ret.isEmpty())
+			failMsg = failMsg + ret;
+		
+		
+		//this month
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[4]")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		cal_startday = Calendar.getInstance();
+		cal_startday.setTime(time);
+		cal_startday.set(Calendar.DAY_OF_MONTH, 1);
+		
+		comm.checkSearchedItemInRow(5, driver, cal_startday, cal_today);
+		if(!ret.isEmpty())
+			failMsg = failMsg + ret;
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+
+	// 9. 세미나 아이템 리스트 & 리스트 페이징
+	@Test(priority = 9, enabled = true)
+	public void seminarList() throws Exception {
+		String failMsg = "";
+		
+		checkListView(driver);
+		
+		CommonValues comm = new CommonValues();
+		comm.setCalender(driver);
+		Thread.sleep(1000);
+
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+
+		//기본 30rows
+		if (rows.size() != 30) {
+			failMsg = "1. default seminar list rows [Expected]30 [Actual]" + rows.size();
+		} 
+		//전체 세미나 갯수 확인
+		int totalCount = Integer.parseInt(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCHED_ITEM_COUNT)).getText().replaceAll("[^0-9]", ""));
+		
+		List<WebElement> paging = driver.findElements(By.xpath(CommonValues.XPATH_LIST_PAGING));
+
+		// 세미나갯수/30(기본 row) = 마지막페이지 번호 -1과 동일
+		String lastP = paging.get(paging.size()-2).findElement(By.xpath("./a")).getText();
+		if(Integer.parseInt(lastP) -1 != totalCount/30) {
+			failMsg = failMsg + "\n2. list paging error. paging count [Expected]" + totalCount/30 + " [Actual]" + (Integer.parseInt(lastP)-1);
+		}
+	
+		//다음페이지 클릭
+		paging.get(paging.size()-1).click();
+		Thread.sleep(500);
+		
+		//2번 활성화 되어 있는지 확인
+		if(!paging.get(2).getAttribute("class").contains("active")) {
+			failMsg = failMsg + "\n3. 2nd page is not actived";
+		}
+		
+		//이전페이지 클릭
+		paging.get(0).click();
+		Thread.sleep(500);
+		
+		//1번 활성화 되어 있는지 확인
+		if(!paging.get(1).getAttribute("class").contains("active")) {
+			failMsg = failMsg + "\n4. 1st page is not actived";
+		}
+		
+		//3번 클릭
+		paging.get(3).click();
+		Thread.sleep(500);
+		
+		//3번 활성화 되어 있는지 확인
+		if(!paging.get(3).getAttribute("class").contains("active")) {
+			failMsg = failMsg + "\n5. 3rd page is not actived";
+		}
+		
+		//마지막 페이지 클릭
+		paging.get(paging.size() - 2).click();
+		Thread.sleep(500);
+		
+		int totalCount2 = Integer.parseInt(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCHED_ITEM_COUNT)).getText().replaceAll("[^0-9]", ""));
+		
+		if(totalCount != totalCount2) {
+			failMsg = failMsg + "\n6. last page check. total count error [Expected]" + totalCount + " [Actual]" + totalCount2;
+		}
+		
+		//click 50rows
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_ROWS +"[2]")).click();
+		Thread.sleep(500);
+		
+		paging = driver.findElements(By.xpath(CommonValues.XPATH_LIST_PAGING));
+		if(paging.size() != 0) {
+			// 세미나갯수/50(기본 row) = 마지막페이지 번호 -1과 동일
+			lastP = paging.get(paging.size()-2).findElement(By.xpath("./a")).getText();
+			if(Integer.parseInt(lastP) -1 != totalCount/50) {
+				failMsg = failMsg + "\n7-1. shown 50 rows.  paging count [Expected]" + totalCount/30 + " [Actual]" + (Integer.parseInt(lastP)-1);
+			}			
+		} else {
+			failMsg = failMsg + "\n7-0. cannot find paging element.";
+		}
+		
+		if(totalCount != Integer.parseInt(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCHED_ITEM_COUNT)).getText().replaceAll("[^0-9]", ""))) {
+			failMsg = failMsg + "\n7-2. shown 50 rows. total count error  [Expected]" + totalCount 
+					+ " [Actual]" + Integer.parseInt(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCHED_ITEM_COUNT)).getText().replaceAll("[^0-9]", ""));
+		}
+		
+		//click 100rows
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_ROWS +"[3]")).click();
+		Thread.sleep(500);
+		
+		paging = driver.findElements(By.xpath(CommonValues.XPATH_LIST_PAGING));
+		if(paging.size() != 0) {
+			// 세미나갯수/50(기본 row) = 마지막페이지 번호 -1과 동일
+			lastP = paging.get(paging.size()-2).findElement(By.xpath("./a")).getText();
+			if(Integer.parseInt(lastP) -1 != totalCount/50) {
+				failMsg = failMsg + "\n8-1. shown 100 rows. paging count [Expected]" + totalCount/30 + " [Actual]" + (Integer.parseInt(lastP)-1);
+			}	
+		} else {
+			failMsg = failMsg + "\n8-0. cannot find paging element.";
+		}
+		
+		if(totalCount != Integer.parseInt(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCHED_ITEM_COUNT)).getText().replaceAll("[^0-9]", ""))) {
+			failMsg = failMsg + "\n8-2. shown 100 rows. total count error  [Expected]" + totalCount 
+					+ " [Actual]" + Integer.parseInt(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCHED_ITEM_COUNT)).getText().replaceAll("[^0-9]", ""));
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
 	// 10. search  세미나명, 채널명, 게시자명, 발표자닉네임
 	@Test(priority = 10, enabled = true)
 	public void keyworkdSearch() throws Exception {
 		String failMsg = "";
+		
+		//reset
+		driver.navigate().refresh();
+		Thread.sleep(500);
 		
 		checkListView(driver);
 		
@@ -188,29 +431,271 @@ public class Seminars_sysadmin {
 				}
 			} 
 		}
+
+		comm.selectAll(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_INPUTBOX)));
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_INPUTBOX)).sendKeys(Keys.BACK_SPACE);
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_INPUTBOX)).clear();
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
 	
+	// 12. search - 속성
+	@Test(priority = 12, enabled = true)
+	public void Search_property() throws Exception {
+		String failMsg = "";
+		
+		checkListView(driver);
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY_PUBLIC)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = "1. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText().contentEquals(PUBLIC)) {
+					failMsg = failMsg + "\n2-" + i + ". searched seminar prpperty. [Expected]" + PUBLIC 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY_PRIVATE)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = failMsg + "\n3. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText().contentEquals(PRIVATE)) {
+					failMsg = failMsg + "\n4-" + i + ". searched seminar prpperty. [Expected]" + PRIVATE 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+	
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY_ALL)).click();
+	
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}	
+	
+	// 13. search - 상태
+	@Test(priority = 13, enabled = true)
+	public void Search_state() throws Exception {
+		String failMsg = "";
+		
+		checkListView(driver);
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE_TEMP)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = "1. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(TEMP)) {
+					failMsg = failMsg + "\n2-" + i + ". searched seminar state. [Expected]" + TEMP 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE_NOTREADY)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = failMsg + "\n3. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(NOTREADY)) {
+					failMsg = failMsg + "\n4-" + i + ". searched seminar state. [Expected]" + NOTREADY 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE_STANDBY)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() != 0) {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(STANDBY)) {
+					failMsg = failMsg + "\n5-" + i + ". searched seminar state. [Expected]" + STANDBY 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE_ONAIR)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() != 0) {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(ONAIR)) {
+					failMsg = failMsg + "\n6-" + i + ". searched seminar state. [Expected]" + ONAIR 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE_END)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = failMsg + "\n7. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(END)) {
+					failMsg = failMsg + "\n8-" + i + ". searched seminar state. [Expected]" + END 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY_ALL)).click();
+		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
 	}
 
-	// 12. listItem
-	@Test(priority = 12, enabled = true)
+	// 14. search - 타임존
+	@Test(priority = 14, enabled = true)
+	public void Search_timezone() throws Exception {
+		String failMsg = "";
+		
+		checkListView(driver);
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_TIMEZONE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_TIMEZONE_KR)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = "1. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(TIMEZONE_KR)) {
+					failMsg = failMsg + "\n2-" + i + ". searched seminar state. [Expected]" + TIMEZONE_KR 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_TIMEZONE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_TIMEZONE_JP)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = failMsg + "\n3. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(TIMEZONE_JP)) {
+					failMsg = failMsg + "\n4-" + i + ". searched seminar state. [Expected]" + TIMEZONE_JP 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_TIMEZONE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_TIMEZONE_US)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		if(rows.size() == 0) {
+			failMsg = failMsg + "\n5. searched item error [Expected]more than 1 [Actual]" + rows.size();
+		} else {
+			for(int i = 0 ; i < rows.size() ; i++) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(TIMEZONE_US)) {
+					failMsg = failMsg + "\n6-" + i + ". searched seminar state. [Expected]" + TIMEZONE_US 
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
+							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+				}
+			}
+		}
+		
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_TIMEZONE)).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_PROPERTY_ALL)).click();
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
+	// 20. listItem
+	@Test(priority = 20, enabled = true)
 	public void listItem() throws Exception {
 		String failMsg = "";	
 		
 		checkListView(driver);
-		
-		CommonValues comm = new CommonValues();
-		comm.setCalender(driver);
-		Thread.sleep(1000);
-		
-		comm.selectAll(driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_INPUTBOX)));
-		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_INPUTBOX)).sendKeys(Keys.BACK_SPACE);
-		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_INPUTBOX)).clear();
-		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
-		
+
 		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 		
 		rows.get(0).click();
@@ -224,7 +709,105 @@ public class Seminars_sysadmin {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
+	}
+
+	// 21. 세미나 정보 화면
+	@Test(priority = 21, enabled = true)
+	public void seminarInfoView() throws Exception {
+		String failMsg = "";	
+		
+		checkListView(driver);
+
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		
+		//1번째 줄 세미나 정보 데이터 
+		String postDate = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText();
+		String channelName = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[2]")).getText();
+		String title = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+		String author = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[4]")).getText();
+		String property = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText();
+		String timezone = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText();
+		String expectedTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText();
+		String realTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[8]")).getText();
+		String excuteTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[9]")).getText();
+		String status = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText();
+		String attendee = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText();
+		
+		rows.get(0).click();
+		Thread.sleep(500);
+		
+		if(!driver.getCurrentUrl().contains(CommonValues.ADMIN_URL + CommonValues.URL_SEMINARINFO)) {
+			failMsg = "0. not user info view. current url : " + driver.getCurrentUrl();
+		} else {
+			
+			//title
+			if(!driver.findElement(By.xpath(XPATH_SEMINAR_VIEW_TITLE)).getText().contentEquals(title)) {
+				failMsg = failMsg + "\n1. seminar info :  title [Expected]" + title 
+						+ " [Actual]" + driver.findElement(By.xpath(XPATH_SEMINAR_VIEW_TITLE)).getText();
+			}
+			
+			//channel
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 1))).getText().contentEquals(channelName)) {
+				failMsg = failMsg + "\n2. seminar info :  channel [Expected]" + channelName 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 1))).getText();
+			}
+			
+			//status
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 3))).getText().contentEquals(status)) {
+				failMsg = failMsg + "\n3. seminar info :  status [Expected]" + status 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 3))).getText();
+			}
+			
+			//property
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 4))).getText().contentEquals(property)) {
+				failMsg = failMsg + "\n4. seminar info :  property [Expected]" + property 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 4))).getText();
+			}
+			
+			//timezone
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 5))).getText().contentEquals(timezone)) {
+				failMsg = failMsg + "\n5. seminar info :  timezone [Expected]" + timezone 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 5))).getText();
+			}
+			
+			//expectedTime
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 6))).getText().contentEquals(expectedTime)) {
+				failMsg = failMsg + "\n6. seminar info :  expectedTime [Expected]" + expectedTime 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 6))).getText();
+			}
+			
+			//realTime
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 7))).getText().contentEquals(realTime)) {
+				failMsg = failMsg + "\n7. seminar info :  realTime [Expected]" + realTime 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 7))).getText();
+			}
+			
+			//excuteTime
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 9))).getText().contentEquals(excuteTime)) {
+				failMsg = failMsg + "\n8. seminar info :  excuteTime [Expected]" + excuteTime 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 9))).getText();
+			}
+			
+			//author
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 10))).getText().contentEquals(author)) {
+				failMsg = failMsg + "\n9. seminar info :  author [Expected]" + author 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 10))).getText();
+			}
+			
+			//postDate
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 11))).getText().contentEquals(postDate)) {
+				failMsg = failMsg + "\n10. seminar info :  postDate [Expected]" + postDate 
+						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 11))).getText();
+			}
+		}
+		
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
 	}	
+	
 	
 
 	private void checkListView(WebDriver wd) throws InterruptedException {
