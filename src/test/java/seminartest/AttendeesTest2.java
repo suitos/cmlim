@@ -63,6 +63,17 @@ import org.testng.annotations.Test;
  * 31. 세미나 시작하기
  * 32. 세미나 종료하기
  * 33. 종료화면 확인
+ * 
+ * 51. 게시자가 일반 비공개  secret 세미나 생성(게시자 rsrsup2, 발표자 rsrsup2, 운영자 rsrsup6), 2명정원
+ * 52. 게시자가 회원, 비회원 참석자 초대 (회원 rsrsup9, 비회원 rsrsup10)
+ * 53. 발표자 세미나 정보에서 입장(rsrsup3). 
+ * 54. 게시자 상세화면에서 입장(rsrsup2). 게시자는 ghost user
+ * 55. 운영자 상세화면에서 입장(rsrsup6).
+ * 56. 채널마스터 참석자 링크를 통해 입장(rsrsup1).
+ * 57. 일반 유저 입정정보 입력 후 세미나 입장 시도
+ * 58. 로그인한 유저가 세미나 입장 시 입장정보 확인  후 입장(rsrsup4) 
+ * 59. 세미나 시작하기
+ * 60. 세미나 종료하기
  */
 
 public class AttendeesTest2{
@@ -137,6 +148,9 @@ public class AttendeesTest2{
 	public void loginseminar() throws Exception {
 		CommonValues comm = new CommonValues();
 		comm.loginseminar(publisherDriver, CommonValues.USEREMAIL_PRES);
+		
+		comm.loginseminar(driver, USER_PRESENTER + "@gmail.com");
+		
 	}
 	
 	//1. 게시자가 일반 비공개 세미나 생성(게시자 rsrsup2, 발표자 rsrsup2, 운영자 rsrsup6), 2명정원
@@ -174,7 +188,7 @@ public class AttendeesTest2{
 	}
 
 	//2. 게시자가 회원, 비회원 참석자 초대 (회원 rsrsup9, 비회원 rsrsup10)
-	@Test(priority = 2, dependsOnMethods = { "createseminar"})
+	@Test(priority = 2, dependsOnMethods = { "createseminar"}, enabled = true)
 	public void publisher_invite() throws Exception {
 
 		String invitation = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
@@ -194,13 +208,9 @@ public class AttendeesTest2{
 	}	
 	
 	// 3. 발표자가 채널 리스트 통해 세미나 입장 rsrsup3
-	@Test(priority = 3, dependsOnMethods = { "createseminar"})
+	@Test(priority = 3, dependsOnMethods = { "createseminar"}, enabled = true)
 	public void presenter_channelList() throws Exception {
 		String failMsg = "";
-		
-		CommonValues comm = new CommonValues();
-		comm.loginseminar(driver, USER_PRESENTER + "@gmail.com");
-		Thread.sleep(1000);
 		
 		//go to seminar by channel
 		seminarInfo_ChannelList(driver, seminarTitle);
@@ -1411,6 +1421,381 @@ public class AttendeesTest2{
 		}
 	}
 	
+	//51. 게시자가 일반 비공개  secret 세미나 생성(게시자 rsrsup2, 발표자 rsrsup2, 운영자 rsrsup6), 2명정원
+	@Test(priority = 51, enabled = true)
+	public void createseminar_secret() throws Exception {
+		Date time = new Date();
+		Calendar startTime = Calendar.getInstance(); 
+		startTime.setTime(time);
+		startTime.add(Calendar.MINUTE, 5);
+		SimpleDateFormat format1 = new SimpleDateFormat ( "HH:mm");
+		String seminarTime = format1.format(startTime.getTime());
+		
+		//get seminar end time
+		Calendar endTime = Calendar.getInstance();
+		endTime.setTime(time);
+		endTime.add(Calendar.MINUTE, 30 + 5);
+		SimpleDateFormat format2 = new SimpleDateFormat ("yyyy/MM/dd HH:mm");
+		
+		seminarDate_T1 = format2.format(startTime.getTime()) + " ~ " + format1.format(endTime.getTime());
+		seminarDate_T2 = format2.format(startTime.getTime()) + " ~ " + format2.format(endTime.getTime());
+		
+		//create seminar after 5minute
+		seminarTitle = format2.format(startTime.getTime());
+		String seminarUri = createSeminar(seminarTitle, seminarTime, "2", true);
+		seminarLink = CommonValues.SERVER_URL + CommonValues.SEMINAR_LINK + seminarUri;
+		seminarID = seminarUri;
+	
+		String failMsg = "";
+		
+	
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e =  new Exception(failMsg);
+	    	throw e;
+		}
+	}	
+	
+	//52. 게시자가 회원, 비회원 참석자 초대 (회원 rsrsup9, 비회원 rsrsup10)
+	@Test(priority = 52, dependsOnMethods = { "createseminar_secret"}, enabled = true)
+	public void publisher_invite_secret() throws Exception {
+
+		String invitation = CommonValues.SERVER_URL + CommonValues.INVITE_VIEW + seminarID;
+		publisherDriver.get(invitation);
+		Thread.sleep(500);
+		
+		//add rsrsup9, rsrsup10
+		String addedMember = USER_INVITED_M + "@gmail.com " + USER_INVITED_N + "@gmail.com " + USER_INVITED_T + "@gmail.com";
+		publisherDriver.findElement(By.xpath(SeminarInvite.XPATH_INVITE_EMAIL_INPUT)).clear();
+		publisherDriver.findElement(By.xpath(SeminarInvite.XPATH_INVITE_EMAIL_INPUT)).sendKeys(addedMember);
+		publisherDriver.findElement(By.xpath(SeminarInvite.XPATH_INVITE_EMAIL_ADD_BTN)).click();
+		Thread.sleep(500);
+		publisherDriver.findElement(By.xpath(SeminarInvite.XPATH_INVITE_EMAIL_SEND_BTN)).click();
+		Thread.sleep(500);
+		publisherDriver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
+		Thread.sleep(100);
+	}	
+
+	// 53. 발표자 세미나 정보에서 입장(rsrsup3). 
+	@Test(priority = 53, enabled = true)
+	public void presenterEnter_secret() throws Exception {
+
+		String failMsg = "";
+
+	    String detailview = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
+	    driver.get(detailview);
+	    Thread.sleep(1000);
+	    
+	    failMsg = roomCheck_OP(driver, ROLE_PRESENER);
+	    
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e =  new Exception(failMsg);
+	    	throw e;
+		}
+	}
+	
+	// 54. 게시자 상세화면에서 입장(rsrsup2). 게시자는 ghost user
+	@Test(priority = 54, dependsOnMethods = { "createseminar_secret", "presenterEnter_secret" }, alwaysRun = true, enabled = true)
+	public void publisherRoom_secret() throws Exception {
+		String failMsg = "";
+		
+		//go to preview
+	    String detailview = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
+	   
+		publisherDriver.get(detailview);
+		Thread.sleep(1000);
+
+		failMsg = roomCheck_ghost(publisherDriver, "publisher");
+	
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
+	// 55. 운영자 상세화면에서 입장(rsrsup6).
+	@Test(priority = 55, dependsOnMethods = { "createseminar_secret", "presenterEnter_secret" }, alwaysRun = true, enabled = true)
+	public void organizerRoom_secret() throws Exception {
+		String failMsg = "";
+		
+		//운영자 login(rsrsup6)
+		sameuserDriver.get(CommonValues.SERVER_URL + "/logout");
+		
+		CommonValues comm = new CommonValues();
+		comm.loginseminar(sameuserDriver, USER_ORGANIZER + "@gmail.com");
+		Thread.sleep(1000);		
+		
+		//go to preview
+	    String detailview = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
+	   
+		sameuserDriver.get(detailview);
+		Thread.sleep(500);
+
+		failMsg = roomCheck_OP(sameuserDriver, ROLE_ORGANIAER);
+	
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
+	// 56. 채널마스터 참석자 링크를 통해 입장(rsrsup1).
+	@Test(priority = 56, dependsOnMethods = { "createseminar_secret", "presenterEnter_secret" }, alwaysRun = true, enabled = true)
+	public void masterRoom_attendeesLink_secret() throws Exception {
+		String failMsg = "";
+		
+		sameuserDriver.get(CommonValues.SERVER_URL + "/logout");
+		Thread.sleep(1000);
+		//채널마스터  login(rsrsup1)
+		CommonValues comm = new CommonValues();
+		comm.loginseminar(sameuserDriver, USER_MASTER + "@gmail.com");
+		
+		Thread.sleep(1000);
+		
+		//go to link
+		sameuserDriver.get(seminarLink);
+		Thread.sleep(500);
+
+		failMsg = roomCheck_ghost(sameuserDriver, "master");
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
+	// 57. 일반 유저 입정정보 입력 후 세미나 입장 시도
+	@Test(priority=57, dependsOnMethods ={ "createseminar_secret", "presenterEnter_secret" }, alwaysRun = true, enabled = true)
+	public void joinAttendeesNormalInfo_secret() throws Exception 
+	{
+		DBConnection dbconn = new DBConnection();
+		String inviteID = dbconn.getInviteID(seminarID.replace("/", ""), USER_INVITED_N + "@gmail.com");
+		
+		String privateURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_LINK + seminarID + URL_PRIVATE + inviteID;
+		
+		attendeesDriver.get(privateURL);
+		Thread.sleep(2000);
+		
+		//click join
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
+		Thread.sleep(500);
+		
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).click();
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).clear();
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).sendKeys(USER_INVITED_N);
+		
+		
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_COMPANY)).clear();
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_POSITION)).clear();
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_PHONE)).clear();
+
+		String entranceCode = dbconn.getEntranceCode(seminarID.replace("/", ""), USER_INVITED_N + "@gmail.com");		
+		
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).clear();
+		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode);
+
+		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
+		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
+		
+		//join seminar
+		
+		JavascriptExecutor js = (JavascriptExecutor) attendeesDriver;
+		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
+		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
+		Thread.sleep(1000);
+		
+		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
+		//check room uri
+		if(!roomuri.equalsIgnoreCase(attendeesDriver.getCurrentUrl()))
+	    {
+	    	Exception e =  new Exception("fail to join Seminar : " + attendeesDriver.getCurrentUrl());
+	    	throw e;
+	    }
+	}
+	
+	
+	// 58. 로그인한 유저가 세미나 입장 시 입장정보 확인  후 입장(rsrsup4) 
+	@Test(priority = 58, enabled = true)
+	public void memberJoinInfo_secret() throws Exception {
+		//login seminar
+		memberDriver.get(CommonValues.SERVER_URL + "/logout");
+		Thread.sleep(500);
+		CommonValues comm = new CommonValues();
+		comm.loginseminar(memberDriver, USER_INVITED_M + "@gmail.com");
+		
+	    Thread.sleep(1000); 
+	    
+	    String userEmail = USER_INVITED_M + "@gmail.com";
+	    DBConnection dbconn = new DBConnection();
+	    String inviteID= dbconn.getInviteID(seminarID.replace("/", ""), userEmail);
+	    String entranceCode = dbconn.getEntranceCode(seminarID.replace("/", ""), userEmail);
+		
+	    // go seminar
+		memberDriver.get(CommonValues.SERVER_URL + CommonValues.SEMINAR_LINK + seminarID +  URL_PRIVATE + inviteID);
+		Thread.sleep(500);
+		
+		JavascriptExecutor js = (JavascriptExecutor) memberDriver;
+		js.executeScript("arguments[0].scrollIntoView();", memberDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)));
+		
+		memberDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
+		Thread.sleep(1000);
+
+		//check member info
+		//nickname, company, position, phone field is enabled
+
+		String infoFailMsg = "";
+		
+		String nickname = USER_INVITED_M;
+		if(!memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).getAttribute("value").contentEquals(nickname) 
+				|| !memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).isEnabled())
+		{
+			infoFailMsg = "member info(nickname) [default] " + memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).getAttribute("value")
+					+ " [enable]" + memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).isEnabled();
+			
+			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).clear();
+			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).sendKeys(nickname);
+		}
+		
+		//email field is disabled
+		if(!memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_EMAIL)).getAttribute("value").contentEquals(userEmail) 
+				|| memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_EMAIL)).isEnabled())
+		{
+			infoFailMsg = "\n" + "member info to join(email) [default] " + memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_EMAIL)).getAttribute("value")
+					+ " [enable]" + memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_EMAIL)).isEnabled();
+	
+		}
+		
+		// enter entrance Code
+		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).clear();
+		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTRANCE_CODE)).sendKeys(entranceCode);
+		
+		if(!memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//input")).isSelected())
+			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX1+ "//div")).click();
+		if(!memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//input")).isSelected())
+			memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
+		
+		// 입장
+		// join seminar
+		memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
+		Thread.sleep(1000);
+		
+		members.add(USER_INVITED_M);
+
+		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
+		// check room uri
+		if (!roomuri.equalsIgnoreCase(memberDriver.getCurrentUrl())) {
+			Exception e = new Exception("fail to join Seminar : " + memberDriver.getCurrentUrl());
+			throw e;
+		}
+		
+		if(infoFailMsg !=null && !infoFailMsg.isEmpty())
+		{
+			Exception e =  new Exception(infoFailMsg);
+			throw e;
+		}
+		
+	}
+	
+	// 59. 세미나 시작하기
+	@Test(priority = 59, enabled = true)
+	public void startSeminar_secret() throws Exception {
+		boolean isPass = true;
+		String failMsg = "";
+		
+		driver.findElement(By.xpath("//button[@class='btn btn-primary btn-xl seminar-start']")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
+		Thread.sleep(1000);
+		
+		String xpath_onair = "//strong[@id='user-type']";
+		// on air tag  : presenter
+		if (!driver.findElement(By.xpath(xpath_onair)).getAttribute("class").contains("onair")) {
+			isPass = false;
+			failMsg = "[presenter]Seminar Tag is wrorng : " + driver.findElement(By.xpath(xpath_onair)).getAttribute("class");
+			//Exception e = new Exception("Seminar Tag is wrorng : " + driver.findElement(By.id("user-type")).getText());
+			//throw e;
+		}
+		
+		// on air tag : attendees 
+		if (!sameuserDriver.findElement(By.xpath(xpath_onair)).getAttribute("class").contains("onair")) {
+			isPass = false;
+			failMsg = failMsg + "\n" + "[attendees : no memeber ]Seminar Tag is wrorng : " + sameuserDriver.findElement(By.xpath(xpath_onair)).getAttribute("class");
+			//Exception e = new Exception("Seminar Tag is wrorng : " + attendeesDriver.findElement(By.id("user-type")).getText());
+			//throw e;
+		}
+		if (!memberDriver.findElement(By.xpath(xpath_onair)).getAttribute("class").contains("onair")) {
+			
+			isPass = false;
+			failMsg = failMsg + "\n" + "[attendees : memeber ]Seminar Tag is wrorng : " + memberDriver.findElement(By.xpath(xpath_onair)).getAttribute("class");
+			//Exception e = new Exception("Seminar Tag is wrorng : " + memberDriver.findElement(By.id("user-type")).getText());
+			//throw e;
+		}
+		
+		if(!isPass)
+		{
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
+	// 60. 세미나 종료하기
+	@Test(priority = 60, enabled = true)
+	public void closeSeminar_secret() throws Exception {
+		String failMsg = "";
+		
+		driver.findElement(By.id("btn-exit")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
+		Thread.sleep(1000);
+		//presenter
+
+		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n0-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n0-2. cannot find toast (presenter)";
+		}
+		
+		if(isElementPresent_wd(publisherDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!publisherDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n1-1. toast message. (publisher) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + publisherDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n1-2. cannot find toast (publisher)";
+		}
+		
+		if(isElementPresent_wd(sameuserDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!sameuserDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n2-1. toast message. (attend) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + sameuserDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n2-2. cannot find toast (attend)";
+		}
+		
+		if(isElementPresent_wd(memberDriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
+			if(!memberDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
+				failMsg = failMsg + "\n3-1. toast message. (attend) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
+						 + " [Actual]" + memberDriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		} else {
+			failMsg = failMsg + "\n3-2. cannot find toast (member)";
+		}
+
+
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e =  new Exception(failMsg);
+	    	throw e;
+		}
+	}
 	
 	public String createSeminar(String seminarName, String seminarTime, String attendees, boolean isSecret) throws Exception {
 		
