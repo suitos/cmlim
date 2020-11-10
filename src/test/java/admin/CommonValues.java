@@ -1,5 +1,6 @@
 package admin;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -234,6 +235,32 @@ public class CommonValues {
 			e.sendKeys(data);}
 		break;
 		}
+	}
+	
+	public String Excelpath(String filename) {
+		String os = System.getProperty("os.name").toLowerCase();
+		String path = "";
+		int num = 1;
+
+		if (os.contains("windows")) {
+			path = "C:\\Users\\admin\\Downloads\\" + filename + ".xlsx";
+
+			File file = new File(path);
+
+			if (!file.exists()) {
+				while (true) {
+					num++;
+					path = "C:\\Users\\admin\\Downloads\\" + filename + " (" + num + ").xlsx";
+					File file2 = new File(path);
+					if (file2.exists())
+						break;
+					}
+			} else {
+			path = System.getProperty("user.home") + "/Downloads/" + filename + ".xlsx";
+			}
+
+		}
+		return path;
 	}
 
 	public static WebDriver getDriver(SearchContext context) {
