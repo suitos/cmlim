@@ -29,6 +29,9 @@ public class CommonValues {
 	public static boolean FOR_JENKINS = true;
 	
 	public static String SERVER_URL = "https://alpha.remoteseminar.com";
+
+	public static int SETTING_ROOM_ATTENDEELIST = 4;
+	public static boolean SETTING_ROOM_OPERATOR_MENU = false;
 	
 	/*user
 	 * 	rsrsup1 |- rsrsup2
@@ -272,6 +275,7 @@ public class CommonValues {
 	public static String XPATH_CREATESEMINAR_TAB5 = "//div[@class='TabNavigation_tabWrap__3jzQi tab-wrap']/ul[1]/li[5]";
 	public static String XPATH_CREATESEMINAR_TITLE = "//div[@class='seminar-title']/input[1]";
 	public static String XPATH_CREATESEMINAR_ATTENDEES = "//div[@class='count-attendants']/input[1]";
+	public static String XPATH_CREATESEMINAR_CHANNELLIST = "//div[@class='ChangeChannel_changeChannel__3-kW6']/ul/li";
 	
 	public static String XPATH_SEMINARVIEW_POST = "//button[@class='btn btn-secondary-light btn-auto actionButton']";
 	public static String XPATH_SEMINARVIEW_ENTER = "//button[@class='btn btn-primary btn-auto actionButton']";
@@ -427,25 +431,21 @@ public class CommonValues {
 			}
 		}
 	}
+	
+	//channel : rsrsup1 으로 선택
 	public void setCreateSeminar_setChannel(WebDriver driver) throws Exception {
 		driver.findElement(By.xpath("//button[@class='btn btn-basic btn-s ']")).click();
 		Thread.sleep(1000);
-		List<WebElement> channelList = driver
-				.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
 
-		if (channelList.size() != 2) {
-			Exception e =  new Exception("1. Channel list size [Expected] 2, [Actual]" + channelList.size());
-			throw e; 
-		} else {
-			for (int i = 0 ; i < channelList.size() ; i ++) {
-				if(channelList.get(i).findElement(By.xpath(".//span[1]")).getText().contentEquals("rsrsup1")) {
-					//click second channel
-					Channelname = channelList.get(i).findElement(By.xpath(".//span[1]")).getText();
-					Master = Channelname + "@gmail.com";
-					channelList.get(i).findElement(By.xpath(".//span[1]")).click();
-				}
+		List<WebElement> channelList = driver.findElements(By.xpath(XPATH_CREATESEMINAR_CHANNELLIST));
+
+		for (int i = 0; i < channelList.size(); i++) {
+			if (channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText().contentEquals("rsrsup1")) {
+				// click second channel
+				channelList.get(i).findElement(By.xpath(".//label/span[1]")).click();
 			}
 		}
+		
 		//click confirm
 		driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
 		Thread.sleep(500);

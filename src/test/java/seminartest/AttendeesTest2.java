@@ -1808,24 +1808,8 @@ public class AttendeesTest2{
 	    
 		//channel
 		//click channel select
-		publisherDriver.findElement(By.xpath("//div[@class='wrap-channel-option']//button[@class='btn btn-basic btn-s ']")).click();
-		Thread.sleep(500);
-
-		// channel popup : channel list
-		List<WebElement> channelList = publisherDriver
-				.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
-
-		for (int i = 0; i < channelList.size(); i++) {
-			if (channelList.get(i).findElement(By.xpath(".//span[1]")).getText().contentEquals("rsrsup1")) {
-				// click second channel
-				channelList.get(i).findElement(By.xpath(".//span[1]")).click();
-			}
-		}
-		Thread.sleep(500);
-		// click confirm
-		publisherDriver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
-		Thread.sleep(2000);
-		
+		CommonValues comm = new CommonValues();
+		comm.setCreateSeminar_setChannel(publisherDriver);
 		
 		// private
 	    publisherDriver.findElement(By.xpath("//div[@id='seminar-type']")).click();
@@ -1844,7 +1828,7 @@ public class AttendeesTest2{
 		// set attendees
 		publisherDriver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_ATTENDEES)).click();
 		publisherDriver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_ATTENDEES)).clear();
-		CommonValues comm = new CommonValues();
+		
 		comm.selectAll(publisherDriver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_ATTENDEES)));
 
 
@@ -2082,10 +2066,10 @@ public class AttendeesTest2{
 
 		}
 
-		// 참석자 인원 탭 없음 확인
+		// 참석자탭 확인
 		List<WebElement> roomTabs = wd.findElements(By.xpath("//div[@id='timeline-viewmode']/button"));
-		if(roomTabs.size() != 3) {
-			failMsg = failMsg + "\n 2. tab size error (" + user +") [Expected]3 [Actual]" + roomTabs.size();
+		if(roomTabs.size() != CommonValues.SETTING_ROOM_ATTENDEELIST) {
+			failMsg = failMsg + "\n 2. tab size error (" + user +") [Expected]" + CommonValues.SETTING_ROOM_ATTENDEELIST + " [Actual]" + roomTabs.size();
 		} else {
 			if(!roomTabs.get(0).getAttribute("class").contentEquals("chat active")) {
 				failMsg = failMsg + "\n 3. 1st tab error (" + user + ") [Expected]chat [Actual]" + roomTabs.get(0).getAttribute("class");
@@ -2095,6 +2079,10 @@ public class AttendeesTest2{
 			}
 			if(!roomTabs.get(2).getAttribute("class").contentEquals("download false")) {
 				failMsg = failMsg + "\n 5. 3rd tab error (" + user + ") [Expected]chat [Actual]" + roomTabs.get(0).getAttribute("class");
+			}
+			
+			if(!roomTabs.get(3).getAttribute("class").contentEquals("attendee")) {
+				failMsg = failMsg + "\n 3. 4st tab error (" + user + ") [Expected]chat [Actual]" + roomTabs.get(0).getAttribute("class");
 			}
 		}
 		
