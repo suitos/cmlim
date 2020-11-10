@@ -5,11 +5,20 @@ import seminartest.DBConnection;
 
 import static org.testng.Assert.fail;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -23,15 +32,15 @@ import org.testng.annotations.Test;
 /*
  * 0.채널 관리 입장
  * 1.검색란 ui확인 및 디폴트 확인
- * 2.***********************날짜 검색(미완)
+ * 2.채널관리 - 검색 - 날짜
  * 
  * 
  * 10.키워드 검색
  * 11.키워드 검색 invalid1
  * 12.키워드 검색 invalid2
  * 13.리스트 항목 셀 클릭 시 이동
- * 14.*********************페이징(미완)
- * 
+ * 14.페이징
+ * 15.엑셀
  * 
  * 20.채널 등록 UI 확인
  * 21.채널 등록 시 빈값 입력 후 등록
@@ -47,15 +56,16 @@ import org.testng.annotations.Test;
  * 31.채널수정-채널URL 
  * 32.채널수정-채널URL-중복
  * 33.채널수정-채널URL-valid
- * 34.채널수정-채널설명
- * 35.채널수정-채널설명2
- * 36.채널정보 탭(빈채널)
+ * 34.채널수정-채널URL-변경완료
+ * 35.채널수정-채널설명
+ * 36.채널수정-채널설명2
+ * 37.채널정보 탭(빈채널)
  * 
  * 
  * 37.채널정보 -채널멤버탭-검색1
  */
 public class Channel {
-	public String Standarddate = "";
+	
 	//임시 XPATH
 	public static String XPATH_CHANNELNAME = "/html/body/div[2]";
 	public static String XPATH_CHANNELDESCRIPTION = "/html/body/div[2]";
@@ -222,15 +232,40 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=2)
-	public void dateSearch() throws Exception{
+	@Test(priority = 2)
+	public void dateSearch() throws Exception {
 		String failMsg = "";
-		//기준날짜
-		Standarddate = driver.findElement(By.xpath("//*[@id=\"datePicker\"]")).getAttribute("value").substring(0,7);
-		System.out.println(Standarddate);
 		
+		checkListView(driver);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
+		driver.findElement(By.xpath("//input[@value='all-months']")).click();
+		driver.findElement(By.xpath(KEYWORD_SEARCH_BTN)).click();
+
+		CheckDateData(); //전체
+		
+		checkListView(driver);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+		driver.findElement(By.xpath("//input[@value='last-3-months']")).click();
+		driver.findElement(By.xpath(KEYWORD_SEARCH_BTN)).click();
+		
+		CheckDateData(); //최근 3개월
+		
+		checkListView(driver);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+		driver.findElement(By.xpath("//input[@value='last-month']")).click();
+		driver.findElement(By.xpath(KEYWORD_SEARCH_BTN)).click();
+		
+		CheckDateData(); //지난달
+		
+		checkListView(driver);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+		CheckDateData(); //당월
 	}
+		
 	
 	@Test(priority=10)
 	public void keywordSearch() throws Exception {
@@ -383,10 +418,243 @@ public class Channel {
 	
 	@Test(priority=14)
 	public void listPaging() throws Exception {
-		
+		String failMsg = "";
+
+		checkListView(driver);
+
+		admin.CommonValues comm = new admin.CommonValues();
+		comm.setCalender(driver);
+		Thread.sleep(1000);
+
+		String N2 = driver.findElement(By.xpath("//span[@class='total']")).getText().replace("건", "");
+		int Realcount = Integer.parseInt(N2);
+
+		List<WebElement> paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+		String lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
+		int lastPnum = Integer.parseInt(lastP);
+
+		// 페이지 수 확인
+		if (lastPnum != (int) Math.ceil((double) Realcount / 30)) {
+			failMsg = "1. list paging error. paging count [Expected]" + (int) Math.ceil((double) Realcount / 30)
+					+ " [Actual]" + lastPnum;
+		}
+		if (lastPnum > 2) {
+			// 다음페이지 클릭
+			paging.get(paging.size() - 1).click();
+			Thread.sleep(500);
+
+			// 2번 활성화 되어 있는지 확인
+			if (!paging.get(2).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 2. 2nd page is not actived";
+			}
+
+			List<WebElement> rows2 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows2.size() != 30) {
+				failMsg = failMsg + "\n 2-1. list rows [Expected]30 [Actual]" + rows2.size();
+			}
+
+			// 이전페이지 클릭
+			paging.get(0).click();
+			Thread.sleep(500);
+
+			// 1번 활성화 되어 있는지 확인
+			if (!paging.get(1).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 2-2. 1st page is not actived";
+			}
+
+			List<WebElement> rows3 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows3.size() != 30) {
+				failMsg = failMsg + "\n 2-3. list rows [Expected]30 [Actual]" + rows3.size();
+			}
+
+			// 마지막 페이지 클릭
+			paging.get(paging.size() - 2).click();
+			Thread.sleep(500);
+
+			// 마지막 페이지 활성화 되어 있는지 확인
+			if (!paging.get(lastPnum).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 2-4. last page is not actived";
+			}
+
+			List<WebElement> rows4 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows4.size() != Realcount % 30) {
+				failMsg = failMsg + "\n 2-5. list rows [Expected]" + Realcount % 30 + "[Actual]" + rows4.size();
+			}
+
+		} else if (lastPnum == 2) {
+			// 다음페이지 클릭
+			paging.get(paging.size() - 1).click();
+			Thread.sleep(500);
+
+			// 2번 활성화 되어 있는지 확인
+			if (!paging.get(2).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 2. 2nd page is not actived(lastPnum is 2)";
+			}
+
+			List<WebElement> rows5 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows5.size() != Realcount % 30) {
+				failMsg = failMsg + "\n 2-1. list rows(lastPnum is 2) [Expected]" + Realcount % 30 + "[Actual]"
+						+ rows5.size();
+			}
+
+			// 이전페이지 클릭
+			paging.get(0).click();
+			Thread.sleep(500);
+
+			// 1번 활성화 되어 있는지 확인
+			if (!paging.get(1).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 2-2. 1st page is not actived(lastPnum is 2)";
+			}
+
+			List<WebElement> rows6 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows6.size() != 30) {
+				failMsg = failMsg + "\n 2-3. list rows(lastPnum is 2) [Expected]30 [Actual]" + rows6.size();
+			}
+
+			// 마지막 페이지 클릭
+			paging.get(paging.size() - 2).click();
+			Thread.sleep(500);
+
+			// 마지막 페이지 활성화 되어 있는지 확인
+			if (!paging.get(lastPnum).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 2-4. last page is not actived(lastPnum is 2)";
+			}
+
+			List<WebElement> rows7 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows7.size() != Realcount % 30) {
+				failMsg = failMsg + "\n 2-5. list rows(lastPnum is 2) [Expected]" + Realcount % 30 + "[Actual]"
+						+ rows7.size();
+			}
+		} else {
+
+			if (!paging.get(1).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 2. 1st page is not actived(lastPnum is 1)";
+			}
+
+			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows.size() != Realcount % 30) {
+				failMsg = failMsg + "\n 2-1. list rows [Expected]" + Realcount % 30 + "[Actual]" + rows.size();
+			}
+
+		}
+
+		// for test
+		paging.get(1).click();
+		Thread.sleep(500);
+
+		// click 50rows
+		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROWS + "[2]")).click();
+		Thread.sleep(500);
+
+		paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+		lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
+		lastPnum = Integer.parseInt(lastP);
+
+		if (lastPnum == 1) {
+			// 세미나갯수/50(기본 row) = 마지막페이지 번호 -1과 동일
+
+			if (!paging.get(1).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 3. 1st page is not actived(lastPnum is 1)";
+			}
+
+			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows.size() != Realcount % 50) {
+				failMsg = failMsg + "\n 3-1. list rows [Expected]" + Realcount % 50 + "[Actual]" + rows.size();
+			}
+
+		} else {
+			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows.size() != 50) {
+				failMsg = failMsg + "\n 3-2. list rows [Expected]50 [Actual]" + rows.size();
+			}
+		}
+
+		// click 100rows
+		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROWS + "[3]")).click();
+		Thread.sleep(500);
+
+		paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+		lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
+		lastPnum = Integer.parseInt(lastP);
+
+		if (lastPnum == 1) {
+			// 세미나갯수/100(기본 row) = 마지막페이지 번호 -1과 동일
+
+			if (!paging.get(1).getAttribute("class").contains("active")) {
+				failMsg = failMsg + "\n 4. 1st page is not actived(lastPnum is 1)";
+			}
+
+			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows.size() != Realcount % 100) {
+				failMsg = failMsg + "\n 4-1. list rows [Expected]" + Realcount % 100 + "[Actual]" + rows.size();
+			}
+
+		} else {
+			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			if (rows.size() != 100) {
+				failMsg = failMsg + "\n 4-2. list rows [Expected]100 [Actual]" + rows.size();
+			}
+		}
+
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
 	}
-		
-		
+	
+	@Test(priority=15)
+	public void checkExcelData() throws Exception {
+		String failMsg = "";
+
+		checkListView(driver);
+
+		admin.CommonValues comm = new admin.CommonValues();
+		comm.setCalender(driver);
+		Thread.sleep(1000);
+
+		WebElement keywordtextbox = driver.findElement(By.xpath(KEYWORD_SEARCH_TEXTBOX));
+
+		insertKeywordSearch(keywordtextbox, "rsrsup");
+
+		ListDataNullCheck();
+
+		// Web 행,열 갯수
+		List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+		int ROWcount = rows.size();
+		List<WebElement> column = driver.findElements(By.xpath("//th[@class='ant-table-cell']"));
+		int Columncount = column.size();
+
+		// Excel Download
+		driver.findElement(By.xpath("//button[@class='ant-btn ant-btn-sub ant-btn-sm']")).click();
+
+		TimeUnit.SECONDS.sleep(5);
+
+		String[][] data = new String[ROWcount][Columncount];
+
+		for (int i = 0; i < ROWcount; i++) {
+			for (int j = 0; j < Columncount; j++) {
+				data[i][j] = rows.get(i)
+						.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[" + (j + 1) + "]")).getText();
+				Thread.sleep(100);
+
+				if (readExcelFile(comm.Excelpath("channel"), i, j).contentEquals("")) {
+					readExcelFile(comm.Excelpath("channel"), i, j).replace("", "00:00:00");
+				}
+				if (!data[i][j].contentEquals(readExcelFile(comm.Excelpath("channel"), i, j))) {
+					failMsg = "Not equal data : [WEB]" + data[i][j] + "[Excel]"
+							+ readExcelFile(comm.Excelpath("channel"), i, j);
+				}
+			}
+		}
+
+		deleteExcelFile(comm.Excelpath("channel"));
+
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
 	@Test(priority=20)
 	public void addChannel() throws Exception {
 		String failMsg = "";	
@@ -1103,10 +1371,27 @@ public class Channel {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
-	
 	}
 	
 	@Test(priority=34) 
+	public void ModifyChannelURL_finished() throws Exception {
+		String failMsg = "";
+		
+		driver.get(adminchannelURL);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+		if(!driver.findElements(By.xpath(XPATH_CHANNEL_INFO_CHANNELURLBTN)).isEmpty()) {
+			failMsg = "1.URL Change Btn is displayed";
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+		
+	
+	@Test(priority=35) 
 	public void ModifyChannelDescription() throws Exception {
 		String failMsg = "";
 		
@@ -1151,7 +1436,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=35) 
+	@Test(priority=36) 
 	public void ModifyChannelDescription2() throws Exception {
 		String failMsg = "";
 		
@@ -1190,7 +1475,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=36) 
+	@Test(priority=37) 
 	public void ChannelinfoEmptyTAB() throws Exception {
 		String failMsg = "";
 		
@@ -1241,7 +1526,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=37) 
+	@Test(priority=38) 
 	public void ChannelinfoSearchTAB() throws Exception {
 		String failMsg = "";
 		
@@ -1446,4 +1731,141 @@ public class Channel {
 		
 	}
 	
+	private void CheckDateData() throws Exception {
+		// 기준날짜(년도,월)
+		String failMsg = "";
+		String StandardStartdate = driver.findElement(By.xpath("//*[@id=\"datePicker\"]")).getAttribute("value").replace("/", "");
+		String StandardEnddate = driver.findElement(By.xpath("//div[@class='ant-picker-input']/input")).getAttribute("value").replace("/", "");
+		int StandardStartdatevalue = Integer.parseInt(StandardStartdate);
+		int StandadEnddatevalue = Integer.parseInt(StandardEnddate);
+		System.out.println(StandardStartdate);
+
+		// 리스트 줄수 100 선택
+		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROWS + "[3]")).click();
+
+		Thread.sleep(500);
+
+		List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+		int ROWcount = rows.size();
+		String N2 = driver.findElement(By.xpath("//span[@class='total']")).getText().replace("건", "");
+		int Realcount = Integer.parseInt(N2);
+
+		if (Realcount <= 100) {
+			for (int i = 0; i < ROWcount; i++) {
+				String data = rows.get(i).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
+				int datavalue = Integer.parseInt(data);
+				
+				if (!(StandardStartdatevalue <= datavalue && datavalue <= StandadEnddatevalue)) {
+					failMsg = "0.default Search is wrong [Row num]" + i;
+				}
+			}
+		} else if (Realcount > 100) { // 데이터 100개 초과할경우
+
+			List<WebElement> paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+			String lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
+			int lastPnum = Integer.parseInt(lastP);
+
+			for (int j = 1; j < lastPnum; j++) {
+				paging.get(paging.size() - 1).click(); // 다음페이지 반복 클릭
+				Thread.sleep(500);
+				if (j + 1 == lastPnum) { // 마지막 페이지 도달할 경우 row갯수 찾고 데이터 검사
+					List<WebElement> rows2 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+					int ROWcount2 = rows2.size();
+
+					for (int k = 0; k < ROWcount2; k++) {
+						String data = rows.get(k).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
+						int datavalue = Integer.parseInt(data);
+						if (!(StandardStartdatevalue <= datavalue && datavalue <= StandadEnddatevalue)) {
+							failMsg = "\n 2.default Search is wrong [Page num]" + j + 1 + " [Row num]" + k;
+						}
+					}
+				} else { // 마지막 페이지 도달할때까지 데이터 검사
+					List<WebElement> rows3 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+					int ROWcount3 = rows3.size();
+
+					for (int i = 0; i < ROWcount3; i++) {
+						String data = rows.get(i).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
+						int datavalue = Integer.parseInt(data);
+						if (!(StandardStartdatevalue <= datavalue && datavalue <= StandadEnddatevalue)) {
+							failMsg = failMsg + "\n 3.default Search is wrong [Page num]" + j + 1 + " [Row num]" + i;
+						}
+					}
+				}
+			}
+		} else {
+			failMsg = "data is null";
+		}
+
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	private void readExcelFileRow(String filepath, int rowsize) throws Exception {
+		String failMsg = "";
+		
+		File file = new File(filepath);
+		FileInputStream inputStream = new FileInputStream(file);
+		Workbook testDataWorkBook = new XSSFWorkbook(inputStream);
+		Sheet testDataSheet = testDataWorkBook.getSheetAt(0);
+
+		int RealrowCount = testDataSheet.getLastRowNum() - testDataSheet.getFirstRowNum();
+		
+		if(RealrowCount != rowsize) {
+			failMsg = "Row size is wrong [Result] Excel:" + RealrowCount + " Web:" + rowsize;
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+
+	private String readExcelFile(String filepath, int x, int y) throws Exception {
+
+		File file = new File(filepath);
+		FileInputStream inputStream = new FileInputStream(file);
+		Workbook testDataWorkBook = new XSSFWorkbook(inputStream);
+		Sheet testDataSheet = testDataWorkBook.getSheetAt(0);
+
+		int rowCount = testDataSheet.getLastRowNum();
+		int cells = testDataSheet.getRow(0).getPhysicalNumberOfCells();
+
+		DataFormatter formatter = new DataFormatter();
+
+		String[][] data = new String[rowCount][cells];
+
+		for (int i = 0; i < rowCount; i++) {
+
+			// 첫 행 제외
+			Row row = testDataSheet.getRow(i + 1);
+
+			for (int j = 0; j < cells; j++) {
+				// 1열,2열 제외
+				Cell cell = row.getCell(j + 2);
+				String a = formatter.formatCellValue(cell);
+
+				data[i][j] = a;
+			}
+		}
+		return data[x][y];
+	}
+
+	private static void deleteExcelFile(String filepath) throws Exception {
+		
+	    File file = new File(filepath);
+
+	    try {
+	        if (file.exists()) {
+	            file.delete();
+	            System.out.println("File is delete");
+	        } else {
+	            
+	            System.out.println("File is not exist");  
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+		
+	}
 }
