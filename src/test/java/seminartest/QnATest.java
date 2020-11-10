@@ -66,11 +66,11 @@ public class QnATest {
 	public String XPATH_QNA_QUESTION_LIKEED_ICON = ".//button[@class='qna-list-item__like-btn liked']";
 	public String XPATH_QNA_QUESTION_LIKE_COUNT = ".//span[@class='like-count']";
 	
-	public String MSG_QNA_PIN_TOOLTIP = "freeze";
+	public String MSG_QNA_PIN_TOOLTIP = "Pin";
 	public String MSG_QNA_PIN_OVER = "The number of questions that can be pinned has been exceeded.";
 	public String MSG_QNA_PIN_PRIVATE = "This is a private question.";
 	
-	public String MSG_QNA_PINOFF_TOOLTIP = "unfreeze";
+	public String MSG_QNA_PINOFF_TOOLTIP = "Unpin";
 	public String QNA_QUESTION_PUBLIC = "QnA Test : public";
 	public String QNA_QUESTION_PRIVATE = "QnA Test : private";
 	public String QNA_ANSWER = "QnA Test : public answer";
@@ -204,7 +204,8 @@ public class QnATest {
 
 		}
 		
-		checkSettingpopup(driver);
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 
 	    //start seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_BTN)).click();
@@ -994,15 +995,7 @@ public class QnATest {
 		}
 	}
 
-	
-	public void checkSettingpopup(WebDriver wd) throws InterruptedException {
-		// 설정팝업 확인
-		if(isElementPresent_wd(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
-			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
-			Thread.sleep(500);
-		}
-	}
-	
+
 	public void takescreenshot(WebDriver e, String filename) throws IOException {
 		System.out.println("try take screenshot");
 		String filepath = System.getProperty("user.dir") + "\\test-output\\failimg\\" + filename;
