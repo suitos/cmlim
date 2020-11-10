@@ -17,7 +17,7 @@
                 <configuration>
                     <!-- Suite testng xml file to consider for test execution -->
                     <suiteXmlFiles>
-                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                        <suiteXmlFile>rstest.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     <systemPropertyVariables>
             			<propertyName>browser</propertyName>
@@ -71,6 +71,11 @@
 	   <version>2.6.1</version>
     </dependency>
     
+    <dependency>
+	  <groupId>org.apache.poi</groupId>
+	  <artifactId>poi-ooxml</artifactId>
+	   <version>3.17</version>
+	</dependency>    
   </dependencies>
   
 </project>
