@@ -200,13 +200,8 @@ public class CreateSeminar_member {
 		//change channel : rsrsup1
 		if(!driver.findElement(By.xpath("//span[@class='selected-channel']")).getText().contentEquals("rsrsup1")) {
 			//click channel select
-			driver.findElement(By.xpath("//div[@class='wrap-channel-option']//button[@class='btn btn-basic btn-s ']")).click();
-			Thread.sleep(500);
-			
-			String channelname = "//span[contains(text(), '" + "rsrsup1" + "')]";
-			driver.findElement(By.xpath(channelname)).click();
-			//click confirm
-			driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
+			CommonValues comm = new CommonValues();
+			comm.setCreateSeminar_setChannel(driver);
 			Thread.sleep(500);
 		}
 		

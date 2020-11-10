@@ -3633,26 +3633,9 @@ public class SeminarInfo {
 	    
 		//channel
 		//click channel select
-		driver_publisher.findElement(By.xpath("//div[@class='wrap-channel-option']//button[@class='btn btn-basic btn-s ']")).click();
-		Thread.sleep(500);
-
-		// channel popup : channel list
-		List<WebElement> channelList = driver_publisher
-				.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
-
-		for (int i = 0; i < channelList.size(); i++) {
-			if (channelList.get(i).findElement(By.xpath(".//span[1]")).getText().contentEquals("rsrsup1")) {
-				// click second channel
-				channelList.get(i).findElement(By.xpath(".//span[1]")).click();
-			}
-		}
-		Thread.sleep(500);
-		
-		// click confirm
-		driver_publisher.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
-		Thread.sleep(2000);
-		
 		CommonValues comm = new CommonValues();
+		comm.setCreateSeminar_setChannel(driver_publisher);
+		
 		comm.setCreateSeminar(driver_publisher, seminarName, isnow);
 		Thread.sleep(500);
 		

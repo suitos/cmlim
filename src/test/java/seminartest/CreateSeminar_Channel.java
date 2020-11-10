@@ -102,14 +102,14 @@ public class CreateSeminar_Channel {
 		
 		//channel popup : channel list
 
-		List<WebElement> channelList = driver.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
+		List<WebElement> channelList = driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_CHANNELLIST));
 		if(channelList.size() != 2) {
 			failMsg = failMsg + "\n 1. Channel list size [Expected] 2, [Actual] " + channelList.size();
 		} else {
 			for (int i = 0 ; i < channelList.size() ; i ++) {
-				if(channelList.get(i).findElement(By.xpath(".//span[1]")).getText().contentEquals("rsrsup1")) {
+				if(channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText().contentEquals("rsrsup1")) {
 					//click second channel
-					channelList.get(i).findElement(By.xpath(".//span[1]")).click();
+					channelList.get(i).findElement(By.xpath(".//label/span[1]")).click();
 				}
 			}
 		}
@@ -136,15 +136,15 @@ public class CreateSeminar_Channel {
 
 		// channel popup : channel list
 		List<WebElement> channelList = driver
-				.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
+				.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_CHANNELLIST));
 
 		if (channelList.size() != 2) {
 			failMsg = failMsg + "1. Channel list size [Expected] 2, [Actual] " + channelList.size();
 		} else {
 			for (int i = 0 ; i < channelList.size() ; i ++) {
-				if(channelList.get(i).findElement(By.xpath(".//span[1]")).getText().contentEquals("rsrsup1")) {
+				if(channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText().contentEquals("rsrsup1")) {
 					//click second channel
-					channelList.get(i).findElement(By.xpath(".//span[1]")).click();
+					channelList.get(i).findElement(By.xpath(".//label/span[1]")).click();
 				}
 			}
 		}
@@ -177,7 +177,7 @@ public class CreateSeminar_Channel {
 		Thread.sleep(500);
 
 		// channel popup : channel list
-		List<WebElement> channelList = driver.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
+		List<WebElement> channelList = driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_CHANNELLIST));
 
 		if (channelList.size() != 2) {
 			failMsg = failMsg + "1. Channel list size [Expected] 2, [Actual] " + channelList.size();
@@ -221,13 +221,13 @@ public class CreateSeminar_Channel {
 		Thread.sleep(1000);
 		
 		
-		channelList = driver.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
+		channelList = driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_CHANNELLIST));
 		List<WebElement> channelIcons= driver.findElements(By.xpath("//label[@class='Radio_radio-contents__wUdmP star']"));
 		if (channelList.size() != 2) {
 			failMsg = failMsg + "1. Channel list size [Expected] 2, [Actual] " + channelList.size();
 		} else {
 			for (int i = 0 ; i < channelList.size() ; i ++) {
-				if(channelList.get(i).findElement(By.xpath(".//span[1]")).getText().contentEquals("rsrsup1")) {
+				if(channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText().contentEquals("rsrsup1")) {
 					//check default icon
 					try {
 						channelIcons.get(i).findElement(By.xpath(".//i[@class='icon star-fill']"));
@@ -268,7 +268,7 @@ public class CreateSeminar_Channel {
 
 		// channel popup : channel list
 		List<WebElement> channelList = driver
-				.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
+				.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_CHANNELLIST));
 
 		if (channelList.size() != 2) {
 			failMsg = failMsg + "1. Channel list size [Expected] 2, [Actual] " + channelList.size();
@@ -327,12 +327,12 @@ public class CreateSeminar_Channel {
 		Thread.sleep(1000);
 
 		// channel popup : channel list
-		List<WebElement> channelList = driver.findElements(By.xpath("//div[@class='radio-channelId']/div[@class='Radio_radioBox__2VtPF radio']"));
+		List<WebElement> channelList = driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_CHANNELLIST));
 		if (channelList.size() != 1) {
 			failMsg = failMsg + "\n 2. Channel list size [Expected] 1, [Actual] " + channelList.size();
 		} else {
-			if (!channelList.get(0).findElement(By.xpath(".//span[1]")).getText().contentEquals("rsrsup1")) {
-				failMsg = failMsg + "\n 3. Channel name error [Expected] rsrsup1, [Actual] " + channelList.get(0).findElement(By.xpath(".//span[1]")).getText();
+			if (!channelList.get(0).findElement(By.xpath(".//label/span[1]")).getText().contentEquals("rsrsup1")) {
+				failMsg = failMsg + "\n 3. Channel name error [Expected] rsrsup1, [Actual] " + channelList.get(0).findElement(By.xpath(".//label/span[1]")).getText();
 			}
 		}
 		
