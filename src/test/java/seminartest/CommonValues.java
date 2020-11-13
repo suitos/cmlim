@@ -397,7 +397,7 @@ public class CommonValues {
 		cal_today.setTime(time);
 		cal.setTime(time);
 		if(isnow)
-			cal.add(Calendar.MINUTE, 2);
+			cal.add(Calendar.MINUTE, 4);
 		else
 			cal.add(Calendar.DAY_OF_MONTH, 2);
 		

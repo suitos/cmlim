@@ -64,6 +64,13 @@
     <classes>
       <class name="seminartest.CreateSeminar2"/>
     </classes>
+  </test>
+  
+   <test name="CreateSeminar3_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.CreateSeminar3"/>
+    </classes>
   </test> 
  
   <test name="CreateSeminar_Channel_Chrome">
