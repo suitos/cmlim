@@ -3,10 +3,19 @@ package admin;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -25,6 +34,17 @@ import org.testng.annotations.Test;
 
 /* Seminars_sysadmin
  * 
+ * 8. 세미나 리스트, 날짜 선택 
+ * 9. 세미나 아이템 리스트 & 리스트 페이징
+ * 10. search  세미나명, 채널명, 게시자명, 발표자닉네임
+ * 11. keyword search - invalid
+ * 12. search - 속성
+ * 13. search - 상태
+ * 14. search - 타임존
+ * 20. listItem
+ * 21. 세미나 정보 화면
+ * 
+ * 31. 세미나 리스트  엑셀 파일 확인
  */
 
 public class Seminars_sysadmin {
@@ -67,8 +87,8 @@ public class Seminars_sysadmin {
 	public static String PRIVATE = "PRIVATE";
 	public static String TEMP = "TEMP";
 	public static String NOTREADY = "NOT_READY";
-	public static String STANDBY = "STANDBY";
-	public static String ONAIR = "STANDBY";
+	public static String STANDBY = "READY";
+	public static String ONAIR = "ONAIR";
 	public static String END = "END";
 	public static String TIMEZONE_KR = "Asia/Seoul";
 	public static String TIMEZONE_JP = "Asia/Tokyo";
@@ -137,7 +157,7 @@ public class Seminars_sysadmin {
 		cal_startday.setTime(time);
 		cal_startday.set(Calendar.YEAR, 1990);
 		
-		comm.checkSearchedItemInRow(3, driver, cal_startday, cal_today);
+		ret = comm.checkSearchedItemInRow(3, driver, cal_startday, cal_today);
 		if(!ret.isEmpty())
 			failMsg = failMsg + ret;
 		
@@ -154,7 +174,7 @@ public class Seminars_sysadmin {
 		Calendar cal_temp = (Calendar)cal_startday.clone();
 		cal_temp.set(Calendar.DAY_OF_MONTH, cal_temp.getActualMaximum(Calendar.DAY_OF_MONTH));
 		
-		comm.checkSearchedItemInRow(4, driver, cal_startday, cal_temp);
+		ret = comm.checkSearchedItemInRow(4, driver, cal_startday, cal_temp);
 		if(!ret.isEmpty())
 			failMsg = failMsg + ret;
 		
@@ -168,7 +188,7 @@ public class Seminars_sysadmin {
 		cal_startday.setTime(time);
 		cal_startday.set(Calendar.DAY_OF_MONTH, 1);
 		
-		comm.checkSearchedItemInRow(5, driver, cal_startday, cal_today);
+		ret = comm.checkSearchedItemInRow(5, driver, cal_startday, cal_today);
 		if(!ret.isEmpty())
 			failMsg = failMsg + ret;
 		
@@ -252,7 +272,7 @@ public class Seminars_sysadmin {
 			// 세미나갯수/50(기본 row) = 마지막페이지 번호 -1과 동일
 			lastP = paging.get(paging.size()-2).findElement(By.xpath("./a")).getText();
 			if(Integer.parseInt(lastP) -1 != totalCount/50) {
-				failMsg = failMsg + "\n7-1. shown 50 rows.  paging count [Expected]" + totalCount/30 + " [Actual]" + (Integer.parseInt(lastP)-1);
+				failMsg = failMsg + "\n7-1. shown 50 rows.  paging count [Expected]" + totalCount/50 + " [Actual]" + (Integer.parseInt(lastP)-1);
 			}			
 		} else {
 			failMsg = failMsg + "\n7-0. cannot find paging element.";
@@ -272,7 +292,7 @@ public class Seminars_sysadmin {
 			// 세미나갯수/50(기본 row) = 마지막페이지 번호 -1과 동일
 			lastP = paging.get(paging.size()-2).findElement(By.xpath("./a")).getText();
 			if(Integer.parseInt(lastP) -1 != totalCount/50) {
-				failMsg = failMsg + "\n8-1. shown 100 rows. paging count [Expected]" + totalCount/30 + " [Actual]" + (Integer.parseInt(lastP)-1);
+				failMsg = failMsg + "\n8-1. shown 100 rows. paging count [Expected]" + totalCount/100 + " [Actual]" + (Integer.parseInt(lastP)-1);
 			}	
 		} else {
 			failMsg = failMsg + "\n8-0. cannot find paging element.";
@@ -753,7 +773,7 @@ public class Seminars_sysadmin {
 			}
 			
 			//status
-			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 3))).getText().contentEquals(status)) {
+			if(!driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 3))).getText().contains(status)) {
 				failMsg = failMsg + "\n3. seminar info :  status [Expected]" + status 
 						+ " [Actual]" + driver.findElement(By.xpath(String.format(XPATH_SEMINAR_VIEW_INFO_DATA, 3))).getText();
 			}
@@ -808,7 +828,76 @@ public class Seminars_sysadmin {
 		}
 	}	
 	
-	
+	// 31. 세미나 리스트  엑셀 파일 확인
+	@Test(priority = 31, enabled = true)
+	public void seminarListExcel() throws Exception {
+		String failMsg = "";	
+		
+		driver.get(CommonValues.ADMIN_URL + CommonValues.URL_SEMINARLIST);
+		Thread.sleep(500);
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[3]")).click();
+		Thread.sleep(100);
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
+		Thread.sleep(500);
+		
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		int rowSize = rows.size();
+		int columnSize = driver.findElements(By.xpath("//th[@class='ant-table-cell']")).size();
+		
+		driver.findElement(By.xpath("//button[@class='ant-btn ant-btn-sub ant-btn-sm']")).click();
+		Thread.sleep(3000);
+		
+		CommonValues comm = new CommonValues();
+		String[][] excelData = readExcelFile(comm.Excelpath("seminar"));
+
+		if(rowSize <= excelData.length && columnSize <= excelData[0].length) {
+			for(int i = 0 ; i < rowSize ; i++ ) {
+				for(int j = 0 ; j < columnSize ; j++ ) {
+					String excelCol = "";
+					
+					String rowData = rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[" + (j+1) + "]")).getText();
+					if(j == 0) {
+						excelCol = excelData[i][j].replace(".", "/");
+					} else if (j == 6 || j == 7) {
+						excelCol = excelData[i][j+2].replace(".", "/");
+						
+						String[] date = rowData.split(" ");
+						rowData = String.format("%s %s %s %s", date[0], date[1], date[2], date[4]);
+						
+					} else if (j == 8) {
+						excelCol = excelData[i][j+2];
+						if (excelCol.isEmpty()) {
+							excelCol = "00:00:00";
+						}	
+					} else if(j >= 2 && j < 4) {
+						excelCol = excelData[i][j + 1];
+					} else if (j >= 4) {
+						excelCol = excelData[i][j + 2];
+					} else {
+						excelCol = excelData[i][j];
+					}
+					excelCol = checkExcelData(excelCol);
+					
+					if(!rowData.contentEquals(excelCol)) {
+						failMsg = failMsg + "\n" + i + "-" + j +". excelData. [Expected]" 
+								+ rowData
+								+ " [Actual]" + excelCol;
+					}
+				}
+			}
+		} else {
+			failMsg = "0. excelData size error. [Expeced]" + rowSize + "," + columnSize 
+					+ " [Actual]" + excelData.length + "," + excelData[0].length;
+		}
+		
+		deleteExcelFile(comm.Excelpath("seminar"));
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}	
+		
 
 	private void checkListView(WebDriver wd) throws InterruptedException {
 		if(!wd.getCurrentUrl().contentEquals(CommonValues.ADMIN_URL + CommonValues.URL_SEMINARLIST)) {
@@ -820,6 +909,65 @@ public class Seminars_sysadmin {
 			Thread.sleep(500);
 		}
 	}
+	
+	private String checkExcelData(String value) {
+
+		value = value.replace("비공개", "PRIVATE");
+		value = value.replace("공개", "PUBLIC");
+		
+		value = value.replace("종료", "END");
+		value = value.replace("스탠바이", "READY");
+		value = value.replace("예정", "NOT_READY");
+		value = value.replace("온에어", "ONAIR");
+
+		return value;
+	}
+	
+	private String[][] readExcelFile(String filepath) throws Exception {
+
+		File file = new File(filepath);
+		FileInputStream inputStream = new FileInputStream(file);
+		Workbook testDataWorkBook = new XSSFWorkbook(inputStream);
+		Sheet testDataSheet = testDataWorkBook.getSheetAt(0);
+
+		int rowCount = testDataSheet.getLastRowNum();
+		int cells = testDataSheet.getRow(0).getPhysicalNumberOfCells();
+
+		DataFormatter formatter = new DataFormatter();
+
+		String[][] data = new String[rowCount][cells];
+
+		for (int i = 1; i <  rowCount; i++) {
+			Row row = testDataSheet.getRow(i);
+			for (int j = 1; j < cells; j++) {
+				
+				Cell cell = row.getCell(j);
+				String a = formatter.formatCellValue(cell);
+
+				data[i-1][j-1] = a;
+			}
+		}
+		testDataWorkBook.close();
+		return data;
+	}
+
+	private static void deleteExcelFile(String filepath) throws Exception {
+		
+	    File file = new File(filepath);
+
+	    try {
+	        if (file.exists()) {
+	            file.delete();
+	            System.out.println("File is delete");
+	        } else {
+	            
+	            System.out.println("File is not exist");  
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+		
+	}	
 
 	public void clearAttributeValue(WebElement el) {
 		while (!el.getAttribute("value").isEmpty())
