@@ -227,6 +227,19 @@
       <class name="seminartest.Demo"/>
     </classes>
   </test>   
-       
+
+  <test name="QnA_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.QnATest"/>
+    </classes>
+  </test>
+  
+  <test name="ShortURL_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.ShortURL"/>
+    </classes>
+  </test>      
 </suite> <!-- Suite -->
 
