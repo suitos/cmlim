@@ -648,6 +648,18 @@ public class Channel {
 		}
 
 		deleteExcelFile(comm.Excelpath("channel"));
+		
+		insertKeywordSearch(keywordtextbox, "!@#$%^");
+		
+		driver.findElement(By.xpath("//button[@class='ant-btn ant-btn-sub ant-btn-sm']")).click();
+
+		TimeUnit.SECONDS.sleep(5);
+		
+		if(readExcelFile(comm.Excelpath("channel"),0,0) != null) {
+			failMsg = failMsg + "\n 2.excel data is not null";
+		}
+		
+		deleteExcelFile(comm.Excelpath("channel"));
 
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -1829,26 +1841,33 @@ public class Channel {
 		Sheet testDataSheet = testDataWorkBook.getSheetAt(0);
 
 		int rowCount = testDataSheet.getLastRowNum();
-		int cells = testDataSheet.getRow(0).getPhysicalNumberOfCells();
+		
+		if(rowCount == 0) {
+			
+			return null;
+			
+		} else {
+			int cells = testDataSheet.getRow(0).getPhysicalNumberOfCells();
 
-		DataFormatter formatter = new DataFormatter();
+			DataFormatter formatter = new DataFormatter();
 
-		String[][] data = new String[rowCount][cells];
+			String[][] data = new String[rowCount][cells];
 
-		for (int i = 0; i < rowCount; i++) {
+			for (int i = 0; i < rowCount; i++) {
 
-			// 첫 행 제외
-			Row row = testDataSheet.getRow(i + 1);
+				// 첫 행 제외
+				Row row = testDataSheet.getRow(i + 1);
 
-			for (int j = 0; j < cells; j++) {
-				// 1열,2열 제외
-				Cell cell = row.getCell(j + 2);
-				String a = formatter.formatCellValue(cell);
+				for (int j = 0; j < cells; j++) {
+					// 1열,2열 제외
+					Cell cell = row.getCell(j + 2);
+					String a = formatter.formatCellValue(cell);
 
-				data[i][j] = a;
+					data[i][j] = a;
+				}
 			}
+			return data[x][y];
 		}
-		return data[x][y];
 	}
 
 	private static void deleteExcelFile(String filepath) throws Exception {
