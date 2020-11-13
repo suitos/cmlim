@@ -186,14 +186,16 @@ public class Common {
 	
 	//4.브라우저 언어 체크(일어)
 	@Test(priority=4)
-	  public void checkJPlanguage() throws Exception {
-			
+	public void checkJPlanguage() throws Exception {
+
 		jpDriver.get(CommonValues.SERVER_URL);
 		WebDriverWait wait = new WebDriverWait(jpDriver, 50);
 		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[@type='submit']")));
-		
-		if(!jpDriver.findElement(By.xpath("//p[@class='login__desc']")).getText().contentEquals("RemoteSeminarでレベルの高いオンラインセミナーを開催してみましょう。")) {
-			Exception e = new Exception("JP language fail :" + jpDriver.findElement(By.xpath("//p[@class='login__desc']")).getText());
+
+		if (!jpDriver.findElement(By.xpath("//p[@class='login__desc']")).getText()
+				.contentEquals("RemoteSeminarでレベルの高いオンラインセミナー\n" + "を開催してみましょう。")) {
+			Exception e = new Exception(
+					"JP language fail :" + jpDriver.findElement(By.xpath("//p[@class='login__desc']")).getText());
 			throw e;
 		}
 	}

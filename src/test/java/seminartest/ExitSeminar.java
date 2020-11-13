@@ -137,14 +137,13 @@ public class ExitSeminar {
 		Present = comm.Present; //rsrsup8@gmail.com
 		Publisher = comm.Publisher; //rsrsup2@gmail.com
 		Organizer = comm.Organizer; //rsrsup3@gmail.com
-		Master = comm.Master; //rsrsup1@gmail.com
 		Channelname = comm.Channelname;
 		
 		
 		JavascriptExecutor js = (JavascriptExecutor) Publisher_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")));
+		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)));
 		//save
-		Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")).click();
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
 		Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
 		List<WebElement> seminarlist = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
@@ -154,22 +153,17 @@ public class ExitSeminar {
 		seminarTime = startTime + " ~ " + endTime;
 		System.out.println(seminarTime);
 		Thread.sleep(1000);
-		//post
-		List<WebElement> seminarlist1 = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
-		seminarlist1.get(0).findElement(By.xpath("//div[2]/button[@class='btn btn-secondary-light btn-m ']")).click();
-		WebDriverWait wait = new WebDriverWait(Publisher_driver, 20);
-	    wait.until(ExpectedConditions.textToBePresentInElement(Publisher_driver.findElement(By.xpath("//div[@class='modal-body']")), "The seminar will be posted on the channel " + Channelname + ".\n" + 
-	    		"Once posted, it cannot be changed."));
+		
+		String seminarUri = "";
+		seminarUri = comm.findSeminarIDInList(Publisher_driver, seminarTitle);
+		comm.postSeminar(Publisher_driver, seminarUri);
+
+	    if(seminarUri == null || seminarUri.isEmpty())
+	    {
+	    	Exception e =  new Exception("fail to create seminar : " + Publisher_driver.getCurrentUrl());
+	    	throw e;
+	    }
 	    
-	    Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		Publisher_driver.findElement(By.xpath("//div[@class='modal-footer']//button[1]")).click();
-		Thread.sleep(2000);
-		
-		List<WebElement> seminarlist2 = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
-		seminarlist2.get(0).click();
-		Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		Thread.sleep(3000);
-		
 		seminarID = Publisher_driver.getCurrentUrl().replace(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW , "");
 		seminarViewURL = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
 		seminarRoomURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
@@ -182,8 +176,8 @@ public class ExitSeminar {
 		String failMsg = "";
 		
 		JavascriptExecutor js = (JavascriptExecutor) Publisher_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")));
-		Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")).click();
+		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
 		
 		Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
@@ -226,8 +220,8 @@ public class ExitSeminar {
 		Thread.sleep(3000);
 		
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")));
-		Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")).click();
+		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
+		Present_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
 		
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
@@ -269,8 +263,8 @@ public class ExitSeminar {
 		Thread.sleep(3000);
 		
 		JavascriptExecutor js = (JavascriptExecutor) Organizer_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Organizer_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")));
-		Organizer_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")).click();
+		js.executeScript("arguments[0].scrollIntoView();", Organizer_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
+		Organizer_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
 		
 		Organizer_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
@@ -295,41 +289,45 @@ public class ExitSeminar {
 	@Test(priority=6)
 	  public void EnterSeminar_Master() throws Exception{
 		String failMsg = "";
-		
+
 		Master_driver.get(CommonValues.SERVER_URL);
-		
+
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Master_driver, Master);
+		comm.loginseminar(Master_driver, CommonValues.USEREMAIL);
 		try {
 			WebDriverWait login_present = new WebDriverWait(Master_driver, 20);
-			login_present.until(ExpectedConditions.textToBePresentInElement(Master_driver.findElement(By.xpath("//div[@id='profile-drop-down']")), CommonValues.USERNICKNAME_JOIN ));
-			
-		}catch(Exception e) {
+			login_present.until(ExpectedConditions.textToBePresentInElement(
+					Master_driver.findElement(By.xpath("//div[@id='profile-drop-down']")),
+					CommonValues.USERNICKNAME_JOIN));
+
+		} catch (Exception e) {
 			failMsg = failMsg + "not login";
 		}
-		
+
 		Master_driver.get(seminarViewURL);
 		Master_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
-		
+
 		JavascriptExecutor js = (JavascriptExecutor) Master_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Master_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")));
-		Master_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")).click();
-		
+		js.executeScript("arguments[0].scrollIntoView();",
+				Master_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
+		Master_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
+
 		Master_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
-		
-		ArrayList<String> tabs = new ArrayList<String> (Master_driver.getWindowHandles());
+
+		ArrayList<String> tabs = new ArrayList<String>(Master_driver.getWindowHandles());
 		Master_driver.close();
 		Master_driver.switchTo().window(tabs.get(1));
-		
+
 		try {
 			WebDriverWait room_master = new WebDriverWait(Master_driver, 40);
-			room_master.until(ExpectedConditions.textToBePresentInElement(Master_driver.findElement(By.xpath("//section[@id='gnb-left']/h1")), seminarTitle ));
-			}catch(Exception e) {
-				failMsg = failMsg + "Drivers can't access Room_URL";
-				}
-		
+			room_master.until(ExpectedConditions.textToBePresentInElement(
+					Master_driver.findElement(By.xpath("//section[@id='gnb-left']/h1")), seminarTitle));
+		} catch (Exception e) {
+			failMsg = failMsg + "Drivers can't access Room_URL";
+		}
+
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -339,40 +337,48 @@ public class ExitSeminar {
 	@Test(priority=7)
 	  public void EnterSeminar_LoginMember() throws Exception{
 		String failMsg = "";
-		
+
 		LoginMember_driver.get(CommonValues.SERVER_URL);
-		
+
 		CommonValues comm = new CommonValues();
 		comm.loginseminar(LoginMember_driver, CommonValues.USEREMAIL_RSUP9);
 		try {
 			WebDriverWait login_present = new WebDriverWait(LoginMember_driver, 20);
-			login_present.until(ExpectedConditions.textToBePresentInElement(LoginMember_driver.findElement(By.xpath("//div[@id='profile-drop-down']")), CommonValues.USEREMAIL_RSUP9.replace("@gmail.com", "") ));
-			
-		}catch(Exception e) {
+			login_present.until(ExpectedConditions.textToBePresentInElement(
+					LoginMember_driver.findElement(By.xpath("//div[@id='profile-drop-down']")),
+					CommonValues.USEREMAIL_RSUP9.replace("@gmail.com", "")));
+
+		} catch (Exception e) {
 			failMsg = failMsg + "not login";
 		}
-		
+
 		LoginMember_driver.get(seminarViewURL);
 		LoginMember_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
-		
+
 		JavascriptExecutor js = (JavascriptExecutor) LoginMember_driver;
-		js.executeScript("arguments[0].scrollIntoView();", LoginMember_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")));
-		LoginMember_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")).click();
-		
-		LoginMember_driver.findElement(By.xpath("//div[@class='public-apply__attendeeInfo__terms']/div[1]")).click();
-		LoginMember_driver.findElement(By.xpath("//div[@class='public-apply__attendeeInfo__terms']/div[2]")).click();
+		js.executeScript("arguments[0].scrollIntoView();",
+				LoginMember_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
+		LoginMember_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
+
+		LoginMember_driver.findElement(By.xpath("//label[@for='serviceAgreement']/div")).click();
+		LoginMember_driver.findElement(By.xpath("//label[@for='infoAgreement']/div")).click();
 		Thread.sleep(1000);
-		LoginMember_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']")).click();
+		LoginMember_driver
+				.findElement(
+						By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']"))
+				.click();
 		LoginMember_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
-		
+
 		try {
 			WebDriverWait room_loginmember = new WebDriverWait(LoginMember_driver, 40);
-			room_loginmember.until(ExpectedConditions.textToBePresentInElement(LoginMember_driver.findElement(By.xpath("//section[@id='gnb-left']/h1")), seminarTitle )); 
-		}catch(Exception e) {
-			failMsg = failMsg + "Drivers can't access Room_URL";}
-		
+			room_loginmember.until(ExpectedConditions.textToBePresentInElement(
+					LoginMember_driver.findElement(By.xpath("//section[@id='gnb-left']/h1")), seminarTitle));
+		} catch (Exception e) {
+			failMsg = failMsg + "Drivers can't access Room_URL";
+		}
+
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -382,39 +388,44 @@ public class ExitSeminar {
 	@Test(priority=8)
 	  public void EnterSeminar_NotLoginMember() throws Exception{
 		String failMsg = "";
-		
+
 		NotLoginMember_driver.get(CommonValues.SERVER_URL);
-		
-		
+
 		NotLoginMember_driver.get(seminarLinkURL);
 		NotLoginMember_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
-		
+
 		JavascriptExecutor js = (JavascriptExecutor) NotLoginMember_driver;
-		js.executeScript("arguments[0].scrollIntoView();", NotLoginMember_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")));
-		NotLoginMember_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")).click();
-		
+		js.executeScript("arguments[0].scrollIntoView();",
+				NotLoginMember_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
+		NotLoginMember_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
+
 		NotLoginMember_driver.findElement(By.xpath("//input[@name='nickname']")).click();
 		NotLoginMember_driver.findElement(By.xpath("//input[@name='nickname']")).clear();
 		NotLoginMember_driver.findElement(By.xpath("//input[@name='nickname']")).sendKeys(ATTENDEES_NICKNAME);
-		
+
 		NotLoginMember_driver.findElement(By.xpath("//input[@name='email']")).click();
 		NotLoginMember_driver.findElement(By.xpath("//input[@name='email']")).clear();
 		NotLoginMember_driver.findElement(By.xpath("//input[@name='email']")).sendKeys(ATTENDEES_EMAIL);
-		
-		NotLoginMember_driver.findElement(By.xpath("//div[@class='public-apply__attendeeInfo__terms']/div[1]")).click();
-		NotLoginMember_driver.findElement(By.xpath("//div[@class='public-apply__attendeeInfo__terms']/div[2]")).click();
+
+		NotLoginMember_driver.findElement(By.xpath("//label[@for='serviceAgreement']/div")).click();
+		NotLoginMember_driver.findElement(By.xpath("//label[@for='infoAgreement']/div")).click();
 		Thread.sleep(1000);
-		NotLoginMember_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']")).click();
+		NotLoginMember_driver
+				.findElement(
+						By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']"))
+				.click();
 		NotLoginMember_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
-		
+
 		try {
 			WebDriverWait room_notloginmember = new WebDriverWait(NotLoginMember_driver, 40);
-			room_notloginmember.until(ExpectedConditions.textToBePresentInElement(NotLoginMember_driver.findElement(By.xpath("//section[@id='gnb-left']/h1")), seminarTitle )); 
-		}catch(Exception e) {
-			failMsg = failMsg + "Drivers can't access Room_URL";}
-		
+			room_notloginmember.until(ExpectedConditions.textToBePresentInElement(
+					NotLoginMember_driver.findElement(By.xpath("//section[@id='gnb-left']/h1")), seminarTitle));
+		} catch (Exception e) {
+			failMsg = failMsg + "Drivers can't access Room_URL";
+		}
+
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -424,50 +435,47 @@ public class ExitSeminar {
 	@Test(priority=9)
 	  public void StartSeminar() throws Exception{
 		String failMsg = "";
-		
-		WebElement StartSeminarSettingBtn = Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-m']"));
-		
+
+		WebElement StartSeminarSettingBtn = Present_driver
+				.findElement(By.xpath("//button[@class='btn btn-primary btn-m']"));
+
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
 		js.executeScript("arguments[0].scrollIntoView();", StartSeminarSettingBtn);
-		
+
 		StartSeminarSettingBtn.click();
-		
-		WebElement StartSeminarBtn = Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-xl seminar-start']"));
+
+		WebElement StartSeminarBtn = Present_driver
+				.findElement(By.xpath("//button[@class='btn btn-primary btn-xl seminar-start']"));
 		StartSeminarBtn.click();
 		WebDriverWait start_popup = new WebDriverWait(Present_driver, 20);
 		start_popup.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='modal-footer']/button[1]")));
 		Present_driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
 
-		TimeUnit.MINUTES.sleep(1);
+		TimeUnit.SECONDS.sleep(20);
 		String[] a = { Publisher_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
-				       Present_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
-				       Organizer_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
-				       Master_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
-				       LoginMember_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
-				       NotLoginMember_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class") };
-		
-		System.out.println(a[0]);
-		
-		if(!a[0].contentEquals("onair")) {
-			failMsg = failMsg + "NOT ON AIR : " + a[0];
+				Present_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
+				Organizer_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
+				Master_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
+				LoginMember_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class"),
+				NotLoginMember_driver.findElement(By.xpath("//strong[@id='user-type']")).getAttribute("class") };
+
+		if(!a[0].contains("onair")) {
+			failMsg = "NOT ON AIR : " + a[0];
 		}
-		if(!a[1].contentEquals("onair")) {
-			failMsg = failMsg + "NOT ON AIR : " + a[1];
+		if(!a[1].contains("onair")) {
+			failMsg = failMsg + "\n NOT ON AIR : " + a[1];
 		}
-		if(!a[2].contentEquals("onair")) {
-			failMsg = failMsg + "NOT ON AIR : " + a[2];
+		if(!a[2].contains("onair")) {
+			failMsg = failMsg + "\n NOT ON AIR : " + a[2];
 		}
-		if(!a[3].contentEquals("onair")) {
-			failMsg = failMsg + "NOT ON AIR : " + a[3];
+		if(!a[3].contains("onair")) {
+			failMsg = failMsg + "\n NOT ON AIR : " + a[3];
 		}
-		if(!a[4].contentEquals("onair")) {
-			failMsg = failMsg + "NOT ON AIR : " + a[4];
+		if(!a[4].contains("onair")) {
+			failMsg = failMsg + "\n NOT ON AIR : " + a[4];
 		}
-		if(!a[5].contentEquals("onair")) {
-			failMsg = failMsg + "NOT ON AIR : " + a[5];
-		}
-		if(!a[6].contentEquals("onair")) {
-			failMsg = failMsg + "NOT ON AIR : " + a[6];
+		if(!a[5].contains("onair")) {
+			failMsg = failMsg + "\n NOT ON AIR : " + a[5]+"onair";
 		}
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
@@ -480,31 +488,31 @@ public class ExitSeminar {
 	  public void EndSeminar() throws Exception{
 		String failMsg = "";
 
-		
 		closedurl = CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID;
-		
+
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath("//button[@id='btn-exit']/i")));
-		
+		js.executeScript("arguments[0].scrollIntoView();",
+				Present_driver.findElement(By.xpath("//button[@id='btn-exit']/i")));
+
 		Present_driver.findElement(By.xpath("//button[@id='btn-exit']")).click();
 		WebDriverWait exit_popup = new WebDriverWait(Present_driver, 20);
 		exit_popup.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='submit']")));
 		Present_driver.findElement(By.xpath("//button[@type='submit']")).click();
-		
+
 		Thread.sleep(1000);
 		Present_driver.findElement(By.xpath("//div[@class='buttons']/div/button[1]")).click();
-		TimeUnit.MINUTES.sleep(1);		
-		
-		if(!Present_driver.getCurrentUrl().contentEquals(closedurl) && 
-		   !Publisher_driver.getCurrentUrl().contentEquals(closedurl) &&
-		   !Organizer_driver.getCurrentUrl().contentEquals(closedurl) &&
-		   !Master_driver.getCurrentUrl().contentEquals(closedurl) &&
-		   !LoginMember_driver.getCurrentUrl().contentEquals(closedurl) &&
-		   !NotLoginMember_driver.getCurrentUrl().contentEquals(closedurl)) {
-			
-			failMsg = failMsg + "Not close url" ;
+		TimeUnit.MINUTES.sleep(1);
+
+		if (!Present_driver.getCurrentUrl().contentEquals(closedurl)
+				&& !Publisher_driver.getCurrentUrl().contentEquals(closedurl)
+				&& !Organizer_driver.getCurrentUrl().contentEquals(closedurl)
+				&& !Master_driver.getCurrentUrl().contentEquals(closedurl)
+				&& !LoginMember_driver.getCurrentUrl().contentEquals(closedurl)
+				&& !NotLoginMember_driver.getCurrentUrl().contentEquals(closedurl)) {
+
+			failMsg = failMsg + "Not close url";
 		}
-		
+
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -715,7 +723,7 @@ public class ExitSeminar {
 			throw e;
 		}
 	}
-		
+	
 	@AfterClass(alwaysRun = true)
 	  public void tearDown() throws Exception {
 	  

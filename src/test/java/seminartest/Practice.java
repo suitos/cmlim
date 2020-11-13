@@ -82,13 +82,13 @@ public class Practice {
 	public String seminarAuthor = "";
 	public String seminarAuthor2 = "";
 	public String seminarDate = "";
-	public String seminarDetailURL = "";
 	public String seminarRoomURL = "";
+	public String seminarLinkURL = "";
+	public String seminarViewURL = "";
 	public String closedURL = "";
 	public String Present = "";
 	public String Publisher = "";
 	public String Organizer = "";
-	public String Master = "";
 	public String Channelname = "";
 	public String filePath = "";
 	
@@ -98,7 +98,6 @@ public class Practice {
 	public static String CANNOT_DELETE_MSG = "In the rehearsal, only the presentation materials registered in the rehearsal can be deleted.";
 	
 	public static String XPATH_SEMINARlIST_PRACTICEBTN = "//button[@class='btn btn-basic btn-m ']";
-	public static String XPATH_SEMINARVIEW_ENTERBTN = "//button[@class='btn btn-primary btn-auto actionButton']";
 	public static String XPATH_SEMINARVIEW_PRACTICEBTN = "//button[@class='btn btn-basic btn-auto SeminarView_actionButton__3tFHP']";
 	
 	private boolean acceptNextAlert = true;
@@ -165,58 +164,45 @@ public class Practice {
 		Present = comm.Present; //rsrsup8@gmail.com
 		Publisher = comm.Publisher; //rsrsup2@gmail.com
 		Organizer = comm.Organizer; //rsrsup3@gmail.com
-		Master = comm.Master; //rsrsup1@gmail.com
+		
 		
 		JavascriptExecutor js = (JavascriptExecutor) Publisher_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")));
+		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)));
 		//save
-		Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")).click();
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
 		Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(2000);
-		//post
-		List<WebElement> seminarlist1 = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
-		seminarlist1.get(0).findElement(By.xpath("//div[2]/button[@class='btn btn-secondary-light btn-m ']")).click();
-		WebDriverWait wait = new WebDriverWait(Publisher_driver, 20);
-	    wait.until(ExpectedConditions.textToBePresentInElement(Publisher_driver.findElement(By.xpath("//div[@class='modal-body']")), "The seminar will be posted on the channel rsrsup1.\n" + 
-	    		"Once posted, it cannot be changed."));
-	    Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		Publisher_driver.findElement(By.xpath("//div[@class='modal-footer']//button[1]")).click();
-		Thread.sleep(2000);
-		
+		String seminarUri = "";
+		seminarUri = comm.findSeminarIDInList(Publisher_driver, seminarTitle);
+		comm.postSeminar(Publisher_driver, seminarUri);
+
+	    if(seminarUri == null || seminarUri.isEmpty())
+	    {
+	    	Exception e =  new Exception("fail to create seminar : " + Publisher_driver.getCurrentUrl());
+	    	throw e;
+	    }
+	    
+	    seminarID = Publisher_driver.getCurrentUrl().replace(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW , "");
+		seminarViewURL = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
+		seminarRoomURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
+		seminarLinkURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_LINK + seminarID;
 	}
 	
 	@Test(priority=3)
 	  public void Publisher_Enter_RehearsalSeminar() throws Exception {
 		String failMsg = "";
 		
-		List<WebElement> seminarlist = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
-		seminarlist.get(0).findElement(By.xpath(XPATH_SEMINARlIST_PRACTICEBTN)).click();
-		
-	    WebDriverWait wait = new WebDriverWait(Publisher_driver, 20);
-	    wait.until(ExpectedConditions.textToBePresentInElement(Publisher_driver.findElement(By.xpath("//div[@class='modal-body']")), "Only the presenter or creator of the seminar can\n" + 
-	  		"rehearse."));
-	  
-	    Publisher_driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();;
-	
-	    seminarlist.get(0).click();
-	    Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 	    String[] info = Publisher_driver.findElement(By.xpath("//p[@class='info-date-author date']")).getText().split("\n");
 	    System.out.println(info[0]);
 	    seminarDate = info[0];
 	    seminarAuthor = info[1];
 	    seminarAuthor2 = seminarAuthor.replace(",", ""); //쉼표 없음
 	    
-	    
 	    System.out.println(seminarAuthor);
-	    seminarID = Publisher_driver.getCurrentUrl().replace(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW , "");
 	    
-	    System.out.println(seminarID);
-	    
-	    seminarDetailURL = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
-	  
-	    if(!Publisher_driver.getCurrentUrl().contentEquals(seminarDetailURL)) {
+	    if(!Publisher_driver.getCurrentUrl().contentEquals(seminarViewURL)) {
 			failMsg = failMsg + "\n 1.Do not access Seminar detail view :" + Publisher_driver.getCurrentUrl()
-			+" [Actual]" + seminarDetailURL;	
+			+" [Actual]" + seminarViewURL;	
 		}
 	    
 	    WebElement EnterBTN = Publisher_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER));
@@ -239,14 +225,14 @@ public class Practice {
 		String failMsg = "";
 		
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Master_driver, Master);
+		comm.loginseminar(Master_driver, CommonValues.USEREMAIL);
 		Thread.sleep(1000);
 		
-		Master_driver.get(seminarDetailURL);
+		Master_driver.get(seminarViewURL);
 		Master_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		if(!Master_driver.getCurrentUrl().contentEquals(seminarDetailURL)) {
+		if(!Master_driver.getCurrentUrl().contentEquals(seminarViewURL)) {
 			failMsg = failMsg + "\n 1.Do not access Seminar detail view :" + Master_driver.getCurrentUrl()
-			+" [Actual]" + seminarDetailURL;	
+			+" [Actual]" + seminarViewURL;	
 		}
 	    
 	    WebElement EnterBTN = Master_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER));
@@ -272,11 +258,11 @@ public class Practice {
 		comm.loginseminar(Present_driver, Present);
 		Thread.sleep(1000);
 		
-		Present_driver.get(seminarDetailURL);
+		Present_driver.get(seminarViewURL);
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		if(!Present_driver.getCurrentUrl().contentEquals(seminarDetailURL)) {
+		if(!Present_driver.getCurrentUrl().contentEquals(seminarViewURL)) {
 			failMsg = failMsg + "\n 1.Do not access Seminar detail view :" + Present_driver.getCurrentUrl()
-			+" [Actual]" + seminarDetailURL;	
+			+" [Actual]" + seminarViewURL;	
 		}
 	    
 	    WebElement PracticeBTN = Present_driver.findElement(By.xpath(XPATH_SEMINARVIEW_PRACTICEBTN));
@@ -304,11 +290,11 @@ public class Practice {
 		comm.loginseminar(Organizer_driver, Organizer);
 		Thread.sleep(1000);
 		
-		Organizer_driver.get(seminarDetailURL);
+		Organizer_driver.get(seminarViewURL);
 		Organizer_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		if(!Organizer_driver.getCurrentUrl().contentEquals(seminarDetailURL)) {
+		if(!Organizer_driver.getCurrentUrl().contentEquals(seminarViewURL)) {
 			failMsg = failMsg + "\n 1.Do not access Seminar detail view :" + Organizer_driver.getCurrentUrl()
-			+" [Actual]" + seminarDetailURL;	
+			+" [Actual]" + seminarViewURL;	
 		}
 	    
 	    WebElement PracticeBTN = Organizer_driver.findElement(By.xpath(XPATH_SEMINARVIEW_PRACTICEBTN));
@@ -382,7 +368,7 @@ public class Practice {
 	  public void checkRehearsalBadge() throws Exception {
 		String failMsg = "";
 		
-		Present_driver.get(seminarDetailURL);
+		Present_driver.get(seminarViewURL);
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
@@ -469,8 +455,8 @@ public class Practice {
 		GOviewBTN.click();
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
-		if(!Present_driver.getCurrentUrl().contentEquals(seminarDetailURL)) {
-			failMsg = failMsg + "\n 5.do not go seminar view   [Expected]" + seminarDetailURL
+		if(!Present_driver.getCurrentUrl().contentEquals(seminarViewURL)) {
+			failMsg = failMsg + "\n 5.do not go seminar view   [Expected]" + seminarViewURL
 					+" [Actual]" + Present_driver.getCurrentUrl();
 		}
 		
@@ -518,8 +504,8 @@ public class Practice {
 		GOviewBTN.click();
 		Organizer_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
-		if(!Organizer_driver.getCurrentUrl().contentEquals(seminarDetailURL)) {
-			failMsg = failMsg + "\n 5.do not go seminar view   [Expected]" + seminarDetailURL
+		if(!Organizer_driver.getCurrentUrl().contentEquals(seminarViewURL)) {
+			failMsg = failMsg + "\n 5.do not go seminar view   [Expected]" + seminarViewURL
 					+" [Actual]" + Organizer_driver.getCurrentUrl();
 		}
 		
@@ -534,7 +520,7 @@ public class Practice {
 	
 	@Test(priority=13 ,dependsOnMethods = { "checkRehearsalBadge"} )
 	  public void checkAfterRehearsalBadge() throws Exception {
-		Present_driver.get(seminarDetailURL);
+		Present_driver.get(seminarViewURL);
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
 		if(!Present_driver.findElement(By.xpath("//div[@class='no-tag wrap-marks']")).isDisplayed()
@@ -550,14 +536,14 @@ public class Practice {
 	
 	@Test(priority=14)
 	  public void createCanPracticeSeminar2() throws Exception {
-		
+		createViewURL = CommonValues.SERVER_URL + CommonValues.CREATE_URI;
 		Publisher_driver.get(createViewURL);
 		Thread.sleep(1000); 
 		if(!Publisher_driver.getCurrentUrl().contentEquals(createViewURL)) {
 			Exception e =  new Exception("Create Seminar view : " +  Publisher_driver.getCurrentUrl());
 			throw e;
 		}
-		
+		seminarTitle = "Practice2";
 		setRehearsal(Publisher_driver, seminarTitle, true);
 		
 	}
@@ -599,9 +585,9 @@ public class Practice {
 	@Test(priority=16)
 	  public void CreateRehearsalSeminar_SettingPresentation() throws Exception{
 		String failMsg = "";
-		/*
-		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB4)).click();
 		
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB4)).click();
+		/*
 		int docs_beforeS = Publisher_driver.findElements(By.xpath("//li[@class='DocItem_doc-item__2bSNb']")).size();
 		
 		String testpng = filePath + CommonValues.TESTFILE_LIST[0];
@@ -619,7 +605,7 @@ public class Practice {
 		Publisher_driver.findElement(By.xpath("//input[@id='input-youtube-link']")).sendKeys(CommonValues.YOUTUBE_URL[0]);
 		Publisher_driver.findElement(By.xpath("//label[@for='input-youtube-link']/button")).click();
 		Thread.sleep(500);
-		
+		/*
 		List<WebElement> docs = Publisher_driver.findElements(By.xpath("//li[@class='DocItem_doc-item__2bSNb']"));
 		
 		if(docs.size() != 2) {
@@ -632,23 +618,30 @@ public class Practice {
 		} else {
 			addedItem.add(CommonValues.YOUTUBE_TITLE[0]);
 		}
-
+		 */
 		JavascriptExecutor js = (JavascriptExecutor) Publisher_driver;
-		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")));
+		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)));
 		//save
-		Publisher_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")).click();
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
 		Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(2000);
-		//post
-		List<WebElement> seminarlist1 = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
-		seminarlist1.get(0).findElement(By.xpath("//div[2]/button[@class='btn btn-secondary-light btn-m ']")).click();
-		WebDriverWait wait = new WebDriverWait(Publisher_driver, 20);
-	    wait.until(ExpectedConditions.textToBePresentInElement(Publisher_driver.findElement(By.xpath("//div[@class='modal-body']")), "The seminar will be posted on the channel rsrsup1.\n" + 
-	    		"Once posted, it cannot be changed."));
-	    Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		Publisher_driver.findElement(By.xpath("//div[@class='modal-footer']//button[1]")).click();
-		Thread.sleep(2000);
-			
+		CommonValues comm = new CommonValues();
+		String seminarUri = "";
+		seminarUri = comm.findSeminarIDInList(Publisher_driver, seminarTitle);
+		comm.postSeminar(Publisher_driver, seminarUri);
+
+	    if(seminarUri == null || seminarUri.isEmpty())
+	    {
+	    	Exception e =  new Exception("fail to create seminar : " + Publisher_driver.getCurrentUrl());
+	    	throw e;
+	    }
+	    
+	    seminarID = Publisher_driver.getCurrentUrl().replace(CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW , "");
+		seminarViewURL = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
+		seminarRoomURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
+		seminarLinkURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_LINK + seminarID;
+		System.out.println(seminarID);
+		System.out.println(seminarViewURL);
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -661,6 +654,8 @@ public class Practice {
 		String failMsg = "";
 		String parentHandle = Publisher_driver.getWindowHandle();
 		
+		Publisher_driver.get(CommonValues.SERVER_URL+CommonValues.LIST_URI);
+		
 		List<WebElement> seminarlist = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
 		seminarlist.get(0).findElement(By.xpath(XPATH_SEMINARlIST_PRACTICEBTN)).click();
 		Thread.sleep(1000);
@@ -668,11 +663,6 @@ public class Practice {
 		for (String winHandle : Publisher_driver.getWindowHandles()) {
 			Publisher_driver.switchTo().window(winHandle); }
 		
-		seminarID = Publisher_driver.getCurrentUrl().replace(CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM, "");
-		seminarDetailURL = CommonValues.SERVER_URL + CommonValues.DETAIL_VIEW + seminarID;
-		System.out.println(seminarID);
-		
-		seminarRoomURL = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		//list에서 입장확인
 		if(!Publisher_driver.getCurrentUrl().contentEquals(seminarRoomURL)) {
 		  	failMsg = failMsg + "\n 1.Do not access Seminar Room :" + Publisher_driver.getCurrentUrl()
@@ -693,13 +683,12 @@ public class Practice {
 		String failMsg = "";
 		String parentHandle = Present_driver.getWindowHandle();
 
-		
-		Present_driver.get(seminarDetailURL);
+		Present_driver.get(seminarViewURL);
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
-		if(!Present_driver.getCurrentUrl().contentEquals(seminarDetailURL)) {
+		if(!Present_driver.getCurrentUrl().contentEquals(seminarViewURL)) {
 			failMsg = failMsg + "\n 1.Do not access Seminar detail view :" + Present_driver.getCurrentUrl()
-			+" [Actual]" + seminarDetailURL;	
+			+" [Actual]" + seminarViewURL;	
 		}
 	    
 	    WebElement PracticeBTN = Present_driver.findElement(By.xpath(XPATH_SEMINARVIEW_PRACTICEBTN));
