@@ -73,6 +73,7 @@ public class OnAirRoom {
 	public static String XPATH_ROOM_TOOLTIP = "//div[@class='wait-tooltip tooltip-inner']";
 	public static String XPATH_ROOM_TOAST = "//div[@class='wrap-toast-outer']";
 	
+	public static String XPATH_ROOM_TAB_DOWNLOAD = "//div[@id='timeline-viewmode']/button[3]";
 	public static String XPATH_ROOM_TAB_QNA = "//div[@id='timeline-viewmode']/button[2]";
 	public static String XPATH_ROOM_TAB_CHAT = "//div[@id='timeline-viewmode']/button[1]";
 	public static String XPATH_ROOM_TAB_QNA_BEDGE = "//div[@id='timeline-viewmode']/button[2]//div[@class='count-bedge']";

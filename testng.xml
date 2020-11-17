@@ -247,6 +247,13 @@
     <classes>
       <class name="seminartest.ShortURL"/>
     </classes>
-  </test>      
+  </test>     
+  
+  <test name="RoomFileShare_Chrome">
+  <parameter name="browser" value="Chrome"/>
+    <classes>
+      <class name="seminartest.RoomFileShare"/>
+    </classes>
+  </test> 
 </suite> <!-- Suite -->
 

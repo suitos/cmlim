@@ -284,6 +284,11 @@ public class CommonValues {
 
 	public static String XPATH_ROOM_STARTSEMINAR_BTN = "//button[@class='btn btn-primary btn-xl seminar-start']";
 	public static String XPATH_ROOM_STARTSEMINAR_NOW_BTN = "//div[@class='countdown-footer']/button";
+	public static String XPATH_ROOM_STARTSEMINAR_EXIT_BTN = "//button[@id='btn-exit']";
+	public static String XPATH_ROOM_STARTSEMINAR_EXIT_POPUPBTN = "//div[@id='seminar-close-dialog']//button";
+	
+	public static String XPATH_ROOM_SETTING_TITLE = "//div[@id='device-setting-wrap']/div[@class='dialog-header']";
+	public static String XPATH_ROOM_SETTING_CONFIRM_BTN = "//div[@class='buttons align-center']/button";
 	
 	public static String XPATH_SEMINARLIST_TAB = "//li[@class='seminarList__category__item']";
 	public static String XPATH_MODAL_BODY = "//div[@class='modal-body']";
@@ -585,8 +590,8 @@ public class CommonValues {
 	public String checkSettingpopup(WebDriver wd) throws InterruptedException {
 		// 설정팝업 확인
 		Thread.sleep(5000);
-		if(isElementPresent(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
-			wd.findElement(By.xpath("//div[@class='buttons align-center']/button")).click();
+		if(isElementPresent(wd, By.xpath(XPATH_ROOM_SETTING_TITLE))) {
+			wd.findElement(By.xpath(XPATH_ROOM_SETTING_CONFIRM_BTN)).click();
 			Thread.sleep(500);
 			return "";
 		} else {
