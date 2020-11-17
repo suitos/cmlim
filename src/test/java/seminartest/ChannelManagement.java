@@ -103,8 +103,8 @@ public class ChannelManagement {
 		driver.findElement(By.xpath("//div[@class='PageTitleWrapper_wrap__1lvJU channel-title']//input[1]")).sendKeys(CommonValues.TWENTY_A + CommonValues.TWENTY_ONE);
 		driver.findElement(By.xpath("//i[@class='ricon-lock-round']")).click();
 		Thread.sleep(500);
-		if (driver.findElement(By.xpath("//div[@class='container-inner']//h2[1]/div[1]")).getText().length() != 20) {
-			failMsg = failMsg + "\n 3. channel title saved 40 characters.(max 20) saved title : [length]" + driver.findElement(By.xpath("//div[@class='container-inner']//h2[1]/div[1]")).getText().length()
+		if (driver.findElement(By.xpath("//div[@class='container-inner']//h2[1]/div[1]")).getText().length() != 30) {
+			failMsg = failMsg + "\n 3. channel title saved 40 characters.(max 30) saved title : [length]" + driver.findElement(By.xpath("//div[@class='container-inner']//h2[1]/div[1]")).getText().length()
 					+ " [saved data]" + driver.findElement(By.xpath("//div[@class='container-inner']//h2[1]/div[1]")).getText();
 		}
 		
@@ -175,7 +175,7 @@ public class ChannelManagement {
 		
 		Thread.sleep(100);
 		if(!descfield.findElement(By.xpath("./div[1]/div[1]")).getText().contentEquals(CommonValues.CHANNEL_DES_PLACEHOLDER)) {
-			failMsg = failMsg + "\n channel title saved blank. saved title : " + descfield.findElement(By.xpath("./div[1]/div[1]")).getText();
+			failMsg = failMsg + "\n1.channel title saved blank. saved title : " + descfield.findElement(By.xpath("./div[1]/div[1]")).getText();
 		}
 		/*
 		if(!descfield.findElement(By.xpath("./div[1]/div[1]")).getText().isEmpty()) {
@@ -204,12 +204,12 @@ public class ChannelManagement {
 		descfield.findElement(By.xpath(".//textarea[1]")).clear();
 		comm.selectAll(descfield.findElement(By.xpath(".//textarea[1]")));
 		descfield.findElement(By.xpath(".//textarea[1]")).sendKeys(Keys.BACK_SPACE);
-		for (int i = 0 ; i <  11 ; i++) descfield.findElement(By.xpath(".//textarea[1]")).sendKeys(CommonValues.TWENTY_A);
+		for (int i = 0 ; i <  30 ; i++) descfield.findElement(By.xpath(".//textarea[1]")).sendKeys(CommonValues.TWENTY_A);
 		driver.findElement(By.xpath("//ul[@class='tab ']/li[2]")).click();
 
 		Thread.sleep(100);
-		if (descfield.findElement(By.xpath("./div[1]/div[1]")).getText().length() != 200) {
-			failMsg = failMsg + "\n channel desc saved 200 characters. saved title : [length]" + descfield.findElement(By.xpath("./div[1]/div[1]")).getText().length()
+		if (descfield.findElement(By.xpath("./div[1]/div[1]")).getText().length() != 500) {
+			failMsg = failMsg + "\n2.channel desc saved 500 characters. saved title : [length]" + descfield.findElement(By.xpath("./div[1]/div[1]")).getText().length()
 					+ " [saved data]" + descfield.findElement(By.xpath("./div[1]/div[1]")).getText();
 		}
 		
