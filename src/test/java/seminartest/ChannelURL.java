@@ -58,7 +58,7 @@ public class ChannelURL {
 	@Test(priority=0)
 	public void loginseminar() throws Exception {
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(driver, CommonValues.USEREMAIL_PRES);
+		comm.loginseminar(driver, "rsrsup4@gmail.com");
 	  }	
 	
 
