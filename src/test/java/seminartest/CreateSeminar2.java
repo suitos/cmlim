@@ -914,9 +914,9 @@ public class CreateSeminar2 {
 		
 		String standbyTime = "Seminar starts in 1 hours.";
 		//check standby time
-		if (!driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME + "/div[@class='text']")).getText().contentEquals(standbyTime)) {
+		if (!driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME)).getText().contentEquals(standbyTime)) {
 			failMsg = failMsg + "\n 4. saved standby time [Expected]" + standbyTime 
-					+ " [Actual]" + driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME + "/div[@class='text']")).getText();
+					+ " [Actual]" + driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME)).getText();
 
 		}
 		
@@ -932,7 +932,7 @@ public class CreateSeminar2 {
 		String failMsg = "";
 
 		String standbyText = driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_MSG)).getText();
-		String standbyTime = driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME + "/div")).getText();
+		String standbyTime = driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME)).getText();
 		
 		//change cover mode : video
 		driver.findElement(By.xpath("//div[@id='cover-mode']")).click();
@@ -947,10 +947,10 @@ public class CreateSeminar2 {
 		}
 		
 		// check standby time
-		if (!driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME + "/div")).getText()
+		if (!driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME)).getText()
 				.contentEquals(standbyTime)) {
 			failMsg = failMsg + "\n 2. saved standby time [Expected]" + standbyTime + " [Actual]"
-					+ driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME + "/div")).getText();
+					+ driver.findElement(By.xpath(XPATH_SEMINARVIEW_WAITING_TIME)).getText();
 
 		}
 		

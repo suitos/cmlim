@@ -108,11 +108,11 @@ public class ChannelInfo {
 		String clipboardtxt = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
 
 		if (!clipboardtxt.equalsIgnoreCase(driver.getCurrentUrl())) {
-			failMsg =  "not mathced channel url. copy data : " + clipboardtxt;
+			failMsg =  "1. not mathced channel url. copy data : " + clipboardtxt;
 		}
 		
 		if (!driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText().contentEquals("Channel URL has been copied.")) {
-			failMsg = failMsg + "\n Copy toast message error : [Actual] " + driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText();
+			failMsg = failMsg + failMsg + "\n 2.Copy toast message error : [Actual] " + driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText();
 		}
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
