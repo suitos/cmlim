@@ -3,6 +3,8 @@ package seminartest;
 import static org.testng.Assert.fail;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -62,8 +64,8 @@ public class Practice2 {
 	public String seminarLinkURL = "";
 	public String seminarRoomURL = "";
 	public String closedURL = "";
-	public String Present = "";
-	public String Organizer = "";
+	public List<String> Presenters;
+	public List<String> Organizers;
 	public String Channelname = "";
 	
 	public static String REHEARSAL_END_MSG = "Seminar rehearsal has ended.";
@@ -90,6 +92,9 @@ public class Practice2 {
 		context.setAttribute("webDriver", Present_driver);
 		context.setAttribute("webDriver2", Organizer_driver);
 		
+		Presenters = new ArrayList<>(Arrays.asList("rsrsup8@gmail.com"));
+		Organizers = new ArrayList<>(Arrays.asList("rsrsup3@gmail.com", "rsrsup6@gmail.com"));
+
         System.out.println("End BeforeTest!!!");
 
 	}
@@ -122,20 +127,27 @@ public class Practice2 {
 	public void CreateRehearsalSeminar_Setting() throws Exception{
 		CommonValues comm = new CommonValues();
 		comm.setCreateSeminar_setChannel(Present_driver);
+		Channelname = "rsrsup1";
 		
 		Present_driver.findElement(By.xpath("//ul[@class='tab ']/li[3]")).click();
 		Thread.sleep(500);
 		String xpath = "//*[normalize-space(text()) and normalize-space(.)='" + CommonValues.CREATE_MEMBER_ORGANIZER_B+ "']";
 		Present_driver.findElement(By.xpath(xpath)).click();
 		Thread.sleep(1000);
-		List<WebElement> members_organized = Present_driver.findElements(By.xpath("//li[@role='presentation']"));
+		List<WebElement> members_organized = Present_driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_LIST));
 		
-		//select 2 //rsrsup3,rsrsup6(알파 기준)
-		members_organized.get(3).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		members_organized.get(4).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		Present_driver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
+		//운영자 select 2 //rsrsup3,rsrsup6(알파 기준)
+		if(members_organized.size() > 0) {
+			for (String organizer : Organizers) {
+				for (WebElement member : members_organized) {
+					if(member.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_EMAIL)).getText().contains(organizer)) {
+						member.click();
+					}
+				}
+			}
+		} 
+		
+		Present_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
 		
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
 		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)));
@@ -257,21 +269,26 @@ public class Practice2 {
 		
 		CommonValues comm = new CommonValues();
 		comm.setCreateSeminar_setChannel(Present_driver);
-		Channelname = comm.Channelname;
-		
+
 		Present_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB3)).click();
 		Thread.sleep(500);
 		String xpath = "//*[normalize-space(text()) and normalize-space(.)='" + CommonValues.CREATE_MEMBER_ORGANIZER_B+ "']";
 		Present_driver.findElement(By.xpath(xpath)).click();
 		Thread.sleep(1000);
-		List<WebElement> members_organized = Present_driver.findElements(By.xpath("//li[@role='presentation']"));
+		List<WebElement> members_organized = Present_driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_LIST));
 		
-		//select 2 //rsrsup3,rsrsup6(알파 기준)
-		members_organized.get(3).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		members_organized.get(4).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		Present_driver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
+		//운영자 select 2 //rsrsup3,rsrsup6(알파 기준)
+		if(members_organized.size() > 0) {
+			for (String organizer : Organizers) {
+				for (WebElement member : members_organized) {
+					if(member.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_EMAIL)).getText().contains(organizer)) {
+						member.click();
+					}
+				}
+			}
+		} 
+		
+		Present_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
 		
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
 		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)));
@@ -702,26 +719,4 @@ public class Practice2 {
 			
 			System.out.println("******************seminarDayPath : " + seminarDayPath);
 			if (isElementPresent(driver, By.xpath(seminarDayPath))) {
-				if (driver.findElements(By.xpath(seminarDayPath)).size() == 2)
-					driver.findElements(By.xpath(seminarDayPath)).get(1).click();
-				else
-					driver.findElement(By.xpath(seminarDayPath)).click();
-			} else {
-				System.out.println("@@@@@can not find day");
-			}
-		}
-	}
-	
-
-	
-	
-	private boolean isElementPresent(WebDriver driver, By by) {
-		try {
-			driver.findElement(by);
-			return true;
-		} catch (NoSuchElementException e) {
-			return false;
-		}
-	}
-}
-	
+				if (driver.findElements(By.xpath(seminarD

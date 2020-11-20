@@ -2,6 +2,8 @@ package seminartest;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -47,9 +49,9 @@ public class ShortURL {
 	public String seminarRoomURL = "";
 	public String seminarLinkURL = "";
 	public String seminarViewURL = "";
-	public String Present = "";
 	public String Publisher = "";
-	public String Organizer = "";
+	public List<String> Presenters;
+	public List<String> Organizers;
 	public String Channelname = "";
 	public String shortURL = "";
 	
@@ -77,6 +79,9 @@ public class ShortURL {
 		context.setAttribute("webDriver4", Master_driver);
 		context.setAttribute("webDriver5", NotLoginMember_driver);
 		
+		Presenters = new ArrayList<>(Arrays.asList("rsrsup8@gmail.com", "rsrsup12@gmail.com", "rsrsup11@gmail.com"));
+		Organizers = new ArrayList<>(Arrays.asList("rsrsup3@gmail.com", "rsrsup6@gmail.com"));
+		
         System.out.println("End BeforeTest!!!");
 
 	}
@@ -101,12 +106,7 @@ public class ShortURL {
 		CommonValues comm = new CommonValues();
 		comm.setCreateSeminar(Publisher_driver, seminarTitle, false);
 		comm.setCreateSeminar_setChannel(Publisher_driver);
-		comm.setCreateSeminar_setMember(Publisher_driver);
-
-		Channelname = comm.Channelname;
-		Present = comm.Present; // rsrsup8@gmail.com
-		Publisher = comm.Publisher; // rsrsup2@gmail.com
-		Organizer = comm.Organizer; // rsrsup3@gmail.com
+		comm.setCreateSeminar_setMember(Publisher_driver, Presenters, Organizers);
 
 		JavascriptExecutor js = (JavascriptExecutor) Publisher_driver;
 		js.executeScript("arguments[0].scrollIntoView();",
@@ -184,7 +184,7 @@ public class ShortURL {
 		String failMsg = "";
 
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Present_driver, Present);
+		comm.loginseminar(Present_driver, Presenters.get(0));
 		Thread.sleep(1000);
 		Present_driver.get(shortURL);
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
@@ -222,7 +222,7 @@ public class ShortURL {
 		String failMsg = "";
 
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Organizer_driver, Organizer);
+		comm.loginseminar(Organizer_driver, Organizers.get(0));
 		Thread.sleep(1000);
 		Organizer_driver.get(shortURL);
 		Organizer_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);

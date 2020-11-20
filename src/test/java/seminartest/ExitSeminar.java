@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -67,9 +68,8 @@ public class ExitSeminar {
 	public String seminarLinkURL = "";
 	public String seminarViewURL = "";
 	public String closedurl = "";
-	public String Present = "";
-	public String Publisher = "";
-	public String Organizer = "";
+	public List<String> Presenters;
+	public List<String> Organizers;
 	public String Master = "";
 	public String Channelname = "";
 	
@@ -98,6 +98,9 @@ public class ExitSeminar {
 		context.setAttribute("webDriver6", NotLoginMember_driver);
 		
 		Publisher_driver.get(CommonValues.SERVER_URL);
+		
+		Presenters = new ArrayList<>(Arrays.asList("rsrsup8@gmail.com", "rsrsup12@gmail.com", "rsrsup11@gmail.com"));
+		Organizers = new ArrayList<>(Arrays.asList("rsrsup3@gmail.com", "rsrsup6@gmail.com"));
 		
         System.out.println("End BeforeTest!!!");
 
@@ -133,13 +136,8 @@ public class ExitSeminar {
 	  public void CreateSeminar_Setting() throws Exception{
 		CommonValues comm = new CommonValues();
 		comm.setCreateSeminar_setChannel(Publisher_driver);
-		comm.setCreateSeminar_setMember(Publisher_driver);
-		Present = comm.Present; //rsrsup8@gmail.com
-		Publisher = comm.Publisher; //rsrsup2@gmail.com
-		Organizer = comm.Organizer; //rsrsup3@gmail.com
-		Channelname = comm.Channelname;
-		
-		
+		comm.setCreateSeminar_setMember(Publisher_driver, Presenters, Organizers);
+
 		JavascriptExecutor js = (JavascriptExecutor) Publisher_driver;
 		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)));
 		//save
@@ -206,10 +204,10 @@ public class ExitSeminar {
 		Present_driver.get(CommonValues.SERVER_URL);
 		
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Present_driver, Present);
+		comm.loginseminar(Present_driver, Presenters.get(0));
 		try {
 			WebDriverWait login_present = new WebDriverWait(Present_driver, 20);
-			login_present.until(ExpectedConditions.textToBePresentInElement(Present_driver.findElement(By.xpath("//div[@id='profile-drop-down']")), Present.replace("@gmail.com", "") ));
+			login_present.until(ExpectedConditions.textToBePresentInElement(Present_driver.findElement(By.xpath("//div[@id='profile-drop-down']")), Presenters.get(0).replace("@gmail.com", "") ));
 			
 		}catch(Exception e) {
 			failMsg = failMsg + "not login";
@@ -249,10 +247,10 @@ public class ExitSeminar {
 		Organizer_driver.get(CommonValues.SERVER_URL);
 		
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Organizer_driver, Organizer);
+		comm.loginseminar(Organizer_driver, Organizers.get(0));
 		try {
 			WebDriverWait login_present = new WebDriverWait(Organizer_driver, 20);
-			login_present.until(ExpectedConditions.textToBePresentInElement(Organizer_driver.findElement(By.xpath("//div[@id='profile-drop-down']")), Organizer.replace("@gmail.com", "") ));
+			login_present.until(ExpectedConditions.textToBePresentInElement(Organizer_driver.findElement(By.xpath("//div[@id='profile-drop-down']")), Organizers.get(0).replace("@gmail.com", "") ));
 			
 		}catch(Exception e) {
 			failMsg = failMsg + "not login";

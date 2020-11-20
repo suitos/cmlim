@@ -68,6 +68,8 @@ public class OnAirRoom {
 	public static String XPATH_ROOM_CAM_BTN = "//div[@id='presentation-buttons']/section[2]";
 	public static String XPATH_ROOM_DOC_BTN = "//div[@id='presentation-buttons']/section[4]";
 	public static String XPATH_ROOM_YUTUBE_BTN = "//div[@id='presentation-buttons']/section[3]";
+	public static String XPATH_ROOM_YUTUBEADD_BTN = "//button[@class='btn-rect plus']";
+	public static String XPATH_ROOM_YUTUBEADD_URL_BOX = "//input[@class='url-input']";
 	public static String XPATH_ROOM_DOC_ICON = "//li[@class='document-item']";
 	public static String XPATH_ROOM_YUTUBE_ICON = "//li[@class='youtube-item']";
 	public static String XPATH_ROOM_TOOLTIP = "//div[@class='wait-tooltip tooltip-inner']";
@@ -510,7 +512,7 @@ public class OnAirRoom {
 		driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
 		Thread.sleep(500);
 		
-		if(!isElementPresent(By.xpath("//button[@class='btn-rect plus']"))) {
+		if(!isElementPresent(By.xpath(XPATH_ROOM_YUTUBEADD_BTN))) {
 			driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
 			Thread.sleep(500);
 		}
@@ -520,13 +522,13 @@ public class OnAirRoom {
 		int youtubecount = youtubeitems.size();
 		
 		//click +
-		driver.findElement(By.xpath("//button[@class='btn-rect plus']")).click();
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_BTN)).click();
 		
 		Thread.sleep(500);
 		
 		//empty url
-		clearAttributeValue(driver.findElement(By.xpath("//input[@class='url-input']")));
-		driver.findElement(By.xpath("//input[@class='url-input']")).clear();
+		clearAttributeValue(driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)));
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)).clear();
 		Thread.sleep(500);
 		//confirm 버튼 : disabled
 		if (driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).isEnabled()) {
@@ -535,8 +537,8 @@ public class OnAirRoom {
 		Thread.sleep(2000);
 		
 		//invalid url
-		driver.findElement(By.xpath("//input[@class='url-input']")).clear();
-		driver.findElement(By.xpath("//input[@class='url-input']")).sendKeys("invalid URL test");
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)).clear();
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)).sendKeys("invalid URL test");
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		// toast
@@ -548,8 +550,8 @@ public class OnAirRoom {
 		Thread.sleep(2000);
 		
 		// input youtube url and click cancel
-		driver.findElement(By.xpath("//input[@class='url-input']")).clear();
-		driver.findElement(By.xpath("//input[@class='url-input']")).sendKeys(CommonValues.YOUTUBE_URL[3]);
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)).clear();
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)).sendKeys(CommonValues.YOUTUBE_URL[3]);
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[2]")).click();
 		Thread.sleep(500);
 		
@@ -578,7 +580,7 @@ public class OnAirRoom {
 		//click youtube icon
 		driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
 		
-		if(!isElementPresent(By.xpath("//button[@class='btn-rect plus']"))) {
+		if(!isElementPresent(By.xpath(XPATH_ROOM_YUTUBEADD_BTN))) {
 			driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
 			Thread.sleep(500);
 		}
@@ -587,11 +589,11 @@ public class OnAirRoom {
 		int youtubecount = youtubeitems.size();
 		
 		//click +
-		driver.findElement(By.xpath("//button[@class='btn-rect plus']")).click();
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_BTN)).click();
 		Thread.sleep(500);
 		//input youtube url
-		driver.findElement(By.xpath("//input[@class='url-input']")).clear();
-		driver.findElement(By.xpath("//input[@class='url-input']")).sendKeys(CommonValues.YOUTUBE_URL[3]);
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)).clear();
+		driver.findElement(By.xpath(XPATH_ROOM_YUTUBEADD_URL_BOX)).sendKeys(CommonValues.YOUTUBE_URL[3]);
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		

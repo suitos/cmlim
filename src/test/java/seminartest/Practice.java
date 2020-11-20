@@ -86,10 +86,9 @@ public class Practice {
 	public String seminarLinkURL = "";
 	public String seminarViewURL = "";
 	public String closedURL = "";
-	public String Present = "";
-	public String Publisher = "";
-	public String Organizer = "";
-	public String Channelname = "";
+	public List<String> Presenters;
+	//public String Publisher = "";
+	public List<String> Organizers;
 	public String filePath = "";
 	
 	public static String REHEARSAL_END_MSG = "Seminar rehearsal has ended.";
@@ -102,7 +101,6 @@ public class Practice {
 	
 	private boolean acceptNextAlert = true;
 	private StringBuffer verificationErrors = new StringBuffer();
-	private ArrayList<String> addedItem = new ArrayList();
 	
 	@Parameters({"browser"})
 	@BeforeClass(alwaysRun = true)
@@ -125,6 +123,9 @@ public class Practice {
 		context.setAttribute("webDriver2", Present_driver);
 		context.setAttribute("webDriver3", Organizer_driver);
 		context.setAttribute("webDriver4", Master_driver);
+		
+		Presenters = new ArrayList<>(Arrays.asList("rsrsup8@gmail.com", "rsrsup12@gmail.com", "rsrsup11@gmail.com"));
+		Organizers = new ArrayList<>(Arrays.asList("rsrsup3@gmail.com", "rsrsup6@gmail.com"));
 		
         System.out.println("End BeforeTest!!!");
 
@@ -158,13 +159,9 @@ public class Practice {
 	  public void CreateRehearsalSeminar_Setting() throws Exception{
 		CommonValues comm = new CommonValues();
 		comm.setCreateSeminar_setChannel(Publisher_driver);
-		comm.setCreateSeminar_setMember(Publisher_driver);
-		
-		Channelname = comm.Channelname;
-		Present = comm.Present; //rsrsup8@gmail.com
-		Publisher = comm.Publisher; //rsrsup2@gmail.com
-		Organizer = comm.Organizer; //rsrsup3@gmail.com
-		
+		comm.setCreateSeminar_setMember(Publisher_driver, Presenters, Organizers);
+
+		//Publisher = comm.Publisher; //rsrsup2@gmail.com
 		
 		JavascriptExecutor js = (JavascriptExecutor) Publisher_driver;
 		js.executeScript("arguments[0].scrollIntoView();", Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)));
@@ -255,7 +252,7 @@ public class Practice {
 		String failMsg = "";
 		
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Present_driver, Present);
+		comm.loginseminar(Present_driver, Presenters.get(0));
 		Thread.sleep(1000);
 		
 		Present_driver.get(seminarViewURL);
@@ -270,11 +267,10 @@ public class Practice {
 		js.executeScript("arguments[0].scrollIntoView();", PracticeBTN);
 		
 		if(!PracticeBTN.isEnabled()) {
-			Exception e = new Exception("button is enabled");
-			throw e;
+			failMsg = failMsg + "\n2. practice button is not enabled";
 		}
-		
 		PracticeBTN.click();
+		
 		Thread.sleep(1000);
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -287,7 +283,7 @@ public class Practice {
 		String failMsg = "";
 		
 		CommonValues comm = new CommonValues();
-		comm.loginseminar(Organizer_driver, Organizer);
+		comm.loginseminar(Organizer_driver, Organizers.get(0));
 		Thread.sleep(1000);
 		
 		Organizer_driver.get(seminarViewURL);
@@ -423,7 +419,6 @@ public class Practice {
 	@Test(priority=11)
 	  public void checkPresentRehearsalExitUI() throws Exception {
 		String failMsg = "";
-		String parentHandle = Present_driver.getWindowHandle();
 		
 		String endtitle = Present_driver.findElement(By.xpath("//h2[@class='center']")).getText();
 		String title = Present_driver.findElement(By.xpath("//div[@class='wrap-text']/p")).getText();
@@ -518,55 +513,71 @@ public class Practice {
 		}	
 	}
 	
-	@Test(priority=13 ,dependsOnMethods = { "checkRehearsalBadge"} )
-	  public void checkAfterRehearsalBadge() throws Exception {
+	@Test(priority = 13, dependsOnMethods = { "checkRehearsalBadge" })
+	public void checkAfterRehearsalBadge() throws Exception {
 		Present_driver.get(seminarViewURL);
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		
-		if(!Present_driver.findElement(By.xpath("//div[@class='no-tag wrap-marks']")).isDisplayed()
-				&& (Present_driver.findElements(By.xpath("//div[@class='wrap-marks']")).isEmpty()) ){
+
+		if (!Present_driver.findElement(By.xpath("//div[@class='no-tag wrap-marks']")).isDisplayed()
+				&& (Present_driver.findElements(By.xpath("//div[@class='wrap-marks']")).isEmpty())) {
 			System.out.println("Badge is not displayed");
-		}
-		else{
+		} else {
 			String BadgeText = Present_driver.findElement(By.xpath("//div[@class='contents']")).getText();
-			Exception e = new Exception("Badge is displayed : " + BadgeText );
+			Exception e = new Exception("Badge is displayed : " + BadgeText);
 			throw e;
-			}
 		}
+	}
 	
-	@Test(priority=14)
-	  public void createCanPracticeSeminar2() throws Exception {
+	@Test(priority = 14)
+	public void createCanPracticeSeminar2() throws Exception {
+		// clear old seminar
+		Publisher_driver.get(seminarViewURL + seminarID);
+		Thread.sleep(500);
+
+		if (isElementPresent(Publisher_driver, By.xpath("//div[@class='ricon ricon-trash']"))) {
+			Publisher_driver.findElement(By.xpath("//div[@class='ricon ricon-trash']")).click();
+			Thread.sleep(500);
+			Publisher_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
+		}
+
 		createViewURL = CommonValues.SERVER_URL + CommonValues.CREATE_URI;
 		Publisher_driver.get(createViewURL);
-		Thread.sleep(1000); 
-		if(!Publisher_driver.getCurrentUrl().contentEquals(createViewURL)) {
-			Exception e =  new Exception("Create Seminar view : " +  Publisher_driver.getCurrentUrl());
+		Thread.sleep(1000);
+		if (!Publisher_driver.getCurrentUrl().contentEquals(createViewURL)) {
+			Exception e = new Exception("Create Seminar view : " + Publisher_driver.getCurrentUrl());
 			throw e;
 		}
 		seminarTitle = "Practice2";
 		setRehearsal(Publisher_driver, seminarTitle, true);
-		
+
 	}
 	
 	@Test(priority=15)
 	  public void CreateRehearsalSeminar_SettingMember() throws Exception{
 		CommonValues comm = new CommonValues();
 		comm.setCreateSeminar_setChannel(Publisher_driver);
+		Presenters.clear();
+		Organizers.clear();
+		
 		//발표자 추가
 		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB3)).click();
 		Thread.sleep(500);
 		Publisher_driver.findElement(By.xpath("//div[@class='MemberSetting_member-info__speaker__iDgdD']/div/button")).click();
 		Thread.sleep(1000);
-		List<WebElement> members_present = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
 		
-		members_present.get(0).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		Present = members_present.get(0).findElement(By.xpath("./span[@class='member-email']")).getText();
-		System.out.println(Present);
+		List<WebElement> members_present = Publisher_driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_LIST));
+		//add rsrsup8
+		for (WebElement member : members_present) {	
+			if (member.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_EMAIL)).getText().contains("rsrsup8@gmail.com")) {
+				member.click();
+				Presenters.add("rsrsup8@gmail.com");
+			}
+		}
 		Thread.sleep(1000);
-		Publisher_driver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
+		
 		//Default 발표자 삭제
-		List<WebElement> member_pres = Publisher_driver.findElements(By.xpath("//div[@role='presentation']"));
+		List<WebElement> member_pres = Publisher_driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPRESENTER_LIST));
 		Thread.sleep(500);
 		member_pres.get(0).findElement(By.xpath(".//i[@class='ricon-close']")).click();
 		Thread.sleep(500);
@@ -574,11 +585,18 @@ public class Practice {
 		String xpath = "//*[normalize-space(text()) and normalize-space(.)='" + CommonValues.CREATE_MEMBER_ORGANIZER_B+ "']";
 		Publisher_driver.findElement(By.xpath(xpath)).click();
 		Thread.sleep(1000);
-		List<WebElement> members_organized = Publisher_driver.findElements(By.xpath("//li[@role='presentation']"));
+		List<WebElement> members_organized = Publisher_driver.findElements(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_LIST));
 		
 		members_organized.get(1).findElement(By.xpath("./span[@class='member-name']")).click();
+		for (WebElement member : members_organized) {	
+			if (member.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_MEMBERPOPUP_EMAIL)).getText().contains("rsrsup6@gmail.com")) {
+				member.click();
+				Organizers.add("rsrsup6@gmail.com");
+			}
+		}		
+
 		Thread.sleep(500);
-		Publisher_driver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
 		Thread.sleep(500);
 	}
 	
@@ -725,8 +743,11 @@ public class Practice {
 	@Test(priority=19)
 	  public void CheckAndTryToDelete_defaultPresentation() throws Exception{
 		String failMsg = "";
+		
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(Present_driver);
 
-		Present_driver.findElement(By.xpath("//button[@title='Share on YouTube']")).click();
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN + "/button")).click();
 		
 		List<WebElement> youtube = Present_driver.findElements(By.xpath("//li[@class='youtube-item']"));
 		
@@ -761,7 +782,7 @@ public class Practice {
 					+ " [Actual]" + Toast;
 	    }
 	    
-	    Present_driver.findElement(By.xpath("//button[@title='Share on YouTube']")).click();			
+	    Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN + "/button")).click();			
 		List<WebElement> youtube_after = Present_driver.findElements(By.xpath("//li[@class='youtube-item']"));
 		
 		if(youtube_after.size() != 1) {
@@ -824,28 +845,33 @@ public class Practice {
 	  public void InsertPresentation_youtube() throws Exception{
 		String failMsg = "";
 		//add 1
-		Present_driver.findElement(By.xpath("//button[@title='Share on YouTube']")).click();
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN + "/button")).click();
 		Thread.sleep(1000);
-		Present_driver.findElement(By.xpath("//button[@class='btn-rect plus']/span")).click();
+		
+		if(!isElementPresent(Present_driver, By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_BTN))) {
+			Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN + "/button")).click();
+			Thread.sleep(1000);
+		}
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_BTN)).click();
 		Thread.sleep(1000);
-		Present_driver.findElement(By.xpath("//input[@class='url-input']")).sendKeys(CommonValues.YOUTUBE_URL[1]);
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_URL_BOX)).sendKeys(CommonValues.YOUTUBE_URL[1]);
 		Thread.sleep(1000);
 		Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-m']")).click();
 		
 		TimeUnit.SECONDS.sleep(10);
 		
 		//add 2
-		Present_driver.findElement(By.xpath("//button[@title='Share on YouTube']")).click();
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN + "/button")).click();
 		Thread.sleep(1000);
-		Present_driver.findElement(By.xpath("//button[@class='btn-rect plus']/span")).click();
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_BTN)).click();
 		Thread.sleep(1000);
-		Present_driver.findElement(By.xpath("//input[@class='url-input']")).sendKeys(CommonValues.YOUTUBE_URL[2]);
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_URL_BOX)).sendKeys(CommonValues.YOUTUBE_URL[2]);
 		Thread.sleep(1000);
 		Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-m']")).click();
 		
 		TimeUnit.SECONDS.sleep(2);
 		
-		Present_driver.findElement(By.xpath("//button[@title='Share on YouTube']")).click();
+		Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN + "/button")).click();
 		
 		TimeUnit.SECONDS.sleep(2);
 		
@@ -881,7 +907,7 @@ public class Practice {
 	    Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-m']")).click();
 	    Thread.sleep(1000);
 	    
-	    Present_driver.findElement(By.xpath("//button[@title='Share on YouTube']")).click();
+	    Present_driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN +"/button")).click();
 		Thread.sleep(1000);
 		
 		List<WebElement> delete_youtube_after = Present_driver.findElements(By.xpath("//li[@class='youtube-item']"));
@@ -967,6 +993,9 @@ public class Practice {
 	@Test(priority=22)
 	  public void RehearsalEnd() throws Exception{
 		
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(Present_driver);
+		
 		Present_driver.findElement(By.xpath("//button[@id='btn-exit']")).click();
 		WebDriverWait exit_popup = new WebDriverWait(Present_driver, 20);
 		exit_popup.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='submit']")));
@@ -1003,7 +1032,7 @@ public class Practice {
 		
 		List<WebElement> docs = Publisher_driver.findElements(By.xpath("//li[@class='DocItem_doc-item__2bSNb']"));
 		
-		if(docs.size() != 0) {
+		if(docs.size() != 1) {
 			failMsg = "Presentation count error [Expected]1 [Actual]" + docs.size();
 		} 
 		
@@ -1011,6 +1040,16 @@ public class Practice {
 			Exception e = new Exception(failMsg);
 			throw e;
 		}
+	}
+	
+	@Test(priority = 50, enabled = true)
+	public void clearSeminar1() throws Exception {
+		Publisher_driver.get(seminarViewURL + seminarID);
+		Thread.sleep(500);
+		
+		Publisher_driver.findElement(By.xpath("//div[@class='ricon ricon-trash']")).click();
+		Thread.sleep(500);
+		Publisher_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 	}
 	
 	@AfterClass(alwaysRun = true)
@@ -1027,8 +1066,8 @@ public class Practice {
 	} 
 	
 	public void setRehearsal(WebDriver driver, String title, boolean isnow) throws Exception  {
-		driver.findElement(By.xpath("//div[@class='seminar-title']/input[1]")).clear();
-		driver.findElement(By.xpath("//div[@class='seminar-title']/input[1]")).sendKeys(title);
+		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).clear();
+		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).sendKeys(title);
 
 		Date time = new Date();
 		Calendar cal = Calendar.getInstance();

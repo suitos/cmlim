@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -58,8 +59,8 @@ public class PreviewSeminar {
 	public String createViewURL = "";
 	public String BannerseminarTitle = "";
 	public String BannerseminarDate = "";
-	public String PresentList = "";
-	public String PresentList2 = "";
+	public List<String> Presenters;
+	public List<String> Organizers;
 
 	public String seminarInfo = "";
 	public String seminarInfo2 = "";
@@ -81,6 +82,9 @@ public class PreviewSeminar {
 		
 		driver.get(CommonValues.SERVER_URL);
 		
+		Presenters = new ArrayList<>(Arrays.asList("rsrsup8@gmail.com", "rsrsup12@gmail.com", "rsrsup11@gmail.com"));
+		Organizers = new ArrayList<>(Arrays.asList("rsrsup3@gmail.com", "rsrsup6@gmail.com"));
+
         System.out.println("End BeforeTest!!!");
 
 	}
@@ -188,17 +192,17 @@ public class PreviewSeminar {
 		String failMsg = "";
 		
 		CommonValues comm = new CommonValues();
-		comm.setCreateSeminar_setMember(driver);
+		comm.setCreateSeminar_setMember(driver, Presenters, Organizers);
 		
 		List<WebElement> allPresent = driver.findElements(By.xpath("//span[@class='member-item__user-info__nickname']"));
 		String Present = allPresent.get(0).getText();
 		String Present1 = allPresent.get(1).getText();
 		String Present2 = allPresent.get(2).getText();
-		PresentList = Present + ", " + Present1 + ", " + Present2;
-		PresentList2 = Present + " " + Present1 + " " + Present2;
-		seminarInfo = BannerseminarDate + "\n" + PresentList;
-		seminarInfo2 = BannerseminarDate + "   |   " + PresentList2;
-		seminarInfo3 = BannerseminarDate + "\n" + PresentList2;
+		String pre_list = Present + ", " + Present1 + ", " + Present2;
+		String pre_list2 = Present + " " + Present1 + " " + Present2;
+		seminarInfo = BannerseminarDate + "\n" + pre_list;
+		seminarInfo2 = BannerseminarDate + "   |   " + pre_list2;
+		seminarInfo3 = BannerseminarDate + "\n" + pre_list2;
 		
 		Thread.sleep(1000);
 		
