@@ -30,7 +30,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-
 /* RoomFileShare : rsrsup2
  * 
  * 0. 세미나 만들기 및 룸 입장. 시작

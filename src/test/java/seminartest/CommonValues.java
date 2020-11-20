@@ -257,15 +257,7 @@ public class CommonValues {
 	public static String SURVEY_TITLE = "SurveyTitle Test";
 	public static String SURVEY_DESCRIPTION = "SurveyDescription_Test";
 	public static String[] SURVEY_QUESTION = {"SurveyQuestion_Test","SurveyQuestion_Test1","SurveyQuestion_Test2"};
-			
-	//마스터,발표자,운영자,게시자 이메일
-	String Master = "";
-	String Present = "";
-	String Organizer = "";
-	String Publisher = "";
-	String Channelname = "";
 
-	
 	//xpath
 	public static String XPATH_CREATESEMINAR_SAVE_BTN = "//button[@class='btn btn-primary btn-l ']";
 	public static String XPATH_CREATESEMINAR_TAB1 = "//div[@class='TabNavigation_tabWrap__3jzQi tab-wrap']/ul[1]/li[1]";
@@ -276,6 +268,10 @@ public class CommonValues {
 	public static String XPATH_CREATESEMINAR_TITLE = "//div[@class='seminar-title']/input[1]";
 	public static String XPATH_CREATESEMINAR_ATTENDEES = "//div[@class='count-attendants']/input[1]";
 	public static String XPATH_CREATESEMINAR_CHANNELLIST = "//div[@class='ChangeChannel_changeChannel__3-kW6']/ul/li";
+	
+	public static String XPATH_CREATESEMINAR_MEMBERPRESENTER_LIST = "//div[@role='presentation']";
+	public static String XPATH_CREATESEMINAR_MEMBERPOPUP_LIST = "//li[@role='presentation']";
+	public static String XPATH_CREATESEMINAR_MEMBERPOPUP_EMAIL = "./span[@class='member-email']";
 	
 	public static String XPATH_SEMINARVIEW_POST = "//button[@class='btn btn-secondary-light btn-auto actionButton']";
 	public static String XPATH_SEMINARVIEW_ENTER = "//button[@class='btn btn-primary btn-auto actionButton']";
@@ -457,7 +453,7 @@ public class CommonValues {
 		
 	}
 	
-	public void setCreateSeminar_setMember(WebDriver driver) throws Exception {
+	public void setCreateSeminar_setMember(WebDriver driver, List<String> presenters, List<String> organizers) throws Exception {
 		/* rsrsup2 로그인 할 경우 채널 rsrsup1로 변경 및 권한 분리
 		 * 마스터 - rsrsup1
 		 * 게시자 - rsrsup2
@@ -468,37 +464,44 @@ public class CommonValues {
 		driver.findElement(By.xpath(XPATH_CREATESEMINAR_TAB3)).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//div[@class='MemberSetting_member-info__speaker__iDgdD']/div/button")).click();
+		Thread.sleep(1000);
 		
-		Thread.sleep(1000);
-		List<WebElement> members_present = driver.findElements(By.xpath("//li[@role='presentation']"));
 		//select 3 (rsrsup + 3) //rsrsup8,rsrsup12,rsrsup11(알파 기준)
-		members_present.get(0).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		members_present.get(1).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		members_present.get(2).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		Present = members_present.get(0).findElement(By.xpath("./span[@class='member-email']")).getText();
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
+		List<WebElement> members = driver.findElements(By.xpath(XPATH_CREATESEMINAR_MEMBERPOPUP_LIST));
+		if(members.size() > 0) {
+			for (String presenter : presenters) {
+				for (WebElement member : members) {
+					if(member.findElement(By.xpath(XPATH_CREATESEMINAR_MEMBERPOPUP_EMAIL)).getText().contains(presenter)) {
+						member.click();
+					}
+				}
+			}
+		} 
+		
+		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
 		
 		String xpath = "//*[normalize-space(text()) and normalize-space(.)='" + CREATE_MEMBER_ORGANIZER_B+ "']";
 		driver.findElement(By.xpath(xpath)).click();
 		Thread.sleep(1000);
-		List<WebElement> members_organized = driver.findElements(By.xpath("//li[@role='presentation']"));
-		
+
 		//select 2 //rsrsup3,rsrsup6(알파 기준)
-		members_organized.get(0).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		members_organized.get(1).findElement(By.xpath("./span[@class='member-name']")).click();
-		Thread.sleep(500);
-		Organizer = members_organized.get(0).findElement(By.xpath("./span[@class='member-email']")).getText();
-		driver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
+		members = driver.findElements(By.xpath(XPATH_CREATESEMINAR_MEMBERPOPUP_LIST));
+		if(members.size() > 0) {
+			
+			for (WebElement member : members) {
+				for (String organizer : organizers) {
+					if(member.findElement(By.xpath(XPATH_CREATESEMINAR_MEMBERPOPUP_EMAIL)).getText().contains(organizer)) {
+						member.click();
+					}
+				}
+			}
+		} 
+
+		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
 		
 		//디폴트 발표자 삭제
-		List<WebElement> member_pres = driver.findElements(By.xpath("//div[@role='presentation']"));
+		List<WebElement> member_pres = driver.findElements(By.xpath(XPATH_CREATESEMINAR_MEMBERPRESENTER_LIST));
 		Thread.sleep(500);
-		Publisher = member_pres.get(0).findElement(By.xpath(".//span[@class='member-item__user-info__email']")).getText();
 		member_pres.get(0).findElement(By.xpath(".//i[@class='ricon-close']")).click();
 		Thread.sleep(500);
 	}
