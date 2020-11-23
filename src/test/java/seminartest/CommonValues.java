@@ -787,11 +787,11 @@ public class CommonValues {
 		return pass;
 	}
 	
-	public void checkBenner(WebDriver wd) {
+	public void checkBanner(WebDriver wd) {
 		try {
 			wd.findElement(By.xpath("//div[@class='Banner_banner__demo__2zAHq']//i[@class='ricon-close']")).click();
 		} catch(Exception e) {
-			//do not anithing
+			//do not anything
 		}
 	}
 }

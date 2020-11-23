@@ -1249,7 +1249,7 @@ public class AttendeesTest{
 	public void survey_loginuser() throws Exception {
 		String failMsg = "";
 		CommonValues comm = new CommonValues();
-		comm.checkBenner(memberDriver);
+		comm.checkBanner(memberDriver);
 		
 		if(memberDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
 			List<WebElement> surveyForms = memberDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
@@ -1301,7 +1301,7 @@ public class AttendeesTest{
 		String failMsg = "";
 		
 		CommonValues comm = new CommonValues();
-		comm.checkBenner(attendeesDriver);
+		comm.checkBanner(attendeesDriver);
 		
 		if(attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
 			List<WebElement> surveyForms = attendeesDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
