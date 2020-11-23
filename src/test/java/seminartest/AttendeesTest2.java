@@ -127,7 +127,7 @@ public class AttendeesTest2{
 		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 		
-		driver = comm.setDriver(driver, browsertype, "lang=en_US");
+		driver = comm.setDriver(driver, browsertype, "lang=en_US", true);
 		publisherDriver = comm.setDriver(publisherDriver, browsertype, "lang=en_US");
 		attendeesDriver = comm.setDriver(attendeesDriver, browsertype, "lang=en_US");
 		memberDriver = comm.setDriver(memberDriver, browsertype, "lang=en_US");
@@ -1708,7 +1708,7 @@ public class AttendeesTest2{
 		driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
 		Thread.sleep(2000);
 		driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_NOW_BTN)).click();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		
 		String xpath_onair = "//strong[@id='user-type']";
 		// on air tag  : presenter
@@ -1917,13 +1917,13 @@ public class AttendeesTest2{
 		
 		String listitem = "//*/text()[normalize-space(.)='" + seminarname + "']/parent::*";
 		JavascriptExecutor js = (JavascriptExecutor) wd;
-		js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-		
+
 		// infinite scroll 20번 아래로 내려가면서 확인
 		for (int i = 0 ; i < 20 ; i++) {
 			if (isElementPresent_wd(wd, By.xpath(listitem)))
-				break;	
-			js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+				break;
+			else
+				js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
 			Thread.sleep(1000);
 		}
 		wd.findElement(By.xpath(listitem)).click();
@@ -2042,6 +2042,9 @@ public class AttendeesTest2{
 		//click enter(new tab)
 		wd.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")).click();
 		Thread.sleep(2000);
+		
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(wd);
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		ArrayList<String> tabs2 = new ArrayList<String> (wd.getWindowHandles());
