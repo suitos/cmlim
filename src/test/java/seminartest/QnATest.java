@@ -186,6 +186,7 @@ public class QnATest {
 		driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
 		Thread.sleep(2000);
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		closeAlertAndGetItsText_webdriver(driver);
 		
 		ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
 		if(tabs2.size() == 2) {
@@ -259,6 +260,8 @@ public class QnATest {
 		attendADriver.findElement(By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']")).click();
 		Thread.sleep(3000);
 		
+		closeAlertAndGetItsText_webdriver(attendADriver);
+		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		//check room uri
 		if(!roomuri.equalsIgnoreCase(attendADriver.getCurrentUrl()))
@@ -307,6 +310,8 @@ public class QnATest {
 
 		attendBDriver.findElement(By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']")).click();
 		Thread.sleep(3000);
+		
+		closeAlertAndGetItsText_webdriver(attendBDriver);
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		//check room uri
@@ -832,9 +837,13 @@ public class QnATest {
 		}
 		
 		if(ispublic) {
-			if(!ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class").contentEquals("ricon-unlock")) {
-				failMsg = failMsg + "\n qna lock icon [Expected]" + "ricon-unlock" 
+			try {
+				ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class");
+				
+				failMsg = failMsg + "\n find lock icon [Expected]" + "ricon-unlock" 
 						+ " [Actual]" + ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class");
+			} catch(NoSuchElementException e) {
+				//do not anything
 			}
 		
 		} else {
@@ -1058,6 +1067,9 @@ public class QnATest {
 				alert.dismiss();
 			}
 			return alertText;
+		} catch (NoAlertPresentException e) {
+			System.out.println("error : " + e.getMessage());
+			return "";
 		} finally {
 			acceptNextAlert = true;
 		}

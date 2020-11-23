@@ -57,8 +57,8 @@ public class Common {
 		comm.setDriverProperty(browsertype);
 		
 		driver = comm.setDriver(driver, browsertype, "lang=ko_KR");
-		enDriver = comm.setDriver(driver, browsertype, "lang=en_US");
-		jpDriver = comm.setDriver(driver, browsertype, "lang=ja_JP");
+		enDriver = comm.setDriver(enDriver, browsertype, "lang=en_US");
+		jpDriver = comm.setDriver(jpDriver, browsertype, "lang=ja_JP");
 		
 		context.setAttribute("webDriver", driver);
 		context.setAttribute("webDriver2", enDriver);
@@ -126,7 +126,7 @@ public class Common {
 	    
 	   
 	    driver.findElement(By.xpath("//button[@type='submit']")).sendKeys(Keys.ENTER);
-	    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	    Thread.sleep(1000);
 	
 		String listview = CommonValues.SERVER_URL + CommonValues.LIST_URI;
 		String introview = CommonValues.SERVER_URL + CommonValues.INTRO_URI;
@@ -173,8 +173,8 @@ public class Common {
 	  public void checkKRlanguage() throws Exception {
 		
 		driver.get(CommonValues.SERVER_URL);
-		WebDriverWait wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[@type='submit']")));
+		
+		Thread.sleep(1000);
 		
 		if(!driver.findElement(By.xpath("//p[@class='login__desc']")).getText().contentEquals("리모트 세미나에서 수준 높은 온라인 세미나를 개최하세요.")) {
 			Exception e = new Exception("KR language fail :" + driver.findElement(By.xpath("//p[@class='login__desc']")).getText());
@@ -189,8 +189,7 @@ public class Common {
 	public void checkJPlanguage() throws Exception {
 
 		jpDriver.get(CommonValues.SERVER_URL);
-		WebDriverWait wait = new WebDriverWait(jpDriver, 50);
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[@type='submit']")));
+		Thread.sleep(1000);
 
 		if (!jpDriver.findElement(By.xpath("//p[@class='login__desc']")).getText()
 				.contentEquals("RemoteSeminarでレベルの高いオンラインセミナー\n" + "を開催してみましょう。")) {
@@ -205,8 +204,7 @@ public class Common {
 	  public void checkENlanguage() throws Exception {
 		
 		enDriver.get(CommonValues.SERVER_URL);
-		WebDriverWait wait = new WebDriverWait(enDriver, 50);
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[@type='submit']")));
+		Thread.sleep(1000);
 		
 		if(!enDriver.findElement(By.xpath("//p[@class='login__desc']")).getText().contentEquals("Host high-quality online seminars with RemoteSeminars.")) {
 			Exception e = new Exception("EN language fail :" + enDriver.findElement(By.xpath("//p[@class='login__desc']")).getText());
@@ -220,8 +218,7 @@ public class Common {
 		public void checkChangelanguage() throws Exception {
 		
 		driver.get(CommonValues.SERVER_URL);
-		WebDriverWait wait = new WebDriverWait(driver, 50);
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[@type='submit']")));
+		Thread.sleep(1000);
 		
 		if(!driver.findElement(By.xpath("//p[@class='login__desc']")).getText().contentEquals("리모트 세미나에서 수준 높은 온라인 세미나를 개최하세요.")) {
 			Exception e = new Exception("KR language fail :" + driver.findElement(By.xpath("//p[@class='login__desc']")).getText());
@@ -230,7 +227,7 @@ public class Common {
 		
 		driver.findElement(By.id("lang")).click();
 		driver.findElement(By.xpath("//div[@class='box-option open']/div[2]")).click();
-		wait.until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.xpath("//a[@href='/login']")), "Sign in"));
+		Thread.sleep(1000);
 		
 		
 		if(!driver.findElement(By.xpath("//p[@class='login__desc']")).getText().contentEquals("Host high-quality online seminars with RemoteSeminars.")) {

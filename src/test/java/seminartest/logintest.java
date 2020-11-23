@@ -744,7 +744,7 @@ public class logintest {
 		
 		// 첫번째 브라우저 세미나 만들기 클릭
 		driver.findElement(By.xpath("//div[@class='l-right']/button[1]")).click();
-		Thread.sleep(2000);
+		Thread.sleep(3000);
 		
 		if(isAlertPresent()) {
 			Alert alert = driver.switchTo().alert();

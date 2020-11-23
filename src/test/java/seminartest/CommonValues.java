@@ -19,11 +19,14 @@ import org.openqa.selenium.WrapsDriver;
 import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class CommonValues {
 	public static final String WEB_CHROME_DRIVER_PATH = System.getProperty("user.dir") + "/driver/chromedriver.exe";
 	public static final String WEB_FIREFOX_DRIVER_PATH = System.getProperty("user.dir") + "/driver/geckodriver.exe";
+	public static final String WEB_EDGE_DRIVER_PATH = System.getProperty("user.dir") + "/driver/msedgedriver.exe";
 	public static final String WEB_FIREFOX_DRIVER_LINUX_PATH = "/tools/webdriver/geckodriver";
 	
 	public static boolean FOR_JENKINS = true;
@@ -91,7 +94,7 @@ public class CommonValues {
 	public static String USERPW_WRONG_ERROR = "Password must include alphabets, numbers and special characters with a minimum of 8 characters.\nAlso, password cannot be the same as the email ID.";
 	public static String USERPW_WRONG_ERROR2 = "Password cannot be the same as email ID.";
 	public static String USERPW_WRONG_ERROR3 = "Consecutive characters/numbers cannot be used.";
-	public static String USERPW_JOIN= "!111qqqq";
+	public static String USERPW_JOIN= "!Rsupport0";
 	public static String USERNICKNAME_JOIN= "NickName";
 	public static String USER_PHONE= "0100000000";
 	public static String USER_COMPANY = "Company name";
@@ -299,21 +302,57 @@ public class CommonValues {
 			} else {
 				System.setProperty("webdriver.chrome.driver", CommonValues.WEB_CHROME_DRIVER_PATH);
 			}
+		} else if(browser.contains("Edge")) {
+			if (os.contains("mac")) {
+				 String path = System.getenv("DRIVER_HOME") + "/msedgedriver";
+				 System.setProperty("webdriver.edge.driver", path);
+			} else if (os.contains("wndows")) {
+				System.setProperty("webdriver.edge.driver", CommonValues.WEB_EDGE_DRIVER_PATH);
+			}
 		} else {
 			System.setProperty("webdriver.gecko.driver", CommonValues.WEB_FIREFOX_DRIVER_PATH);
 		}
 	}
 	
-	public WebDriver setDriver(WebDriver driver, String browser, String lang) {
+	public WebDriver setDriver(WebDriver driver, String browser, String lang, boolean presenter) {
 		if (browser.contains("Chrome")) {
 			ChromeOptions options = new ChromeOptions();
 		    options.addArguments(lang);
 		    //options.addArguments("headless");
-		    options.addArguments("disable-gpu");
+		    //options.addArguments("disable-gpu");
 		    
-		    
-		    Map<String, Object> prefs = new HashMap<>();
+		    if(presenter) {
+		    	options.addArguments("auto-select-desktop-capture-source=Entire screen");
+			    
+			    
+			    Map<String, Object> prefs = new HashMap<>();
 
+			    // with this chrome still asks for permission
+				prefs.put("profile.managed_default_content_settings.media_stream", 1);
+				prefs.put("profile.managed_default_content_settings.media_stream_camera", 1);
+				prefs.put("profile.managed_default_content_settings.media_stream_mic", 1);
+
+				// and this prevents chrome from starting
+				prefs.put("profile.content_settings.exceptions.media_stream_mic.https://*,*.setting", 1);
+				prefs.put("profile.content_settings.exceptions.media_stream_mic.https://*,*.last_used", 1);
+				prefs.put("profile.content_settings.exceptions.media_stream_camera.https://*,*.setting", 1);
+				prefs.put("profile.content_settings.exceptions.media_stream_camera.https://*,*.last_used", 1);
+			    
+				options.setExperimentalOption("prefs", prefs);
+				
+		    }
+		    driver = new ChromeDriver(options);
+		} else if (browser.contains("Edge")) {
+			EdgeOptions options = new EdgeOptions();
+
+			//options.addArguments(lang);
+		    //options.addArguments("disable-gpu");
+		    
+		    options.setCapability("dom.webnotifications.enabled", 1);
+		    options.setCapability("permissions.default.microphone", 1);
+		    options.setCapability("permissions.default.camera", 1);
+
+		    Map<String, Object> prefs = new HashMap<>();
 		    // with this chrome still asks for permission
 			prefs.put("profile.managed_default_content_settings.media_stream", 1);
 			prefs.put("profile.managed_default_content_settings.media_stream_camera", 1);
@@ -325,10 +364,9 @@ public class CommonValues {
 			prefs.put("profile.content_settings.exceptions.media_stream_camera.https://*,*.setting", 1);
 			prefs.put("profile.content_settings.exceptions.media_stream_camera.https://*,*.last_used", 1);
 		    
-			options.setExperimentalOption("prefs", prefs);
+			//options.setExperimentalOption("prefs", prefs);
 			
-		    
-		    driver = new ChromeDriver(options);
+			driver = new EdgeDriver(options);
 		} else {
 			driver = new FirefoxDriver();
 		}
@@ -340,6 +378,11 @@ public class CommonValues {
 		}
 		
 		driver.manage().window().maximize();
+		return driver;
+	}
+	
+	public WebDriver setDriver(WebDriver driver, String browser, String lang) {
+		driver = setDriver(driver, browser, lang, false);
 		return driver;
 	}
 	
@@ -404,9 +447,8 @@ public class CommonValues {
 		
 		SimpleDateFormat format1 = new SimpleDateFormat("HH:mm");
 		String seminarTime = format1.format(cal.getTime());
+		//driver.findElement(By.name("startTime")).sendKeys(seminarTime);
 
-		driver.findElement(By.name("startTime")).sendKeys(seminarTime);
-		
 		if (!isnow) {
 			//click timepicker
 			driver.findElement(By.xpath("//div[@class='react-datepicker__input-container']")).click();
@@ -743,5 +785,13 @@ public class CommonValues {
 			pass = false;
 		}
 		return pass;
+	}
+	
+	public void checkBenner(WebDriver wd) {
+		try {
+			wd.findElement(By.xpath("//div[@class='Banner_banner__demo__2zAHq']//i[@class='ricon-close']")).click();
+		} catch(Exception e) {
+			//do not anithing
+		}
 	}
 }
