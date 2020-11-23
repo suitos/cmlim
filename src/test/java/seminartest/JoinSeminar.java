@@ -88,6 +88,7 @@ public class JoinSeminar {
 	public static String XPATH_PHONE = "//input[@name='phone']";
 	public static String XPATH_COMPANY = "//input[@name='companyName']";
 	public static String XPATH_POSITION = "//input[@name='jobPosition']";
+	public static String XPATH_JOIN_SIGNUP_BTN = "//button[@class='form__submit-btn']";
 	
 	public static String XPATH_EMAIL_ERROR = "//input[@name='email']/../../../span[@class='form__content__error-msg']";
 	public static String XPATH_EMAIL_VALID = "//input[@name='email']/../../../span[@class='form__content__auth-email']";
@@ -104,6 +105,7 @@ public class JoinSeminar {
 	public static String XPATH_JOIN_CHECKBOX_ERROR = "//div[@class='form__content-box']/span[@class='form__content-box__error-msg']";
 	
 	public static String MSG_JOIN_AGREE_ERROR = "Please agree to the terms of service and privacy policy, as well as the guidance on handling personal information of the channel.";
+	public static String MSG_ADDTIONAL_INFO = "Please, agree to receive marketing emails and enter additional information to conduct the seminar for 40 minutes.";
 	
 	public String seminarID = "";
 	
@@ -316,7 +318,8 @@ public class JoinSeminar {
 	    }
 	    
 	    //click signup 
-	    driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+	    driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
+	    
 	    Thread.sleep(500);
 	    if (!driver.findElement(By.xpath(XPATH_AUTHCODE_ERROR)).getText().contentEquals(CommonValues.REQUIRED_VALUE))
 	    {
@@ -356,8 +359,15 @@ public class JoinSeminar {
 			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
 		}
 		
-	    driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+	    driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 	    Thread.sleep(500);
+	    
+	    //check additional popup
+	    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+	    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+	    	Thread.sleep(500);
+	    }
+	    
 	    if (!driver.findElement(By.xpath(XPATH_AUTHCODE_ERROR)).getText().contentEquals(CommonValues.INVALID_AUTHCODE_MSG))
 	    {
 	    	failMsg = "wrong error msg(worng authCode) : " + driver.findElement(By.xpath(XPATH_AUTHCODE_ERROR)).getText();
@@ -410,9 +420,20 @@ public class JoinSeminar {
 		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
 			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
 		}
+		
+		//check additional popup
+	    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+	    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+	    	Thread.sleep(500);
+	    }
 
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
+		//check additional popup
+	    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+	    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+	    	Thread.sleep(500);
+	    }
 		
 	    if (!driver.findElement(By.xpath(XPATH_AUTHCODE_ERROR)).getText().contentEquals(CommonValues.INVALID_AUTHCODE_MSG))
 	    {
@@ -468,8 +489,14 @@ public class JoinSeminar {
 			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
 		}
 		
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
+		
+		//check additional popup
+	    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+	    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+	    	Thread.sleep(500);
+	    }
 		
 	    if (!driver.findElement(By.xpath(XPATH_AUTHCODE_ERROR)).getText().contentEquals(CommonValues.INVALID_AUTHCODE_MSG))
 	    {
@@ -487,6 +514,9 @@ public class JoinSeminar {
 	@Test(priority = 20, enabled = true)
 	public void checkPwfield_empty() throws Exception {
 		String failMsg = "";	
+		
+		driver.navigate().refresh();
+		Thread.sleep(500);
 		
 		// init email, auth code
 		clearAttributeValue(driver.findElement(By.xpath(XPATH_EMAIL)));
@@ -511,17 +541,18 @@ public class JoinSeminar {
 		
 		driver.findElement(By.xpath(XPATH_EMAIL)).click();
 		Thread.sleep(500);
-		if (!driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText()
-				.contentEquals(CommonValues.REQUIRED_VALUE)) {
-			failMsg = failMsg + "\n" + "wrong error msg [1] (empty password) : " + driver
-					.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText();
+		if (!driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText().contentEquals(CommonValues.REQUIRED_VALUE)) {
+			failMsg = failMsg + "\n" + "wrong error msg [1] (empty password) : " + driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText();
 
 		}
-
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		
+		driver.findElement(By.xpath(XPATH_PASSWORD)).click();
+		driver.findElement(By.xpath(XPATH_PASSWORD)).clear();;
 		Thread.sleep(500);
-		if (!driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText()
-				.contentEquals(CommonValues.REQUIRED_VALUE)) {
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
+		Thread.sleep(500);
+		
+		if (!driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText().contentEquals(CommonValues.REQUIRED_VALUE)) {
 			failMsg = failMsg + "\n" + "wrong error msg2 [2] [(empty password) : " + driver
 					.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText();
 
@@ -543,8 +574,14 @@ public class JoinSeminar {
 	    {
 	    	clearAttributeValue(driver.findElement(By.xpath(XPATH_PASSWORD)));
 	    	driver.findElement(By.xpath(XPATH_PASSWORD)).sendKeys(CommonValues.USERPW_WRONG_CASE[i]);
-	    	driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+	    	driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		    Thread.sleep(500);
+		    //check additional popup
+		    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+		    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+		    	Thread.sleep(500);
+		    }
+		    
 		    if (!driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText().contentEquals(CommonValues.USERPW_WRONG_ERROR))
 		    {
 				failMsg = failMsg + "\n" + i + ". wrong error msg(worng password : " + CommonValues.USERPW_WRONG_CASE[i] + ") : " + driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText();
@@ -568,8 +605,13 @@ public class JoinSeminar {
 	    {
 	    	clearAttributeValue(driver.findElement(By.xpath(XPATH_PASSWORD)));
 	    	driver.findElement(By.xpath(XPATH_PASSWORD)).sendKeys(CommonValues.USERPW_WRONG_CASE2[i]);
-	    	driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+	    	driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		    Thread.sleep(500);
+		    //check additional popup
+		    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+		    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+		    	Thread.sleep(500);
+		    }
 		    if (!driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText().contentEquals(CommonValues.USERPW_WRONG_ERROR3))
 		    {
 				failMsg = failMsg + "\n2-" + i + ". wrong error msg(worng password : " + CommonValues.USERPW_WRONG_CASE2[i] + ") : " + driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText();
@@ -579,8 +621,13 @@ public class JoinSeminar {
 		
 	    clearAttributeValue(driver.findElement(By.xpath(XPATH_PASSWORD)));
     	driver.findElement(By.xpath(XPATH_PASSWORD)).sendKeys(JOIN_USER);
-    	driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+    	driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 	    Thread.sleep(500);
+	    //check additional popup
+	    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+	    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+	    	Thread.sleep(500);
+	    }
 	    if (!driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText().contentEquals(CommonValues.USERPW_WRONG_ERROR2))
 	    {
 			failMsg = failMsg + "\n3" + ". wrong error msg(same email : " + JOIN_USER + ") : " + driver.findElement(By.xpath(XPATH_PASSWORD_ERROR)).getText();
@@ -649,15 +696,21 @@ public class JoinSeminar {
 		
 		driver.findElement(By.xpath(XPATH_PHONE)).click();
 		Thread.sleep(500);
-		if (!driver.findElement(By.xpath(XPATH_NICKNAME_ERROR)).getText()
-				.contentEquals(CommonValues.REQUIRED_VALUE)) {
-			failMsg = failMsg + "\n" + "wrong error msg [2] (empty nickname) : " + driver
-					.findElement(By.xpath(XPATH_NICKNAME_ERROR)).getText();
+		if (!driver.findElement(By.xpath(XPATH_NICKNAME_ERROR)).getText().contentEquals(CommonValues.REQUIRED_VALUE)) {
+			failMsg = failMsg + "\n" + "wrong error msg [2] (empty nickname) : " + driver.findElement(By.xpath(XPATH_NICKNAME_ERROR)).getText();
 
 		}
 
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_NICKNAME)).click();
 		Thread.sleep(500);
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
+		Thread.sleep(500);
+		
+		//check additional popup
+	    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+	    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+	    	Thread.sleep(500);
+	    }
 		if (!driver.findElement(By.xpath(XPATH_NICKNAME_ERROR)).getText()
 				.contentEquals(CommonValues.REQUIRED_VALUE)) {
 			failMsg = failMsg + "\n" + "wrong error msg [2] (empty nickname) : " + driver
@@ -665,7 +718,6 @@ public class JoinSeminar {
 
 		}
 	    
-		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
 			throw e;
@@ -1149,9 +1201,7 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(XPATH_NICKNAME)).sendKeys("joinTC");
 		
 		DBConnection connection = new DBConnection();
-		
 		ArrayList<String> beforeCode = connection.getAuthCodeForJoin(JOIN_USER);
-		
 		
 		driver.findElement(By.xpath("//button[@class='form__auth-code-btn']")).click();
 		Thread.sleep(500);
@@ -1180,10 +1230,11 @@ public class JoinSeminar {
 		
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//button[@class='form__submit-btn']")));
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)));
 		// click enter(new tab)
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
+		
 		//uncheck all
 		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
 			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
@@ -1210,7 +1261,7 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
 		Thread.sleep(100);
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
 		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
 			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
@@ -1225,7 +1276,7 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3+ "//div")).click();
 		Thread.sleep(100);
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
 		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
 			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
@@ -1241,7 +1292,7 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
 		Thread.sleep(100);
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
 		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
 			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
@@ -1256,7 +1307,7 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3+ "//div")).click();
 		Thread.sleep(100);
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
 		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
 			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
@@ -1271,7 +1322,7 @@ public class JoinSeminar {
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2+ "//div")).click();
 		driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1+ "//div")).click();
 		Thread.sleep(100);
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
 		if(isElementPresent(By.xpath(XPATH_JOIN_CHECKBOX_ERROR))) {
 			if(!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX_ERROR)).getText().contentEquals(MSG_JOIN_AGREE_ERROR)) {
@@ -1343,7 +1394,7 @@ public class JoinSeminar {
 		
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//button[@class='form__submit-btn']")));
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)));
 		
 		//check all
 		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
@@ -1356,8 +1407,14 @@ public class JoinSeminar {
 			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
 		}
 		
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
+		
+		//check additional popup, confirm
+	    if(isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+	    	driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
+	    	Thread.sleep(500);
+	    }
 		
 		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/signup/finished")){
 			failMsg = "1. not success join view [Actual]" + driver.getCurrentUrl();
@@ -1387,7 +1444,136 @@ public class JoinSeminar {
 		}
 	}
 	
+	//72. 회원가입 추가정보 유도 팝업 확인
+	@Test(priority = 72, dependsOnMethods = {"essentialAgree"}, alwaysRun = true, enabled = true)
+	public void joinUser_additionalInfo() throws Exception {
+		String failMsg = "";
+		
+		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/signup/form")) {
+			driver.get(CommonValues.SERVER_URL + "/signup/form");
+			Thread.sleep(100);
+		}
+		
+		driver.navigate().refresh();
+		Thread.sleep(500);
+		
+		
+		driver.findElement(By.xpath(XPATH_EMAIL)).click();
+		driver.findElement(By.xpath(XPATH_EMAIL)).sendKeys(JOIN_USER);
+		
+		driver.findElement(By.xpath(XPATH_PASSWORD)).click();
+		driver.findElement(By.xpath(XPATH_PASSWORD)).sendKeys(CommonValues.USERPW);
+		
+		driver.findElement(By.xpath(XPATH_NICKNAME)).click();
+		driver.findElement(By.xpath(XPATH_NICKNAME)).sendKeys("joinTC");
+		
+		DBConnection connection = new DBConnection();
+		ArrayList<String> beforeCode = connection.getAuthCodeForJoin(JOIN_USER);
 
+		driver.findElement(By.xpath("//button[@class='form__auth-code-btn']")).click();
+		Thread.sleep(500);
+		
+		ArrayList<String> afterCode = connection.getAuthCodeForJoin(JOIN_USER);
+		
+		for (String str : afterCode) { 
+			if (!beforeCode.contains(str)) {
+				driver.findElement(By.xpath(XPATH_AUTHCODE)).sendKeys(str);
+			}
+		}
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)));
+		
+		//check all
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX2 + "//div")).click();
+		}
+		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//input")).isSelected()) {
+			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
+		}
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
+		Thread.sleep(500);
+		
+		//check popup
+		if(!isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+			failMsg = "1. cannot find popup.";
+		} else {
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contains(MSG_ADDTIONAL_INFO)) {
+				failMsg = failMsg + "\n2. popup msssage [Expected]" + MSG_ADDTIONAL_INFO
+						 + " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			}
+			//click enter
+			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
+			Thread.sleep(500);
+		}
+		
+		//input phone No.
+		driver.findElement(By.xpath(XPATH_PHONE)).click();
+		driver.findElement(By.xpath(XPATH_PHONE)).sendKeys("0100000000");
+		
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
+		Thread.sleep(500);
+		
+		//check popup
+		if(!isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+			failMsg = failMsg + "\n3. cannot find popup.";
+		} else {
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contains(MSG_ADDTIONAL_INFO)) {
+				failMsg = failMsg + "\n4. popup msssage [Expected]" + MSG_ADDTIONAL_INFO
+						 + " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			}
+			//click enter
+			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
+			Thread.sleep(500);
+		}
+		
+		//company name
+		driver.findElement(By.xpath(XPATH_COMPANY)).click();
+		driver.findElement(By.xpath(XPATH_COMPANY)).sendKeys("joinCompany");
+		
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
+		Thread.sleep(500);
+		
+		//check popup
+		if(!isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+			failMsg = failMsg + "\n5. cannot find popup.";
+		} else {
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contains(MSG_ADDTIONAL_INFO)) {
+				failMsg = failMsg + "\n6. popup msssage [Expected]" + MSG_ADDTIONAL_INFO
+						 + " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			}
+			//click enter
+			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
+			Thread.sleep(500);
+		}
+		
+		driver.findElement(By.xpath(XPATH_POSITION)).clear();
+		driver.findElement(By.xpath(XPATH_POSITION)).sendKeys("joinJobPosition");
+		
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
+		Thread.sleep(500);
+		
+		//check popup
+		if(!isElementPresent(By.xpath(CommonValues.XPATH_MODAL_BODY))) {
+			failMsg = failMsg + "\n7. cannot find popup.";
+		} else {
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contains(MSG_ADDTIONAL_INFO)) {
+				failMsg = failMsg + "\n8. popup msssage [Expected]" + MSG_ADDTIONAL_INFO
+						 + " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			}
+			//click enter
+			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
+			Thread.sleep(500);
+		}
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
+	}
+	
 	//75. 회원가입 정상 - 마케팅 동의 체크
 	@Test(priority = 75, enabled = true)
 	public void joinUser_max() throws Exception {
@@ -1438,7 +1624,7 @@ public class JoinSeminar {
 		}
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//button[@class='form__submit-btn']")));
+		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)));
 		
 		//check all
 		if (!driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX1 + "//input")).isSelected()) {
@@ -1451,7 +1637,7 @@ public class JoinSeminar {
 			driver.findElement(By.xpath(XPATH_JOIN_CHECKBOX3 + "//div")).click();
 		}
 		
-		driver.findElement(By.xpath("//button[@class='form__submit-btn']")).click();
+		driver.findElement(By.xpath(XPATH_JOIN_SIGNUP_BTN)).click();
 		Thread.sleep(500);
 		
 		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/signup/finished")){
