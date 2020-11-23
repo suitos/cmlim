@@ -136,7 +136,7 @@ public class AttendeesTest{
 		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 		
-		driver = comm.setDriver(driver, browsertype, "lang=en_US");
+		driver = comm.setDriver(driver, browsertype, "lang=en_US", true);
 		publisherDriver = comm.setDriver(publisherDriver, browsertype, "lang=en_US");
 		attendeesDriver = comm.setDriver(attendeesDriver, browsertype, "lang=en_US");
 		memberDriver = comm.setDriver(memberDriver, browsertype, "lang=en_US");
@@ -797,7 +797,7 @@ public class AttendeesTest{
 		Thread.sleep(500);
 		//join seminar
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		//check room uri
@@ -1248,6 +1248,8 @@ public class AttendeesTest{
 	@Test(priority = 40, enabled = true)
 	public void survey_loginuser() throws Exception {
 		String failMsg = "";
+		CommonValues comm = new CommonValues();
+		comm.checkBenner(memberDriver);
 		
 		if(memberDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
 			List<WebElement> surveyForms = memberDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
@@ -1297,6 +1299,9 @@ public class AttendeesTest{
 	@Test(priority = 41, enabled = true)
 	public void survey_normaluser() throws Exception {
 		String failMsg = "";
+		
+		CommonValues comm = new CommonValues();
+		comm.checkBenner(attendeesDriver);
 		
 		if(attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
 			List<WebElement> surveyForms = attendeesDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
