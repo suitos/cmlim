@@ -28,6 +28,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -804,6 +805,14 @@ public class QnATest {
 		
 		for (int i = 0; i < replys.size(); i++) {
 			replys.get(i).findElement(By.xpath(".//button[@class='qna-reply__close-btn']")).click();
+			
+			WebDriverWait wait = new WebDriverWait(wd, 10);
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element : " + e.getMessage());
+			}
 			Thread.sleep(500);
 			
 			if(!wd.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(OnAirRoom.MSG_DELETE_ANSWER)) {
@@ -891,7 +900,14 @@ public class QnATest {
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(1000);
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element " + e.getMessage());
+		}
+		Thread.sleep(500);
 		
 		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
@@ -901,7 +917,7 @@ public class QnATest {
 		} else {
 			failMsg = failMsg + "\n1-2. cannot find toast (presenter)";
 		}
-		
+		/*
 		if(isElementPresent_wd(attendADriver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!attendADriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
 				failMsg = failMsg + "\n2-1. toast message. (attendee A) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
@@ -919,7 +935,7 @@ public class QnATest {
 		} else {
 			failMsg = failMsg + "\n3-2. cannot find toast (attendee B)";
 		}
-		
+		*/
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e =  new Exception(failMsg);
 	    	throw e;
