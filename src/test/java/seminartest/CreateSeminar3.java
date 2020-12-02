@@ -76,7 +76,7 @@ public class CreateSeminar3 {
 		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 		
-		driver = comm.setDriver(driver, browsertype, "lang=en_US");
+		driver = comm.setDriver(driver, browsertype, "lang=en_US", true);
 		LoginMember_driver = comm.setDriver(LoginMember_driver, browsertype, "lang=en_US");
 		NotLoginMember_driver = comm.setDriver(LoginMember_driver, browsertype, "lang=en_US");
 		
@@ -320,9 +320,8 @@ public class CreateSeminar3 {
 			throw e;
 		}
 		CommonValues comm = new CommonValues();
-		comm.setCreateSeminar(driver, seminarTitle, true);
 		comm.setCreateSeminar_setChannel(driver);
-
+		comm.setCreateSeminar(driver, seminarTitle, true);
 	}
 
 	@Test(priority = 8)
@@ -795,12 +794,8 @@ public class CreateSeminar3 {
 
 		closedurl = CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID;
 		
-		WebElement StartSeminarSettingBtn = driver.findElement(By.xpath("//button[@class='btn btn-primary btn-m']"));
-
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].scrollIntoView();", StartSeminarSettingBtn);
-
-		StartSeminarSettingBtn.click();
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(driver);
 
 		JavascriptExecutor js2 = (JavascriptExecutor) driver;
 		js2.executeScript("arguments[0].scrollIntoView();",
@@ -922,3 +917,4 @@ public class CreateSeminar3 {
 	}
 
 }
+
