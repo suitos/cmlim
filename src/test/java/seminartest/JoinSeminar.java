@@ -72,6 +72,7 @@ import org.testng.annotations.Test;
  * 69. 필수동의 확인
  * 
  * 71. 회원가입 정상 - 마케팅 동의 체크안함 - 내정보 확인 후 탈퇴
+ * 72. 회원가입 추가정보 유도 팝업 확인
  * 75. 회원가입 정상 - 마케팅 동의 체크 
  * 76. 가입한 회원 채널 URL변경 - 정상케이스 - 회원탈퇴
  */
@@ -1849,8 +1850,4 @@ public class JoinSeminar {
 			}
 			return alertText;
 		} finally {
-			acceptNextAlert = true;
-		}
-	}
-
-}
+			acceptNextAl

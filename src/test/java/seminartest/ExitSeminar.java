@@ -180,6 +180,9 @@ public class ExitSeminar {
 		Publisher_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
 		
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(Publisher_driver);
+		
 		ArrayList<String> tabs = new ArrayList<String> (Publisher_driver.getWindowHandles());
 		Publisher_driver.close();
 		Publisher_driver.switchTo().window(tabs.get(1));
@@ -220,6 +223,8 @@ public class ExitSeminar {
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
 		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
 		Present_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
+
+		comm.checkSettingpopup(Present_driver);
 		
 		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
@@ -267,6 +272,8 @@ public class ExitSeminar {
 		Organizer_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		Thread.sleep(3000);
 		
+		comm.checkSettingpopup(Organizer_driver);
+		
 		ArrayList<String> tabs = new ArrayList<String> (Organizer_driver.getWindowHandles());
 		Organizer_driver.close();
 		Organizer_driver.switchTo().window(tabs.get(1));
@@ -311,8 +318,7 @@ public class ExitSeminar {
 				Master_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
 		Master_driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
 
-		Master_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		Thread.sleep(3000);
+		comm.checkSettingpopup(Master_driver);
 
 		ArrayList<String> tabs = new ArrayList<String>(Master_driver.getWindowHandles());
 		Master_driver.close();
@@ -366,8 +372,8 @@ public class ExitSeminar {
 				.findElement(
 						By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']"))
 				.click();
-		LoginMember_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		Thread.sleep(3000);
+
+		comm.checkSettingpopup(LoginMember_driver);
 
 		try {
 			WebDriverWait room_loginmember = new WebDriverWait(LoginMember_driver, 40);
@@ -409,12 +415,10 @@ public class ExitSeminar {
 		NotLoginMember_driver.findElement(By.xpath("//label[@for='serviceAgreement']/div")).click();
 		NotLoginMember_driver.findElement(By.xpath("//label[@for='infoAgreement']/div")).click();
 		Thread.sleep(1000);
-		NotLoginMember_driver
-				.findElement(
-						By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']"))
-				.click();
-		NotLoginMember_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		Thread.sleep(3000);
+		NotLoginMember_driver.findElement(
+						By.xpath("//button[@class='btn btn-primary btn-xl public-apply__attendeeInfo__enter-btn']")).click();
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(NotLoginMember_driver);
 
 		try {
 			WebDriverWait room_notloginmember = new WebDriverWait(NotLoginMember_driver, 40);

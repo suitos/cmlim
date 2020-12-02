@@ -1,5 +1,6 @@
 package seminartest;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,11 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WrapsDriver;
@@ -22,6 +27,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class CommonValues {
 	public static final String WEB_CHROME_DRIVER_PATH = System.getProperty("user.dir") + "/driver/chromedriver.exe";
@@ -306,7 +313,7 @@ public class CommonValues {
 			if (os.contains("mac")) {
 				 String path = System.getenv("DRIVER_HOME") + "/msedgedriver";
 				 System.setProperty("webdriver.edge.driver", path);
-			} else if (os.contains("wndows")) {
+			} else if (os.contains("window")) {
 				System.setProperty("webdriver.edge.driver", CommonValues.WEB_EDGE_DRIVER_PATH);
 			}
 		} else {
@@ -319,12 +326,16 @@ public class CommonValues {
 			ChromeOptions options = new ChromeOptions();
 		    options.addArguments(lang);
 		    //options.addArguments("headless");
-		    //options.addArguments("disable-gpu");
+		    options.addArguments("disable-gpu");
+		    options.addArguments("enable-automation");
+		    options.addArguments("--no-sandbox");
+		    options.addArguments("--disable-infobars"); 
+		    options.addArguments("--disable-dev-shm-usage");
+		    options.addArguments("--disable-browser-side-navigation");
 		    
 		    if(presenter) {
 		    	options.addArguments("auto-select-desktop-capture-source=Entire screen");
-			    
-			    
+
 			    Map<String, Object> prefs = new HashMap<>();
 
 			    // with this chrome still asks for permission
@@ -347,7 +358,7 @@ public class CommonValues {
 
 			//options.addArguments(lang);
 		    //options.addArguments("disable-gpu");
-		    
+		 
 		    options.setCapability("dom.webnotifications.enabled", 1);
 		    options.setCapability("permissions.default.microphone", 1);
 		    options.setCapability("permissions.default.camera", 1);
@@ -413,7 +424,7 @@ public class CommonValues {
 	    
 	    driver.findElement(By.xpath("//button[@type='submit']")).sendKeys(Keys.ENTER);
 	    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-	    Thread.sleep(1000); 
+	    Thread.sleep(2000); 
 
 	    try {
 			driver.findElement(By.xpath(XPATH_MODAL_FOOTER + "/button[1]")).click();
@@ -477,18 +488,38 @@ public class CommonValues {
 	
 	//channel : rsrsup1 으로 선택
 	public void setCreateSeminar_setChannel(WebDriver driver) throws Exception {
+		WebDriverWait wait = new WebDriverWait(driver, 5);
+		
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@class='btn btn-basic btn-s ']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element " + e.getMessage());
+		}
+		Thread.sleep(500);
 		driver.findElement(By.xpath("//button[@class='btn btn-basic btn-s ']")).click();
-		Thread.sleep(1000);
 
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_CREATESEMINAR_CHANNELLIST)));
+		} catch (Exception e) {
+			System.out.println("cannot find element " + e.getMessage());
+		}
+		Thread.sleep(2000);
+		System.out.println("try take screenshot");
+		String filepath = System.getProperty("user.dir") + "\\test-output\\failimg\\" + "channel.png";
+		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		// Now you can do whatever you need to do with it, for example copy somewhere
+		FileUtils.copyFile(scrFile, new File(filepath));
 		List<WebElement> channelList = driver.findElements(By.xpath(XPATH_CREATESEMINAR_CHANNELLIST));
-
+		
 		for (int i = 0; i < channelList.size(); i++) {
+			
+			System.out.println("channel : " + channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText());
 			if (channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText().contentEquals("rsrsup1")) {
 				// click second channel
 				channelList.get(i).findElement(By.xpath(".//label/span[1]")).click();
+				Thread.sleep(500);
 			}
 		}
-		
 		//click confirm
 		driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
 		Thread.sleep(500);
@@ -619,27 +650,45 @@ public class CommonValues {
 	
 	public void postSeminar(WebDriver driver, String seminarID) throws InterruptedException {
 		String seminarView = SERVER_URL + DETAIL_VIEW + seminarID;
-		
-		driver.get(seminarView);
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		if(!driver.getCurrentUrl().contentEquals(seminarView)) {
+			driver.get(seminarView);
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_SEMINARVIEW_POST)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element : " + e.getMessage());
+			}
+		}
 		Thread.sleep(1000);
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(XPATH_SEMINARVIEW_POST)));
 		driver.findElement(By.xpath(XPATH_SEMINARVIEW_POST)).click();
+
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_MODAL_FOOTER)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		Thread.sleep(500);
-		
 		driver.findElement(By.xpath(XPATH_MODAL_FOOTER + "/button[1]")).click();
-		Thread.sleep(500);
+		
+		Thread.sleep(1000);
 	}
 	
 	public String checkSettingpopup(WebDriver wd) throws InterruptedException {
+		
 		// 설정팝업 확인
-		Thread.sleep(5000);
-		if(isElementPresent(wd, By.xpath(XPATH_ROOM_SETTING_TITLE))) {
+		WebDriverWait wait = new WebDriverWait(wd, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_ROOM_SETTING_TITLE)));
+			Thread.sleep(500);
 			wd.findElement(By.xpath(XPATH_ROOM_SETTING_CONFIRM_BTN)).click();
 			Thread.sleep(500);
 			return "";
-		} else {
+		} catch (Exception e) {
 			return "cannot find seminar setting popup.";
 		}
 	}
@@ -787,11 +836,11 @@ public class CommonValues {
 		return pass;
 	}
 	
-	public void checkBanner(WebDriver wd) {
+	public void checkBenner(WebDriver wd) {
 		try {
 			wd.findElement(By.xpath("//div[@class='Banner_banner__demo__2zAHq']//i[@class='ricon-close']")).click();
 		} catch(Exception e) {
-			//do not anything
+			//do not anithing
 		}
 	}
 }

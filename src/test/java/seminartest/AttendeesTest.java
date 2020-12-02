@@ -27,6 +27,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
@@ -90,6 +91,8 @@ public class AttendeesTest{
 	public static String XPATH_ATTEND_AGREE_CHECKBOX1 = "//div[@class='public-apply__attendeeInfo__terms']/div[@class='checkbox'][1]";
 	public static String XPATH_ATTEND_AGREE_CHECKBOX2 = "//div[@class='public-apply__attendeeInfo__terms']/div[@class='checkbox'][2]";
 	public static String XPATH_ATTEND_AGREE_ERROR = "//div[@class='public-apply__attendeeInfo__terms']/span[@class='public-apply__attendeeInfo__terms__error-msg']";
+	
+	public static String XPATH_ATTEND_SEMINARVIEW_TITLE = "//h2[@class='PublicApply_public-apply__title__oUTIx']";
 	
 	public static String XPATH_ATTEND_SURVEY_FORM = "//div[@class='SurveyFormat_boxItem__2vAeb SurveyFormat_MultiChoiceTemplate__1-K7m']";
 	public static String XPATH_ATTEND_SURVEY_SUBMIT = "//div[@class='SurveySettings_wrap-bottom-center__mntno']/button[1]";
@@ -193,7 +196,7 @@ public class AttendeesTest{
 	}
 
 	// 2. 발표자가 참석자 링크로 세미나 입장 rsrsup3
-	@Test(priority = 2, dependsOnMethods = { "createseminar"})
+	@Test(priority = 2, dependsOnMethods = { "createseminar"}, enabled = true)
 	public void presenter_attendeesLink() throws Exception {
 		String failMsg = "";
 		
@@ -217,7 +220,7 @@ public class AttendeesTest{
 	}	
 	
 	// 3. 발표자가 채널 리스트 통해 세미나 입장 rsrsup3
-	@Test(priority = 3, dependsOnMethods = { "createseminar"})
+	@Test(priority = 3, dependsOnMethods = { "createseminar"}, enabled = true)
 	public void presenter_channelList() throws Exception {
 		String failMsg = "";
 		
@@ -271,7 +274,7 @@ public class AttendeesTest{
 	}
 		
 	// 6. 게시자가 참석자 링크를 통해서 입장(rsrsup2). 게시자는 ghost user
-	@Test(priority = 6, dependsOnMethods = { "createseminar", "presenterEnter" }, alwaysRun = true, enabled = true)
+	@Test(priority = 6, dependsOnMethods = { "createseminar", "publisherRoom" }, alwaysRun = true, enabled = true)
 	public void publisherRoom_attendeesLink() throws Exception {
 		String failMsg = "";
 		
@@ -288,7 +291,7 @@ public class AttendeesTest{
 	}
 
 	// 7. 게시자가 채널 리스트를 통해서 입장(rsrsup2). 게시자는 ghost user
-	@Test(priority = 7, dependsOnMethods = { "createseminar", "presenterEnter" }, alwaysRun = true, enabled = true)
+	@Test(priority = 7, dependsOnMethods = { "createseminar", "publisherRoom_attendeesLink" }, alwaysRun = true, enabled = true)
 	public void publisherRoom_channelInfo() throws Exception {
 		String failMsg = "";
 		
@@ -305,7 +308,7 @@ public class AttendeesTest{
 	}	
 	
 	// 8. 운영자 상세화면에서 입장(rsrsup6).
-	@Test(priority = 8, dependsOnMethods = { "createseminar", "presenterEnter" }, alwaysRun = true, enabled = true)
+	@Test(priority = 8, dependsOnMethods = { "createseminar", "publisherRoom_channelInfo" }, alwaysRun = true, enabled = true)
 	public void organizerRoom() throws Exception {
 		String failMsg = "";
 		
@@ -331,7 +334,7 @@ public class AttendeesTest{
 	}
 		
 	// 9. 운영자 참석자 링크를 통해 입장(rsrsup6).
-	@Test(priority = 9, dependsOnMethods = { "createseminar", "presenterEnter" }, alwaysRun = true, enabled = true)
+	@Test(priority = 9, dependsOnMethods = { "createseminar", "organizerRoom" }, alwaysRun = true, enabled = true)
 	public void organizerRoom_attendeesLink() throws Exception {
 		String failMsg = "";
 		
@@ -348,7 +351,7 @@ public class AttendeesTest{
 	}
 
 	// 10. 운영자 채널 리스트를 통해서 입장(rsrsup6). 
-	@Test(priority = 10, dependsOnMethods = { "createseminar", "presenterEnter" }, alwaysRun = true, enabled = true)
+	@Test(priority = 10, dependsOnMethods = { "createseminar", "organizerRoom_attendeesLink" }, alwaysRun = true, enabled = true)
 	public void organizerRoom_channelInfo() throws Exception {
 		String failMsg = "";
 		
@@ -423,12 +426,18 @@ public class AttendeesTest{
 		
 		//click join
 		attendeesDriver.findElement(By.xpath(XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);
+
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 5);
+		try {
+			wait.until(ExpectedConditions.visibilityOfAllElements(attendeesDriver.findElements(By.xpath(XPATH_ATTEND_SEMINARVIEW_TITLE))));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		String infoFailMsg = "";
 		
 		//view title
-		if(!attendeesDriver.findElement(By.xpath("//h2[@class='PublicApply_public-apply__title__oUTIx']")).getText().trim().contentEquals(CommonValues.ATTENDEES_VIEW_TITLE)) {
+		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_SEMINARVIEW_TITLE)).getText().trim().contentEquals(CommonValues.ATTENDEES_VIEW_TITLE)) {
 			
 			infoFailMsg = "1. Attendees View title : [expected]" + CommonValues.ATTENDEES_VIEW_TITLE + " [actual]" + attendeesDriver.findElement(By.xpath("//h2[@class='PublicApply_public-apply__title__oUTIx']")).getText().trim();
 		
@@ -1033,14 +1042,30 @@ public class AttendeesTest{
 			Thread.sleep(1000);
 		}
 		
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath(XPATH_VIEW_JOIN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		JavascriptExecutor js = (JavascriptExecutor) attendeesDriver;
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(XPATH_VIEW_JOIN)));
 		
 		// click join
 		attendeesDriver.findElement(By.xpath(XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);
+		Thread.sleep(2000);
 		
-
+		try {
+			wait.until(ExpectedConditions.visibilityOfAllElements(attendeesDriver.findElements(By.xpath(XPATH_ATTEND_NICKNAME))));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find nickname field");
+			attendeesDriver.findElement(By.xpath(XPATH_VIEW_JOIN)).click();
+			Thread.sleep(500);
+		}
+		
 		//name check
 		if(!attendeesDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).getAttribute("value").contentEquals(ATTENDEES_NICKNAME)) {
 			failMsg = failMsg + "\n 2. nickname missmatch [Expected]" + ATTENDEES_NICKNAME 
@@ -1106,6 +1131,10 @@ public class AttendeesTest{
 		Thread.sleep(1000);
 		
 		String xpath_onair = "//strong[@id='user-type']";
+		
+		WebDriverWait wait = new WebDriverWait(driver, 5);
+		wait.until(ExpectedConditions.visibilityOfAllElements(driver.findElements(By.xpath(xpath_onair))));
+				
 		// on air tag  : presenter
 		if (!driver.findElement(By.xpath(xpath_onair)).getAttribute("class").contains("onair")) {
 			isPass = false;
@@ -1146,7 +1175,7 @@ public class AttendeesTest{
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(1000);
+		Thread.sleep(1500);
 		//presenter
 		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
@@ -1249,7 +1278,7 @@ public class AttendeesTest{
 	public void survey_loginuser() throws Exception {
 		String failMsg = "";
 		CommonValues comm = new CommonValues();
-		comm.checkBanner(memberDriver);
+		comm.checkBenner(memberDriver);
 		
 		if(memberDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
 			List<WebElement> surveyForms = memberDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
@@ -1301,7 +1330,7 @@ public class AttendeesTest{
 		String failMsg = "";
 		
 		CommonValues comm = new CommonValues();
-		comm.checkBanner(attendeesDriver);
+		comm.checkBenner(attendeesDriver);
 		
 		if(attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + CommonValues.SEMINAR_CLOSED_URI + seminarID)) {
 			List<WebElement> surveyForms = attendeesDriver.findElements(By.xpath(XPATH_ATTEND_SURVEY_FORM));
@@ -1430,10 +1459,10 @@ public class AttendeesTest{
 		
 		if(!publisherDriver.getCurrentUrl().contains(CommonValues.SERVER_URL + CommonValues.LIST_URI)) {
 			publisherDriver.get(CommonValues.SERVER_URL + CommonValues.LIST_URI);
-			Thread.sleep(500);
+			Thread.sleep(2000);
 		}
 		publisherDriver.findElement(By.xpath("//div[@class='l-right']/button[1]")).click();
-	    Thread.sleep(2000);
+	    Thread.sleep(3000);
 	    
 		//channel
 		//click channel select
@@ -1717,6 +1746,8 @@ public class AttendeesTest{
 			//switch room tab
 		    wd.switchTo().window(tabs2.get(1));
 		}
+		
+		closeAlertAndGetItsText_webdriver(wd);
 	
 		// 시작하기 버튼 없음 확인
 		try {
@@ -1808,64 +1839,4 @@ public class AttendeesTest{
 		}
 	}
 
-	private boolean isElementPresent_wd(WebDriver wd, By by) {
-		try {
-			wd.findElement(by);
-			return true;
-		} catch (NoSuchElementException e) {
-			return false;
-		}
-	}
-
-	  private boolean isAlertPresent() {
-	    try {
-	      driver.switchTo().alert();
-	      return true;
-	    } catch (NoAlertPresentException e) {
-	      return false;
-	    }
-	  }
-
-	private boolean findAlert(WebDriver wd, String msg) {
-		// attendees
-		if (ExpectedConditions.alertIsPresent().apply(wd) == null) {
-			return false;
-
-		} else {
-			// 알림창이 존재하면 알림창 확인을 누를것
-			assertEquals(closeAlertAndGetItsText_webdriver(wd), msg);
-			return true;
-		}
-	}
-
-	private String closeAlertAndGetItsText() {
-		try {
-			Alert alert = driver.switchTo().alert();
-			String alertText = alert.getText();
-			if (acceptNextAlert) {
-				alert.accept();
-			} else {
-				alert.dismiss();
-			}
-			return alertText;
-		} finally {
-			acceptNextAlert = true;
-		}
-	}
-
-	private String closeAlertAndGetItsText_webdriver(WebDriver wd) {
-		try {
-			Alert alert = wd.switchTo().alert();
-			String alertText = alert.getText();
-			if (acceptNextAlert) {
-				alert.accept();
-			} else {
-				alert.dismiss();
-			}
-			return alertText;
-		} finally {
-			acceptNextAlert = true;
-		}
-	}
-
-}
+	private boolean isElementPresent_wd(WebDr
