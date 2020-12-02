@@ -28,6 +28,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -106,7 +108,7 @@ public class ListTest {
 		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 		
-		driver = comm.setDriver(driver, browsertype, "lang=en_US");
+		driver = comm.setDriver(driver, browsertype, "lang=en_US", true);
 		driver_guest = comm.setDriver(driver_guest, browsertype, "lang=en_US");
 
 		context.setAttribute("webDriver", driver);
@@ -171,8 +173,15 @@ public class ListTest {
 			//click post
 			WebElement seminarTitle = driver.findElement(By.xpath(listitem));
 			WebElement we = seminarTitle.findElement(By.xpath("../../../."));
-			//takescreenshot(we, "draft.png");
 			if(buttonTest(we, "post", true)) {
+				
+				WebDriverWait wait = new WebDriverWait(driver, 10);
+				try {
+					wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
+				} catch (Exception e) {
+					System.out.println("cannot find element " + CommonValues.XPATH_MODAL_BODY);
+				}
+				
 				Thread.sleep(500);
 				String popupmsg = String.format(CommonValues.MSG_POST_SEMINAR, userName);
 				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(popupmsg)){
@@ -190,7 +199,12 @@ public class ListTest {
 				Thread.sleep(500);
 				//confirm
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
-				Thread.sleep(1000);
+
+				try {
+					wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(listitem)));
+				} catch (Exception e) {
+					System.out.println("cannot find element :" + e.getMessage());
+				}
 				
 			} else {
 				failMsg = failMsg + "\n 0. not find post button";
@@ -244,8 +258,10 @@ public class ListTest {
 			
 			Actions actions = new Actions(driver);
 			actions.moveToElement(we).perform();
-			Thread.sleep(100);
-	
+			Thread.sleep(500);
+			
+			takescreenshot(driver, "list.png");
+		
 			//버튼 확인
 			if(!buttonTest(we, "link", false)) {
 				failMsg = failMsg + "\n1-1. can not find link icon";
@@ -348,7 +364,7 @@ public class ListTest {
 	}
 
 	//4. 리스트에서 게시완료 세미나 초대하기 들어가기
-	@Test(priority = 4, dependsOnMethods = {"registeredseminar_edit"}, alwaysRun = true,enabled = true)
+	@Test(priority = 4, dependsOnMethods = {"registeredseminar_edit"}, alwaysRun = true, enabled = true)
 	public void registeredseminar_invite() throws Exception {
 		String failMsg = "";
 		
@@ -612,6 +628,7 @@ public class ListTest {
 			actions.moveToElement(we).perform();
 			Thread.sleep(100);
 			
+			takescreenshot(driver, "list.png");
 			//버튼 확인
 			if(!buttonTest(we, "link", false)) {
 				failMsg = failMsg + "\n1-1. can not find link icon";
@@ -991,7 +1008,9 @@ public class ListTest {
 			Actions actions = new Actions(driver);
 			actions.moveToElement(we).perform();
 			Thread.sleep(500);
-	
+			
+			takescreenshot(driver, "list.png");
+			
 			//버튼 확인
 			if(!buttonTest(we, "lock", false)) {
 				failMsg = failMsg + "\n1-1. can not find lock icon";
@@ -1521,7 +1540,7 @@ public class ListTest {
 		
 		// click registerd tab
 		driver.findElement(By.xpath(XPATH_LIST_TAB_REGISTERED)).click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		String listitem = "//*/text()[normalize-space(.)='" + seminarTitle + "']/parent::*";
@@ -1867,7 +1886,7 @@ public class ListTest {
 		
 		//save as..
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 
 		// 임시저장 세미나 ID
 		seminarID = comm.findSeminarIDInList(driver, seminarTitle);
@@ -1893,8 +1912,9 @@ public class ListTest {
 
 			Actions actions = new Actions(driver);
 			actions.moveToElement(we).perform();
-			Thread.sleep(100);
-	
+			Thread.sleep(1000);
+			takescreenshot(driver, "list.png");
+			
 			//버튼 확인
 			if(!buttonTest(we, "lock", false)) {
 				failMsg = failMsg + "\n1-1. can not find lock icon";
@@ -2047,7 +2067,7 @@ public class ListTest {
 		
 		//save as..
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 
 		// 임시저장 세미나 ID
 		seminarID = comm.findSeminarIDInList(driver, seminarTitle);
@@ -2276,7 +2296,14 @@ public class ListTest {
 
 			// click rehearsal
 			if (buttonTest(we, "rehearsal", true)) {
-				Thread.sleep(500);
+
+				WebDriverWait wait = new WebDriverWait(driver, 10);
+				try {
+					wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+				} catch (Exception e) {
+					// TODO: handle exception
+					System.out.println("cannot find element : " + e.getMessage());
+				}
 
 				ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
 				if(tabs2.size() == 2) {
@@ -2298,7 +2325,7 @@ public class ListTest {
 				}
 
 			} else {
-				failMsg = failMsg + "\n 3. fail to click invite button";
+				failMsg = failMsg + "\n 4. fail to click invite button";
 			}
 
 		}
@@ -2416,7 +2443,7 @@ public class ListTest {
 		
 		//save as..
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 
 		// 임시저장 세미나 ID
 		seminarID = comm.findSeminarIDInList(driver, seminarTitle);
@@ -2507,7 +2534,14 @@ public class ListTest {
 		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
 		// click enter(new tab)
 		driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
-		Thread.sleep(2000);
+
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		ArrayList<String> tabs2 = new ArrayList<String>(driver.getWindowHandles());
