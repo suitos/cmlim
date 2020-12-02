@@ -21,6 +21,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -91,7 +93,7 @@ public class StandbyRoom {
 		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 		
-		driver = comm.setDriver(driver, browsertype, "lang=en_US");
+		driver = comm.setDriver(driver, browsertype, "lang=en_US", true);
 		attendADriver = comm.setDriver(attendADriver, browsertype, "lang=en_US");
 		attendBDriver = comm.setDriver(attendBDriver, browsertype, "lang=en_US");
 
@@ -160,6 +162,15 @@ public class StandbyRoom {
 		
 		// save seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
+
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(ListTest.XPATH_LIST_TAB_SAVED)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
 		Thread.sleep(1000);
 		
 		String seminarUri = "";
@@ -402,17 +413,17 @@ public class StandbyRoom {
 			//툴팁 확인
 			WebElement web = driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_ICON));
 			actions.moveToElement(web).perform();
-			Thread.sleep(100);
+			Thread.sleep(500);
 			
 			
 			//툴팁 확인
 			if(isElementPresent(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP))){
 				if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP)).getText().contentEquals(DES_YOUTUBE)) {
-					failMsg = failMsg + "\n 4. tooltip msg [Expected]" + DES_YOUTUBE 
+					failMsg = failMsg + "\n 3. tooltip msg [Expected]" + DES_YOUTUBE 
 							+ " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP)).getText();
 				}
 			} else {
-				failMsg = failMsg + "\n 7. cannot find tooltip";
+				failMsg = failMsg + "\n4. cannot find tooltip";
 			}
 			
 			// mouse hover. delete - cancel
@@ -441,14 +452,14 @@ public class StandbyRoom {
 			
 			if (!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText()
 					.contentEquals(CommonValues.SEMINAR_ROOM_DELETE_TOAST)) {
-				failMsg = failMsg + "\n 3. toast message after delete item : [Actual] "
+				failMsg = failMsg + "\n 5. toast message after delete item : [Actual] "
 						+ driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
 			}
 			
 			Thread.sleep(2000);
 			
 		} else {
-			failMsg = "7. cannot fild doc item";
+			failMsg = "6. cannot fild doc item";
 		}
 		
 		//delete item check
@@ -883,7 +894,7 @@ public class StandbyRoom {
 			Thread.sleep(500);
 			
 			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+				failMsg = failMsg + "\n2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
 			}
 			//cancel
 			attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -907,7 +918,7 @@ public class StandbyRoom {
 		}
 		List<WebElement> qnas2 = driver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_QNA_LIST));
 		if(qnas2.size() != 1) {
-			failMsg = failMsg + "\n 3. QnA count(presenter) [Expected]1 [Actual]" + qnas2.size();
+			failMsg = failMsg + "\n3.QnA count(presenter) [Expected]1 [Actual]" + qnas2.size();
 		} else {
 			String msg = checkQuestion(qnas2.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n4." + msg));
@@ -923,9 +934,9 @@ public class StandbyRoom {
 		
 		List<WebElement> qnas3 = attendBDriver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_QNA_LIST));
 		if(qnas3.size() != 1) {
-			failMsg = failMsg + "\n 5. QnA count(attendeeB) [Expected]1 [Actual]" + qnas3.size();
+			failMsg = failMsg + "\n5.QnA count(attendeeB) [Expected]1 [Actual]" + qnas3.size();
 		} else {
-			String msg =  failMsg + checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PUBLIC, true);
+			String msg = checkQuestion(qnas3.get(0), ATTENDEES_NICKNAME + "2", QNA_QUESTION_PUBLIC, true);
 			failMsg = failMsg + (msg.isEmpty()?msg:("\n6." + msg));
 		}		
 		
@@ -1514,11 +1525,13 @@ public class StandbyRoom {
 		}
 		
 		if(ispublic) {
-			if(!ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class").contentEquals("ricon-unlock")) {
-				failMsg = failMsg + "\n qna lock icon [Expected]" + "ricon-unlock" 
-						+ " [Actual]" + ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class");
+			try {
+				ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class").contentEquals("ricon-lock");
+				failMsg = failMsg + "\n qna lock icon [Expected]" + "cannot find icon" 
+						+ " [Actual]find lock icon";
+			} catch (NoSuchElementException e) {
+				//success
 			}
-		
 		} else {
 			if(!ee.findElement(By.xpath(".//div[@class='content-box__utills']//i")).getAttribute("class").contentEquals("ricon-lock")) {
 				failMsg = failMsg + "\n qna lock icon [Expected]" + "ricon-lock" 
@@ -1562,8 +1575,15 @@ public class StandbyRoom {
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(2000);
 		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		Thread.sleep(500);
 		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
 				failMsg = failMsg + "\n1-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
