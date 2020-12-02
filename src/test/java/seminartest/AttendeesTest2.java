@@ -25,6 +25,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -418,12 +419,19 @@ public class AttendeesTest2{
 		
 		//click join
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);
+
+
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 5);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(AttendeesTest.XPATH_ATTEND_SEMINARVIEW_TITLE)));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		String infoFailMsg = "";
 		
 		//view title
-		if(!attendeesDriver.findElement(By.xpath("//h2[@class='PublicApply_public-apply__title__oUTIx']")).getText().trim().contentEquals(CommonValues.ATTENDEES_VIEW_TITLE)) {
+		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_SEMINARVIEW_TITLE)).getText().trim().contentEquals(CommonValues.ATTENDEES_VIEW_TITLE)) {
 			
 			infoFailMsg = "1. Attendees View title : [expected]" + CommonValues.ATTENDEES_VIEW_TITLE + " [actual]" + attendeesDriver.findElement(By.xpath("//h2[@class='PublicApply_public-apply__title__oUTIx']")).getText().trim();
 		
@@ -686,10 +694,19 @@ public class AttendeesTest2{
 			attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_AGREE_CHECKBOX2+ "//div")).click();
 		
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
-		if(!attendeesDriver.findElement(By.xpath("//div[@class='modal-body']")).getText().contentEquals(MSG_CHECK_CODE)) {
+		
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
+		Thread.sleep(500);
+		if(!attendeesDriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_CHECK_CODE)) {
 			failMsg = failMsg + "\n3. error popup Msg(wrong code) [Expected]" + MSG_CHECK_CODE
-					+ " [Actual]" + attendeesDriver.findElement(By.xpath("//div[@class='modal-body']")).getText();
+					+ " [Actual]" + attendeesDriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
 		}		
 		attendeesDriver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
 		Thread.sleep(500);
@@ -811,7 +828,14 @@ public class AttendeesTest2{
 		JavascriptExecutor js = (JavascriptExecutor) attendeesDriver;
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
+
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		//check room uri
@@ -886,6 +910,14 @@ public class AttendeesTest2{
 		// 입장
 		// join seminar
 		memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
+		
+		WebDriverWait wait = new WebDriverWait(memberDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		Thread.sleep(1000);
 		
 		members.add(USER_INVITED_M);
@@ -930,13 +962,26 @@ public class AttendeesTest2{
 			Thread.sleep(500);
 		}
 		
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		JavascriptExecutor js = (JavascriptExecutor) attendeesDriver;
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)));
 		
 		// click join
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);
-		
+
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 
 		//name check
 		if(!attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).getAttribute("value").contentEquals(USER_INVITED_N)) {
@@ -983,7 +1028,14 @@ public class AttendeesTest2{
 		
 		//join seminar
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1500);
+
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		// check room uri
@@ -1026,9 +1078,15 @@ public class AttendeesTest2{
 		
 		// click join
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);
 		
-
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).clear();
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).sendKeys(USER_INVITED_N);
 
@@ -1051,12 +1109,20 @@ public class AttendeesTest2{
 		//try to join seminar
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
+		
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
 		Thread.sleep(1000);
 		
 		// check popup
-		if(!attendeesDriver.findElement(By.xpath("//div[@class='modal-body']")).getText().contentEquals(MSG_CHECK_CODE)) {
+		if(!attendeesDriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_CHECK_CODE)) {
 			failMsg = failMsg + "\n3. error popup Msg(wrong code) [Expected]" + MSG_CHECK_CODE
-					+ " [Actual]" + attendeesDriver.findElement(By.xpath("//div[@class='modal-body']")).getText();
+					+ " [Actual]" + attendeesDriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
 		}		
 		attendeesDriver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
 		Thread.sleep(500);
@@ -1072,8 +1138,15 @@ public class AttendeesTest2{
 		//try to join seminar
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
 		
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
+		Thread.sleep(1000);
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		// check room uri
 		if (!roomuri.equalsIgnoreCase(attendeesDriver.getCurrentUrl())) {
@@ -1108,8 +1181,14 @@ public class AttendeesTest2{
 		
 		// click join
 		sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);	
-		
+
+		WebDriverWait wait = new WebDriverWait(sameuserDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).clear();
 		sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).sendKeys(USER_INVITED_N);
@@ -1124,11 +1203,18 @@ public class AttendeesTest2{
 		
 		//click join
 		sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);		
+
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}	
+		Thread.sleep(1000);
 		
-		if(!sameuserDriver.findElement(By.xpath("//div[@class='modal-body']")).getText().contentEquals(MSG_DUPLICATED_CODE)) {
+		if(!sameuserDriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DUPLICATED_CODE)) {
 			failMsg = failMsg + "\n1. error popup Msg(duplicated code) [Expected]" + MSG_DUPLICATED_CODE
-					+ " [Actual]" + sameuserDriver.findElement(By.xpath("//div[@class='modal-body']")).getText();
+					+ " [Actual]" + sameuserDriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
 		}
 		sameuserDriver.findElement(By.xpath("//div[@class='modal-footer']/button")).click();
 		Thread.sleep(100);
@@ -1167,8 +1253,15 @@ public class AttendeesTest2{
 		// join seminar
 		js.executeScript("arguments[0].scrollIntoView();", sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
 		sameuserDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1500);
 
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		Thread.sleep(1000);
+		
 		members.add(USER_INVITED_N);
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
@@ -1262,7 +1355,14 @@ public class AttendeesTest2{
 		
 		// click join
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(1000);	
+
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		try {
+			wait.until(ExpectedConditions.alertIsPresent());
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find alert ");
+		}
 
 		assertEquals(closeAlertAndGetItsText_webdriver(attendeesDriver), MSG_SEMINAR_FULL);
 		
@@ -1282,6 +1382,10 @@ public class AttendeesTest2{
 		Thread.sleep(1000);
 		
 		String xpath_onair = "//strong[@id='user-type']";
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(xpath_onair)));
+		
 		// on air tag  : presenter
 		if (!driver.findElement(By.xpath(xpath_onair)).getAttribute("class").contains("onair")) {
 			isPass = false;
@@ -1322,9 +1426,17 @@ public class AttendeesTest2{
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//section[@id='confirm-dialog']//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(1000);
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element " + e.getMessage());
+		}
+		Thread.sleep(500);
+		
 		//presenter
-
 		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
 				failMsg = failMsg + "\n0-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
@@ -1379,7 +1491,7 @@ public class AttendeesTest2{
 			failMsg = failMsg +"1. no closed view after close seminar [Expected]" + closedurl 
 					+ " [Actual]" + publisherDriver.getCurrentUrl();
 			driver.get(closedurl);
-			Thread.sleep(500);
+			Thread.sleep(1000);
 		}
 		
 		// title
@@ -1577,8 +1689,16 @@ public class AttendeesTest2{
 		
 		//click join
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);
 		
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		Thread.sleep(500);
+
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).click();
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).clear();
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).sendKeys(USER_INVITED_N);
@@ -1603,7 +1723,13 @@ public class AttendeesTest2{
 		JavascriptExecutor js = (JavascriptExecutor) attendeesDriver;
 		js.executeScript("arguments[0].scrollIntoView();", attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)));
 		attendeesDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
+		
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		//check room uri
@@ -1678,8 +1804,15 @@ public class AttendeesTest2{
 		// 입장
 		// join seminar
 		memberDriver.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
-		
+
+		WebDriverWait wait = new WebDriverWait(memberDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+	
 		members.add(USER_INVITED_M);
 
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;

@@ -25,7 +25,7 @@ public class TestListener implements ITestListener {
 	String sharedPath ="";
 	String filePath = "";
 	String fileuri = "/target/surefire-reports";
-
+	
     @Override
     public void onTestFailure(ITestResult result) {
     	System.out.println("***** Error "+result.getName()+" test has failed *****");
@@ -68,12 +68,10 @@ public class TestListener implements ITestListener {
          //The below method will save the screen shot in d drive with test method name 
     	
     	 String filename = String.format("%s-%s", methodName, Calendar.getInstance().getTimeInMillis());
-    	 System.out.println("***methodName "+methodName+" ***");
             try {
             	File destFile = new File(filePath+filename+".png");
             	String jkpath = sharedPath + filename + ".png";
 				FileUtils.copyFile(scrFile, destFile);
-				System.out.println("***Placed screen shot in "+filePath+" ***");
 				System.out.println("***Placed screen shot file name : "+destFile.getName()+" ***");
 				//Reporter.log("<a href='"+ destFile.getName()+ "'> <img src='"+ destFile.getName() + "' height='100' width='100'/> </a>");
 				Reporter.log("<a href='"+ jkpath + "'> <img src='"+ jkpath + "' height='100' width='100'/> </a>");
@@ -83,13 +81,18 @@ public class TestListener implements ITestListener {
     }
 	public void onFinish(ITestContext context) {}
   
-    public void onTestStart(ITestResult result) {   }
+    public void onTestStart(ITestResult result) { 
+    	System.out.println("start : " + result.getName().toString());
+    }
   
-    public void onTestSuccess(ITestResult result) {   }
+    public void onTestSuccess(ITestResult result) { 
+    	System.out.println("test success : " + result.getName().toString());
+    }
 
     public void onTestSkipped(ITestResult result) {   }
 
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {   }
 
-    public void onStart(ITestContext context) {   }
+    public void onStart(ITestContext context) { 
+ }
 }  
