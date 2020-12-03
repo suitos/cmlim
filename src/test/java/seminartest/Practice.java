@@ -110,7 +110,7 @@ public class Practice {
 		comm.setDriverProperty(browsertype);
 		
 		Publisher_driver = comm.setDriver(Publisher_driver, browsertype, "lang=en_US");
-		Present_driver = comm.setDriver(Present_driver, browsertype, "lang=en_US");
+		Present_driver = comm.setDriver(Present_driver, browsertype, "lang=en_US", true);
 		Organizer_driver = comm.setDriver(Organizer_driver, browsertype, "lang=en_US");
 		Master_driver = comm.setDriver(Master_driver, browsertype, "lang=en_US");
 		

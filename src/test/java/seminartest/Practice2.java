@@ -86,7 +86,7 @@ public class Practice2 {
 		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 
-		Present_driver = comm.setDriver(Present_driver, browsertype, "lang=en_US");
+		Present_driver = comm.setDriver(Present_driver, browsertype, "lang=en_US", true);
 		Organizer_driver = comm.setDriver(Organizer_driver, browsertype, "lang=en_US");
 	
 		context.setAttribute("webDriver", Present_driver);
@@ -459,14 +459,12 @@ public class Practice2 {
 	@Test(priority=12)
 	public void EndRehearsal() throws Exception {
 		
-		WebElement SettingBTN = Present_driver.findElement(By.xpath("//div[@class='buttons align-center']/button"));
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(Present_driver);
 		
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
-		js.executeScript("arguments[0].scrollIntoView();", SettingBTN);
-		SettingBTN.click();
-		Thread.sleep(2000);
 		
-		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath("//button[@id='btn-exit']/i")));
+		js.executeScript("arguments[0].scrollIntoView();", Present_driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
 		
 		Present_driver.findElement(By.xpath("//button[@id='btn-exit']")).click();
 		WebDriverWait exit_popup = new WebDriverWait(Present_driver, 20);
@@ -719,4 +717,26 @@ public class Practice2 {
 			
 			System.out.println("******************seminarDayPath : " + seminarDayPath);
 			if (isElementPresent(driver, By.xpath(seminarDayPath))) {
-				if (driver.findElements(By.xpath(seminarD
+				if (driver.findElements(By.xpath(seminarDayPath)).size() == 2)
+					driver.findElements(By.xpath(seminarDayPath)).get(1).click();
+				else
+					driver.findElement(By.xpath(seminarDayPath)).click();
+			} else {
+				System.out.println("@@@@@can not find day");
+			}
+		}
+	}
+	
+
+	
+	
+	private boolean isElementPresent(WebDriver driver, By by) {
+		try {
+			driver.findElement(by);
+			return true;
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+	}
+}
+	
