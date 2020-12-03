@@ -1,26 +1,14 @@
 package seminartest;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
-
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -33,7 +21,12 @@ import org.testng.annotations.Test;
  * Channel private: channel member, non channel member, non login user
  */
 public class ChannelVisibility {
+	
+	public static String XPATH_CHANNEL_TOAST = "//div[@class='toast-inner normal']/span";
 
+	public static String MSG_CHANNEL_PUBLIC_TOAST = "This channel has been changed to public.";
+	public static String MSG_CHANNEL_PRIVATE_TOAST = "This channel has been changed to private.";
+	
 	public static WebDriver driver;
 	public static WebDriver viewerdriver;
 
@@ -56,7 +49,6 @@ public class ChannelVisibility {
 
 		context.setAttribute("webDriver", driver);
 		context.setAttribute("webDriver2", viewerdriver);
-		driver.get(CommonValues.SERVER_URL);
 
 		System.out.println("End BeforeTest!!!");
 	}
@@ -71,9 +63,9 @@ public class ChannelVisibility {
 	public void channelManageView() throws Exception {
 
 		driver.findElement(By.xpath("//ul[@class='nav-seminar']//a[@href='/channel/list']")).click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		driver.findElement(By.xpath("//div[@class='img-box']")).click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		driver.findElement(By.xpath("//ul[@class='tab ']/li[2]")).click();
 		Thread.sleep(500);
 
@@ -95,25 +87,37 @@ public class ChannelVisibility {
 	
 		// change public. toast, lock icon
 		driver.findElement(By.xpath("//label[@for='access-button']/span[1]")).click();
+
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_CHANNEL_TOAST)));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		Thread.sleep(500);
-		if (!driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText()
-				.contentEquals("This channel has been changed to public.")) {
-			failMsg = failMsg + "\n toast message after click public : [Actual] "
-					+ driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText();
+		if (!driver.findElement(By.xpath(XPATH_CHANNEL_TOAST)).getText()
+				.contentEquals(MSG_CHANNEL_PUBLIC_TOAST)) {
+			failMsg = failMsg + "\n 1.toast message after click public : [Actual] "
+					+ driver.findElement(By.xpath(XPATH_CHANNEL_TOAST)).getText();
 		}
 		if(isElementPresent(By.xpath("//i[@class='ricon-lock-round']"))) {
-			failMsg = failMsg + "\n click public. lock icon is visible";
+			failMsg = failMsg + "\n 2.click public. lock icon is visible";
 		}
 
 		// change private. toast, lock icon
 		driver.findElement(By.xpath("//label[@for='access-button']/span[1]")).click();
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_CHANNEL_TOAST)));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		Thread.sleep(500);
-		if (!driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText().contentEquals("This channel has been changed to private.")) {
-			failMsg = failMsg + "\n toast message after click private : [Actual] "
-					+ driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText();
+		if (!driver.findElement(By.xpath(XPATH_CHANNEL_TOAST)).getText().contentEquals(MSG_CHANNEL_PRIVATE_TOAST)) {
+			failMsg = failMsg + "\n 3.toast message after click private : [Actual] "
+					+ driver.findElement(By.xpath(XPATH_CHANNEL_TOAST)).getText();
 		}
 		if(!isElementPresent(By.xpath("//i[@class='ricon-lock-round']"))) {
-			failMsg = failMsg + "\n click private. lock icon is not visible";
+			failMsg = failMsg + "\n 4.click private. lock icon is not visible";
 		}
 
 		if (failMsg != null && !failMsg.isEmpty()) {
