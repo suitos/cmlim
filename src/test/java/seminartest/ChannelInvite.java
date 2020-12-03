@@ -6,23 +6,30 @@ import static org.testng.Assert.fail;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -446,7 +453,7 @@ public class ChannelInvite {
 		
 		//check send email button
 		try {
-			memberlist.get(1).findElement(By.xpath(".//i[@class='ricon-send-email']"));
+			memberlist.get(1).findElement(By.xpath(".//button[@class='btn invite-btn']"));
 
 		} catch (NoSuchElementException e) {
 			failMsg = failMsg + "\n can not find send email button ";
@@ -576,8 +583,7 @@ public class ChannelInvite {
 		
 		Thread.sleep(3000);
 		// check invited member (master1, memeber1, total2)
-		List<WebElement> memberlist = driver
-				.findElements(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']"));
+		List<WebElement> memberlist = driver.findElements(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']"));
 		if (memberlist.size() != 2 || !memberlist.get(1).findElement(By.xpath(".//span[@class='user-info-email']"))
 				.getText().contentEquals(INVITED_USER)) {
 			failMsg = "1. added 1email [expected] 2item, " + INVITED_USER + "[Actual] "
@@ -606,17 +612,24 @@ public class ChannelInvite {
 					+ memberlist.get(1).findElement(By.xpath(".//div[@class='invite-status deny']/span[1]")).getText();
 		}
 
+		JavascriptExecutor js = (JavascriptExecutor) driver;
 		// check send email button
 		try {
-			memberlist.get(1).findElement(By.xpath(".//i[@class='ricon-send-email']"));
-
-		} catch (NoSuchElementException e) {
+			// click send email button
+			//memberlist.get(1).findElement(By.xpath(".//button[@class='btn invite-btn']")).click();
+			js.executeScript("arguments[0].click();", memberlist.get(1).findElement(By.xpath(".//button[@class='btn invite-btn']")));
+			} catch (NoSuchElementException e) {
 			failMsg = failMsg + "\n 4. can not find send email button ";
 		}
 
-		// click send email button
-		memberlist.get(1).findElement(By.xpath(".//i[@class='ricon-send-email']")).click();
-		Thread.sleep(100);
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		// check send email button
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//button[@class='backdrop__close-btn']/i[1]")));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		// click x
 		driver.findElement(By.xpath("//button[@class='backdrop__close-btn']/i[1]")).click();
 		Thread.sleep(500);
@@ -628,11 +641,18 @@ public class ChannelInvite {
 		}
 
 		// click send email button
-		memberlist.get(1).findElement(By.xpath(".//i[@class='ricon-send-email']")).click();
-		Thread.sleep(1000);
+		//memberlist.get(1).findElement(By.xpath(".//button[@class='btn invite-btn']")).click();
+		js.executeScript("arguments[0].click();", memberlist.get(1).findElement(By.xpath(".//button[@class='btn invite-btn']")));
+
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		// click confirm
-		driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		js.executeScript("arguments[0].click();", driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")));
+		//driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
 		Thread.sleep(1000);
 		memberlist = driver.findElements(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']"));
 		Thread.sleep(500);
@@ -707,10 +727,17 @@ public class ChannelInvite {
 		driver.navigate().refresh();
 		Thread.sleep(500);
 		int memberindex = 0;
+		
+		WebDriverWait wait = new WebDriverWait(driver, 5);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
 		// check invited member (master1, memeber1, total2)
 		List<WebElement> memberlist = driver.findElements(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']"));
-		if (memberlist.size() == 2 || !memberlist.get(1).findElement(By.xpath(".//span[@class='user-info-email']"))
-				.getText().contentEquals(INVITED_USER)) {
+		if (memberlist.size() == 2) {
 			
 			if(memberlist.get(0).findElement(By.xpath(".//span[@class='user-info-email']")).getText().contentEquals(INVITED_USER)) {
 				memberindex = 0;
@@ -722,7 +749,7 @@ public class ChannelInvite {
 			}
 			
 		} else {
-			failMsg = "added 1email [expected] 2item, " + "[Actual] "
+			failMsg = "1. added 1email [expected] 2item, " + "[Actual] "
 					+ memberlist.size() + "item ";
 		}
 
@@ -741,15 +768,19 @@ public class ChannelInvite {
 
 		// click ok
 		driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
-		Thread.sleep(500);
+		Thread.sleep(2000);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 
 		// check invited member (master1, total1)
 		memberlist = driver.findElements(By.xpath("//li[@class='ChannelMemberListItem_channel-member-item-box__EvrY0']"));
 		if (memberlist.size() != 1) {
-			failMsg = "added 1email [expected] 1item, " + INVITED_USER + "[Actual] "
+			failMsg = "2. added 1email [expected] 1item, " + INVITED_USER + "[Actual] "
 					+ memberlist.size() + "item ";
 		}
-		
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -759,7 +790,7 @@ public class ChannelInvite {
 	
 	
 	// 20. 삭제한 멤버 재 초대
-	@Test (priority=20)
+	@Test (priority=20, dependsOnMethods={"joinChannel_deleteMember"}, alwaysRun = true, enabled = true)
 	public void channelInvite_invite2() throws Exception {
 		String failMsg = "";
 		
@@ -857,13 +888,18 @@ public class ChannelInvite {
 		
 		// click confirm
 		memberdriver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
-		memberdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
-		Thread.sleep(2000);
+		
+		WebDriverWait wait = new WebDriverWait(memberdriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//li[@class='ChannelListItem_ChannelListItem__3PdRK']")));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		if (!memberdriver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText().contentEquals("You have unsubscribed to the channel.")) {
 			failMsg = "1. Channel Leave toast message error : [Actual] " + driver.findElement(By.xpath("//div[@class='wrap-toast-outer']")).getText();
 		}
-		
+		Thread.sleep(2000);
 		//check url. expect channel list view
 		if (!memberdriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/channel/list")) {
 			failMsg = failMsg + "\n 2. not channel list view : [Actual] " + memberdriver.getCurrentUrl();
@@ -1172,7 +1208,7 @@ public class ChannelInvite {
 		}
 		
 		//click re-send
-		memberlist.get(memberindex).findElement(By.xpath(".//i[@class='ricon-send-email']")).click();
+		memberlist.get(memberindex).findElement(By.xpath(".//button[@class='btn invite-btn']")).click();
 		Thread.sleep(500);
 		
 		// check popup msg
