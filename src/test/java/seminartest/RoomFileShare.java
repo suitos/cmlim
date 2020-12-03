@@ -24,6 +24,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -73,7 +74,7 @@ public class RoomFileShare {
 	public static String MSG_ADD_DOWNLOADFILE_CONFIRM = "Do you want to share the selected file?";
 	public static String MSG_DOWNLOADFILE_EMPTY = "There is no shared file.";
 	public static String MSG_DOWNLOADFILE_INVALID = "blabla";
-	public static String MSG_DOWNLOADFILE_DELETE = "blabla";
+	public static String MSG_DOWNLOADFILE_DELETE = "Do you want to remove this file from the list?";
 	public static String MSG_ROOM_SETTINGPOPUP_TITLE = "Seminar settings";
 	public static String MSG_ROOM_SETTINGPOPUP_BTN = "Continue the seminar";
 	
@@ -107,7 +108,7 @@ public class RoomFileShare {
 		comm.setDriverProperty(browsertype);
 		
 		driver = comm.setDriver(driver, browsertype, "lang=en_US");
-		driver_presenter = comm.setDriver(driver_presenter, browsertype, "lang=en_US");
+		driver_presenter = comm.setDriver(driver_presenter, browsertype, "lang=en_US", true);
 		driver_organizer = comm.setDriver(driver_organizer, browsertype, "lang=en_US");
 		driver_guest = comm.setDriver(driver_guest, browsertype, "lang=en_US");
 		
@@ -124,7 +125,7 @@ public class RoomFileShare {
 	}
 	
 	// 0. 세미나 만들기
-	@Test(priority=0)
+	@Test(priority=0, alwaysRun = true, enabled = true)
 	public void createSeminar() throws Exception {
 		String failMsg = "";
 		
@@ -142,8 +143,15 @@ public class RoomFileShare {
 		// goto Create seminar
 		driver.get(CommonValues.SERVER_URL + CommonValues.LIST_URI);
 		driver.findElement(By.xpath("//div[@class='l-right']/button[1]")).click();
-
-		Thread.sleep(1000);
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element " + e.getMessage());
+		}
+		Thread.sleep(500);
 		String createViewUri = CommonValues.SERVER_URL + CommonValues.CREATE_URI;
 
 		if (!driver.getCurrentUrl().contains(createViewUri)) {
@@ -270,11 +278,21 @@ public class RoomFileShare {
 		
 		//참석자 입장
 		driver_guest.get(CommonValues.SERVER_URL + CommonValues.SEMINAR_LINK + seminarID);
-		Thread.sleep(2000);
+		WebDriverWait wait = new WebDriverWait(driver_guest, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)));
+		} catch (Exception e) {
+			System.out.println("cannot find element " + e.getMessage());
+		}
 		
 		//click join
 		driver_guest.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(500);
+		
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)));
+		} catch (Exception e) {
+			System.out.println("cannot find element " + e.getMessage());
+		}
 		
 		driver_guest.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).click();
 		driver_guest.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_NICKNAME)).clear();
@@ -292,7 +310,12 @@ public class RoomFileShare {
 		Thread.sleep(500);
 		//join seminar
 		driver_guest.findElement(By.xpath(AttendeesTest.XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
+		
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			System.out.println("cannot find element " + e.getMessage());
+		}
 		
 		//check room uri
 		if(!roomuri.equalsIgnoreCase(driver_guest.getCurrentUrl())){
@@ -359,7 +382,7 @@ public class RoomFileShare {
 	}
 	
 	// 3. 발표자,운영자 스탠바이룸 새로고침
-	@Test(priority=3, dependsOnMethods = {"enterRoom"}, enabled = true)
+	@Test(priority=3, dependsOnMethods = {"settingpopup_defalut"}, alwaysRun = true, enabled = true)
 	public void settingpopup_refrash() throws Exception {
 		String failMsg = "";
 		
@@ -402,7 +425,7 @@ public class RoomFileShare {
 	}
 
 	// 11. 발표자,운영자,참석자 파일다운로드 탭 빈 리스트 확인
-	@Test(priority=11, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=11, dependsOnMethods = {"settingpopup_refrash"}, alwaysRun = true, enabled = true)
 	public void empty_sharedFile() throws Exception {
 		String failMsg = "";
 		
@@ -455,7 +478,7 @@ public class RoomFileShare {
 	}
 
 	// 12. 발표자 공유 파일 등록
-	@Test(priority=12, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=12, dependsOnMethods = {"empty_sharedFile"}, alwaysRun = true,  enabled = true)
 	public void register_sharedFile() throws Exception {
 		String failMsg = "";
 		
@@ -520,7 +543,7 @@ public class RoomFileShare {
 	}
 	
 	// 13. 발표자 공유 invalid파일 등록
-	@Test(priority=13, dependsOnMethods = {"createSeminar"}, enabled = false)
+	@Test(priority=13, dependsOnMethods = {"register_sharedFile"}, alwaysRun = true, enabled = true)
 	public void register_InvalidSharedFile() throws Exception {
 		String failMsg = "";
 		
@@ -565,7 +588,7 @@ public class RoomFileShare {
 	}
 	
 	// 14. 발표자 공유파일 삭제
-	@Test(priority=14, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=14, dependsOnMethods = {"register_InvalidSharedFile"}, alwaysRun = true, enabled = true)
 	public void delete_SharedFile() throws Exception {
 		String failMsg = "";
 		
@@ -627,7 +650,7 @@ public class RoomFileShare {
 	}
 	
 	// 15. 운영자 공유파일 등록 삭제
-	@Test(priority=15, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=15, dependsOnMethods = {"delete_SharedFile"}, alwaysRun = true, enabled = true)
 	public void organizer_SharedFile() throws Exception {
 		String failMsg = "";
 		
@@ -699,7 +722,7 @@ public class RoomFileShare {
 	}
 	
 	// 16. guest 공유파일 확인 다운로드
-	@Test(priority=16, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=16, dependsOnMethods = {"organizer_SharedFile"}, alwaysRun = true, enabled = true)
 	public void guest_SharedFile() throws Exception {
 		String failMsg = "";
 		
@@ -749,7 +772,7 @@ public class RoomFileShare {
 	}	
 	
 	// 21. 발표자 세미나 시작. 모든 다운로드 파일 삭제 후 빈화면 확인
-	@Test(priority=21, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=21, dependsOnMethods = {"guest_SharedFile"}, alwaysRun = true, enabled = true)
 	public void startSeminar() throws Exception {
 		String failMsg = "";
 		
@@ -840,7 +863,7 @@ public class RoomFileShare {
 	}
 	
 	// 22. 발표자 파일등록
-	@Test(priority=22, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=22, dependsOnMethods = {"startSeminar"}, alwaysRun = true, enabled = true)
 	public void register_sharedFileOnAir() throws Exception {
 		String failMsg = "";
 		
@@ -907,7 +930,7 @@ public class RoomFileShare {
 	}
 	
 	// 23. 발표자 공유 invalid파일 등록_onair
-	@Test(priority=23, dependsOnMethods = {"createSeminar"}, enabled = false)
+	@Test(priority=23, dependsOnMethods = {"register_sharedFileOnAir"}, alwaysRun = true, enabled = true)
 	public void register_InvalidSharedFileOnAir() throws Exception {
 		String failMsg = "";
 		
@@ -952,7 +975,7 @@ public class RoomFileShare {
 	}
 	
 	// 24. 발표자 공유파일 삭제 onair
-	@Test(priority=24, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=24, dependsOnMethods = {"register_InvalidSharedFileOnAir"}, alwaysRun = true, enabled = true)
 	public void delete_SharedFileOnAir() throws Exception {
 		String failMsg = "";
 		
@@ -1014,7 +1037,7 @@ public class RoomFileShare {
 	}
 	
 	// 25. 운영자 공유파일 등록 삭제
-	@Test(priority=25, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=25, dependsOnMethods = {"delete_SharedFileOnAir"}, alwaysRun = true, enabled = true)
 	public void organizer_SharedFileOnAir() throws Exception {
 		String failMsg = "";
 		
@@ -1086,7 +1109,7 @@ public class RoomFileShare {
 	}
 	
 	// 26. guest 공유파일 확인 다운로드
-	@Test(priority=26, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=26, dependsOnMethods = {"organizer_SharedFileOnAir"}, alwaysRun = true, enabled = true)
 	public void guest_SharedFileOnAir() throws Exception {
 		String failMsg = "";
 		
@@ -1136,7 +1159,7 @@ public class RoomFileShare {
 	}
 	
 	//31. 발표자, 운영자 onair룸 새로 입장 설정팝업 확인
-	@Test(priority=31, dependsOnMethods = {"createSeminar"}, enabled = true)
+	@Test(priority=31, dependsOnMethods = {"guest_SharedFileOnAir"}, alwaysRun = true, enabled = true)
 	public void settingpopup_onair_enter() throws Exception {
 		String failMsg = "";
 		
@@ -1250,7 +1273,7 @@ public class RoomFileShare {
 	}
 
 	//32. 발표자, 운영자 onair룸 새로고침 팝업 확인
-	@Test(priority=32, dependsOnMethods = {"enterRoom"}, enabled = true)
+	@Test(priority=32, dependsOnMethods = {"settingpopup_onair_enter"}, alwaysRun = true, enabled = true)
 	public void settingpopup_refrash_onair() throws Exception {
 		String failMsg = "";
 		
