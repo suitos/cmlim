@@ -25,6 +25,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -149,7 +150,7 @@ public class SeminarInfo {
 		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 		
-		driver = comm.setDriver(driver, browsertype, "lang=en_US");
+		driver = comm.setDriver(driver, browsertype, "lang=en_US", true);
 		driver_publisher = comm.setDriver(driver_publisher, browsertype, "lang=en_US");
 		driver_master = comm.setDriver(driver_master, browsertype, "lang=en_US");
 		driver_organizer = comm.setDriver(driver_organizer, browsertype, "lang=en_US");
@@ -544,8 +545,15 @@ public class SeminarInfo {
 			Thread.sleep(500);
 		}
 		
+		WebDriverWait wait = new WebDriverWait(driver_master, 10);
 		// 삭제버튼 클릭
 		if(buttonTest(driver_master, "trash", true)) {
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element " + e.getMessage());
+			}
 			Thread.sleep(500);
 			if(!driver_master.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE)) {
 				failMsg = failMsg + "\n 1. post popup msg [Expected]" + MSG_DELETE 
@@ -1104,9 +1112,15 @@ public class SeminarInfo {
 			Thread.sleep(500);
 		}
 		
-		// 입장하기 버튼 클릭
+		WebDriverWait wait = new WebDriverWait(driver_master, 10);
+		//입장하기 버튼 클릭
 		if (buttonTest(driver_master, "enter", true)) {
-			Thread.sleep(1000);
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element " + e.getMessage());
+			}
 			
 			String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 			ArrayList<String> tabs2 = new ArrayList<String> (driver_master.getWindowHandles());
@@ -1147,9 +1161,15 @@ public class SeminarInfo {
 			Thread.sleep(500);
 		}
 		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
 		// 입장하기 버튼 클릭
 		if (buttonTest(driver, "enter", true)) {
-			Thread.sleep(500);
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element " + e.getMessage());
+			}
 			
 			String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 			ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
@@ -1477,10 +1497,15 @@ public class SeminarInfo {
 			Thread.sleep(500);
 		}
 		
+		WebDriverWait wait = new WebDriverWait(driver_master, 10);
 		// 입장하기 버튼 클릭
 		if (buttonTest(driver_master, "enter", true)) {
-			Thread.sleep(500);
-			
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element " + e.getMessage());
+			}
 			String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 			ArrayList<String> tabs2 = new ArrayList<String> (driver_master.getWindowHandles());
 			if(tabs2.size() != 2) {
@@ -1525,9 +1550,15 @@ public class SeminarInfo {
 			Thread.sleep(500);
 		}
 		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
 		// 입장하기 버튼 클릭
 		if (buttonTest(driver, "enter", true)) {
-			Thread.sleep(500);
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element " + e.getMessage());
+			}
 			
 			String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 			ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
@@ -2251,7 +2282,13 @@ public class SeminarInfo {
 		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath("//button[@class='btn btn-primary btn-auto actionButton']")));
 		// click enter(new tab)
 		buttonTest(driver, "enter", true);
-		Thread.sleep(2000);
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element " + e.getMessage());
+		}
 
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		ArrayList<String> tabs2 = new ArrayList<String>(driver.getWindowHandles());
@@ -3173,7 +3210,13 @@ public class SeminarInfo {
 
 		// click enter(new tab)
 		buttonTest(driver, "enter", true);
-		Thread.sleep(2000);
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element " + e.getMessage());
+		}
 
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		ArrayList<String> tabs2 = new ArrayList<String>(driver.getWindowHandles());
