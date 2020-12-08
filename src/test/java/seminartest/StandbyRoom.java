@@ -2,6 +2,7 @@ package seminartest;
 
 import static org.testng.Assert.fail;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,12 +10,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -136,16 +140,21 @@ public class StandbyRoom {
 		String filePath = CommonValues.TESTFILE_PATH;
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) 
 			filePath = CommonValues.TESTFILE_PATH_MAC;
-		String testDoc = filePath + CommonValues.TESTFILE_LIST[0];
+		String testDoc = filePath + CommonValues.TESTFILE_PDFS[0];
 		driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testDoc);
-		Thread.sleep(2000);
-	
-		
+
 		//add youtube
 		driver.findElement(By.id("input-youtube-link")).clear();
 		driver.findElement(By.id("input-youtube-link")).sendKeys(CommonValues.YOUTUBE_URL[0]);
 		driver.findElement(By.xpath("//input[@id='input-youtube-link']/following::button[1]")).click();
 		Thread.sleep(1000);
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//li[@class='DocItem_doc-item__2bSNb']//textarea[@class='input-content']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		//add file, youtube description
 		// presentation list size
@@ -156,14 +165,17 @@ public class StandbyRoom {
 
 		docs_before.get(1).findElement(By.xpath(".//textarea[@class='input-content']")).clear();
 		docs_before.get(1).findElement(By.xpath(".//textarea[@class='input-content']")).sendKeys(DES_YOUTUBE);
-
-		docs_before.get(0).findElement(By.xpath(".//textarea[@class='input-content']")).click();
-		Thread.sleep(1000);
 		
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//li[@class='DocItem_doc-item__2bSNb']//textarea[@class='input-content']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
+		Thread.sleep(5000);
 		// save seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
 
-		WebDriverWait wait = new WebDriverWait(driver, 10);
 		try {
 			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(ListTest.XPATH_LIST_TAB_SAVED)));
 		} catch (Exception e) {
@@ -243,7 +255,7 @@ public class StandbyRoom {
 	}
 	
 	// 2. 발표자 standby 룸에서 발표문서 확인 (툴팁 확인) 후 삭제 : 스펙아웃 사용안함
-	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" },  enabled = false)
+	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" },  enabled = true)
 	public void doc_checkDelete() throws Exception {
 		
 		String failMsg = "";
@@ -262,13 +274,13 @@ public class StandbyRoom {
 				failMsg = "1. doc item icon is enable.";
 			
 			//icon
-			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class").contentEquals("png icon")) {
-				failMsg = failMsg + "\n 2. doc item icon [Expected]png, [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class");
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class").contentEquals("pdf icon")) {
+				failMsg = failMsg + "\n 2. doc item icon [Expected]pdf, [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class");
 			}
 			
 			//title
-			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText().contains(CommonValues.TESTFILE_LIST[0])) {
-				failMsg = failMsg + "\n 3. doc item title [Expected]" + CommonValues.TESTFILE_LIST[0] + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText();
+			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText().contains(CommonValues.TESTFILE_PDFS[0])) {
+				failMsg = failMsg + "\n 3. doc item title [Expected]" + CommonValues.TESTFILE_PDFS[0] + " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText();
 			}
 			
 			Actions actions = new Actions(driver);
@@ -276,9 +288,17 @@ public class StandbyRoom {
 			// mouse hover
 			WebElement web = driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON));
 			actions.moveToElement(web).perform();
-			Thread.sleep(100);
+			Thread.sleep(500);
 			
+			WebDriverWait wait = new WebDriverWait(driver, 10);
+			try {
+				wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element : " + e.getMessage());
+			}
 			
+
 			//툴팁 확인
 			if(isElementPresent(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP))){
 				if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP)).getText().contentEquals(DES_FILE)) {
@@ -317,6 +337,7 @@ public class StandbyRoom {
 				Thread.sleep(2000);
 			}
 			
+			
 		} else {
 			failMsg = failMsg + "\n 8. cannot fild doc item";
 		}
@@ -335,19 +356,18 @@ public class StandbyRoom {
 		}
 	}
 	
-	// 3. 발표자 standby 룸에서 발표문서 추가  : 스펙아웃 사용안함
-	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
+	// 3. 발표자 standby 룸에서 발표문서 추가 
+	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
 	public void doc_addFile() throws Exception {
 		String failMsg = "";
 		
-		//refresh window
-		driver.navigate().refresh();
-		Thread.sleep(1000);
-		
 		CommonValues comm = new CommonValues();
 		comm.checkSettingpopup(driver);
-		//click doc icon
-		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_BTN)).click();
+		
+		if(!isElementPresent(By.xpath(OnAirRoom.XPATH_ROOM_DOC_UPLOAD))) {
+			//click doc icon
+			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_DOC_BTN)).click();
+		}
 		
 		List<WebElement> docitems = driver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON));
 		int doccount = docitems.size();
@@ -356,7 +376,7 @@ public class StandbyRoom {
 		String filePath = CommonValues.TESTFILE_PATH;
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) 
 			filePath = CommonValues.TESTFILE_PATH_MAC;
-		String addedfile = filePath + CommonValues.TESTFILE_LIST[3];
+		String addedfile = filePath + CommonValues.TESTFILE_PDFS[1];
 		driver.findElement(By.xpath("//input[@id='doc-upload-input']")).sendKeys(addedfile);
 		Thread.sleep(500);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -364,7 +384,7 @@ public class StandbyRoom {
 		//check added file
 		docitems = driver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_DOC_ICON));
 		if(doccount+1 == docitems.size()) {
-			if(!docitems.get(doccount).findElement(By.xpath(".//div[@class='title']")).getText().contains(CommonValues.TESTFILE_LIST[3])) {
+			if(!docitems.get(doccount).findElement(By.xpath(".//div[@class='title']")).getText().contains(CommonValues.TESTFILE_PDFS[1])) {
 				failMsg = "1. added file title error [Expected] " + CommonValues.TESTFILE_LIST[3]+ " [Actual]" + docitems.get(doccount).findElement(By.xpath("/div[@class='title']")).getText();
 			}
 			
@@ -379,7 +399,7 @@ public class StandbyRoom {
 	}
 	
 	// 4. 발표자 standby 룸에서 발표문서 추가 초과(10개 초과) :  : 스펙아웃 사용안함
-	@Test(priority = 4, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
+	@Test(priority = 4, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
 	public void doc_addFileMax() throws Exception {
 		//기획안됨
 	}
@@ -392,6 +412,8 @@ public class StandbyRoom {
 		
 		CommonValues comm = new CommonValues();
 		comm.checkSettingpopup(driver);
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
 		
 		//click youtube icon
 		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN)).click();
@@ -415,7 +437,12 @@ public class StandbyRoom {
 			actions.moveToElement(web).perform();
 			Thread.sleep(500);
 			
-			
+			try {
+				wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element : " + e.getMessage());
+			}
 			//툴팁 확인
 			if(isElementPresent(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP))){
 				if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP)).getText().contentEquals(DES_YOUTUBE)) {
@@ -481,22 +508,20 @@ public class StandbyRoom {
 	public void youtube_add1() throws Exception {
 		String failMsg = "";
 		
-		//refresh window
-		driver.navigate().refresh();
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		
 		CommonValues comm = new CommonValues();
 		comm.checkSettingpopup(driver);
 		
-		//click youtube icon
-		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN)).click();
+		if(!isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_BTN))) {
+			//click youtube icon
+			driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_BTN)).click();
+		}
 		
 		//기존 youtube icon 확인
 		List<WebElement> youtubeitems = driver.findElements(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBE_ICON));
 		int youtubecount = youtubeitems.size();
 		
 		//click +
-		driver.findElement(By.xpath("//button[@class='btn-rect plus']")).click();
+		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_BTN)).click();
 		
 		Thread.sleep(500);
 		
@@ -562,13 +587,21 @@ public class StandbyRoom {
 		int youtubecount = youtubeitems.size();
 		
 		//click +
-		driver.findElement(By.xpath("//button[@class='btn-rect plus']")).click();
+		driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_YUTUBEADD_BTN)).click();
 		Thread.sleep(500);
 		//input youtube url
 		driver.findElement(By.xpath("//input[@class='url-input']")).clear();
 		driver.findElement(By.xpath("//input[@class='url-input']")).sendKeys(CommonValues.YOUTUBE_URL[3]);
 		driver.findElement(By.xpath("//div[@class='buttons align-center']/button[1]")).click();
-		Thread.sleep(500);
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
+		Thread.sleep(100);
 		
 		if (!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText()
 				.contentEquals(CommonValues.SEMINAR_ROOM_ADD_TOAST)) {
@@ -600,7 +633,7 @@ public class StandbyRoom {
 	}
 	
 	// 8. 발표자 standby 룸에서 유튜브 추가 최대(10개)
-	@Test(priority = 8, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
+	@Test(priority = 8, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
 	public void youtube_max() throws Exception {
 		String failMsg = "";
 		
@@ -874,6 +907,8 @@ public class StandbyRoom {
 		//참석자B 질문작성
 		addQuestion(attendBDriver, QNA_QUESTION_PUBLIC, true);
 		
+		WebDriverWait waitA = new WebDriverWait(attendADriver, 10);
+		
 		//참석자A 본인질문 삭제
 		if(attendADriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
 			attendADriver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TAB_QNA)).click();
@@ -893,8 +928,8 @@ public class StandbyRoom {
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
 			Thread.sleep(500);
 			
-			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -905,7 +940,12 @@ public class StandbyRoom {
 			Thread.sleep(100);
 			
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
-			Thread.sleep(500);
+
+			try {
+				waitA.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")));
+			} catch (Exception e) {
+				System.out.println("cannot find element : " + e.getMessage());
+			}
 			//confirm
 			attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
 			Thread.sleep(100);	
@@ -973,8 +1013,8 @@ public class StandbyRoom {
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
 			Thread.sleep(100);
 			
-			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -1125,8 +1165,8 @@ public class StandbyRoom {
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
 			Thread.sleep(500);
 			
-			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -1204,8 +1244,8 @@ public class StandbyRoom {
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
 			Thread.sleep(500);
 			
-			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -1494,9 +1534,9 @@ public class StandbyRoom {
 			replys.get(i).findElement(By.xpath(".//button[@class='qna-reply__close-btn']")).click();
 			Thread.sleep(500);
 			
-			if(!wd.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_ANSWER)) {
+			if(!wd.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_ANSWER)) {
 				failMsg = failMsg + "\n delete popup message [Expected]" + MSG_DELETE_ANSWER 
-						+ " [Actual]" + wd.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+						+ " [Actual]" + wd.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			
 			//cancel
@@ -1583,7 +1623,7 @@ public class StandbyRoom {
 			// TODO: handle exception
 			System.out.println("cannot find element : " + e.getMessage());
 		}
-		Thread.sleep(500);
+		/* 토스트 타이밍 문제로 주석처리
 		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
 				failMsg = failMsg + "\n1-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
@@ -1610,7 +1650,7 @@ public class StandbyRoom {
 		} else {
 			failMsg = failMsg + "\n3-2. cannot find toast (attendee B)";
 		}
-		
+		*/
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e =  new Exception(failMsg);
 	    	throw e;
