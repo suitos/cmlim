@@ -65,12 +65,12 @@ import org.testng.annotations.Test;
 
 public class Presentation {
 
-	public static String PLACEHOLDER_YOUTUBE = "Enter Youtube link";
+	public static String PLACEHOLDER_YOUTUBE = "Enter YouTube link";
 	public static String PLACEHOLDER_PRESENTION_DES = "Enter a description to view with file.";
 	public static String MSG_YOUTUBE_ERROR = "Please, enter a valid YouTube link.";
 	public static String MSG_YOUTUBE_EXCEED_ERROR = "You have exceeded the max. number of YouTube registrations.";
 	public static String MSG_FILE_EXCEED_ERROR = "Maximum number of files has been exceeded.";
-	public static String MSG_FILE_UPLOAD = "Uploaded files can be used and shared by the presenter and the organizer at the seminar (up to 10 files, 500MB total). * File type : doc, docx, pdf, ppt, pptx, hwp, txt, jpg, jpeg, png, gif";
+	public static String MSG_FILE_UPLOAD = "Uploaded PDF files can be used and shared by the presenter and the organizer at the seminar (up to 10 files, 500MB total).";
 	public static String MSG_DEETE_ITEM = "Do you want to delete the selected file?";
 	
 	public String des_youtube1 = "1.youtube description test!!";
@@ -293,7 +293,7 @@ public class Presentation {
 			Thread.sleep(500);
 		}		
 		
-		if(!driver.findElement(By.xpath("//div[@class='PageTitleWrapper_wrap__1lvJU seminar-page-title']/div")).getText().contentEquals(MSG_FILE_UPLOAD)) {
+		if(!driver.findElement(By.xpath("//div[@class='PageTitleWrapper_wrap__1lvJU seminar-page-title doc-view-title']/div")).getText().contentEquals(MSG_FILE_UPLOAD)) {
 			failMsg = "1. Presentation tab message error [Actual]" 
 					+ driver.findElement(By.xpath("//div[@class='PageTitleWrapper_wrap__1lvJU seminar-page-title']/div")).getText();
 		}
@@ -338,7 +338,7 @@ public class Presentation {
 	}
 
 	// 13. 발표자료 - 정상 파일 추가1
-	@Test(priority = 13, enabled = false)
+	@Test(priority = 13, enabled = true)
 	public void presentation_file_valid() throws Exception {
 		String failMsg = "";
 
@@ -352,7 +352,7 @@ public class Presentation {
 		int docs_beforeS = driver.findElements(By.xpath("//li[@class='DocItem_doc-item__2bSNb']")).size();
 		
 		//add vaild file
-		String testpng = filePath + CommonValues.TESTFILE_LIST[0];
+		String testpng = filePath + CommonValues.TESTFILE_PDFS[0];
 		driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testpng);
 		Thread.sleep(1000);
 		
@@ -361,7 +361,7 @@ public class Presentation {
 		if((docs_beforeS+1) != docs_after.size()) {
 			failMsg = "1. added file count error [Expected]" + (docs_beforeS+1) + " [Actual]" + docs_after.size();
 		}  else {
-			addedItem.add(CommonValues.TESTFILE_LIST[0]);
+			addedItem.add(CommonValues.TESTFILE_PDFS[0]);
 		}
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
@@ -372,7 +372,7 @@ public class Presentation {
 	}	
 	
 	// 14. 발표자료 - 발표자료 10개 초과
-	@Test(priority = 14, enabled = false, dependsOnMethods = {"presentation_file_valid"})
+	@Test(priority = 14, enabled = true, dependsOnMethods = {"presentation_file_valid"})
 	public void presentation_file_max() throws Exception {
 		String failMsg = "";
 
@@ -388,14 +388,14 @@ public class Presentation {
 		//add vaild file 9
 		String testpng = "";
 		for(int i = 1 ; i < 10 ; i++) {
-			testpng = filePath + CommonValues.TESTFILE_LIST[i];
+			testpng = filePath + CommonValues.TESTFILE_PDFS[1];
 			driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testpng);
-			addedItem.add(CommonValues.TESTFILE_LIST[i]);
-			Thread.sleep(1000);
+			addedItem.add(CommonValues.TESTFILE_PDFS[1]);
+			Thread.sleep(2000);
 		}
 		
 		//add 1
-		testpng = filePath + CommonValues.TESTFILE_LIST[0];
+		testpng = filePath + CommonValues.TESTFILE_PDFS[1];
 		driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testpng);
 		Thread.sleep(1000);
 		assertEquals(closeAlertAndGetItsText(), MSG_FILE_EXCEED_ERROR);
