@@ -429,7 +429,7 @@ public class AttendeesTest{
 
 		WebDriverWait wait = new WebDriverWait(attendeesDriver, 5);
 		try {
-			wait.until(ExpectedConditions.visibilityOfAllElements(attendeesDriver.findElements(By.xpath(XPATH_ATTEND_SEMINARVIEW_TITLE))));
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_ATTEND_SEMINARVIEW_TITLE)));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -806,7 +806,14 @@ public class AttendeesTest{
 		Thread.sleep(500);
 		//join seminar
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(2000);
+
+		WebDriverWait wait = new WebDriverWait(attendeesDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		//check room uri
@@ -873,7 +880,14 @@ public class AttendeesTest{
 		// 입장
 		// join seminar
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
+
+		WebDriverWait wait = new WebDriverWait(memberDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		// check room uri
@@ -933,7 +947,14 @@ public class AttendeesTest{
 		
 		// join seminar
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
+		
+		WebDriverWait wait = new WebDriverWait(memberDriver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		// check room uri
@@ -1058,7 +1079,7 @@ public class AttendeesTest{
 		Thread.sleep(2000);
 		
 		try {
-			wait.until(ExpectedConditions.visibilityOfAllElements(attendeesDriver.findElements(By.xpath(XPATH_ATTEND_NICKNAME))));
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_ATTEND_NICKNAME)));
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("cannot find nickname field");
@@ -1103,7 +1124,13 @@ public class AttendeesTest{
 		
 		//join seminar
 		attendeesDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
-		Thread.sleep(1000);
+
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 
 		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		// check room uri
@@ -1133,7 +1160,7 @@ public class AttendeesTest{
 		String xpath_onair = "//strong[@id='user-type']";
 		
 		WebDriverWait wait = new WebDriverWait(driver, 5);
-		wait.until(ExpectedConditions.visibilityOfAllElements(driver.findElements(By.xpath(xpath_onair))));
+		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(xpath_onair)));
 				
 		// on air tag  : presenter
 		if (!driver.findElement(By.xpath(xpath_onair)).getAttribute("class").contains("onair")) {
@@ -1839,4 +1866,68 @@ public class AttendeesTest{
 		}
 	}
 
-	private boolean isElementPresent_wd(WebDr
+	private boolean isElementPresent_wd(WebDriver wd, By by) {
+		try {
+			wd.findElement(by);
+			return true;
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+	}
+
+	  private boolean isAlertPresent() {
+	    try {
+	      driver.switchTo().alert();
+	      return true;
+	    } catch (NoAlertPresentException e) {
+	      return false;
+	    }
+	  }
+
+	private boolean findAlert(WebDriver wd, String msg) {
+		// attendees
+		if (ExpectedConditions.alertIsPresent().apply(wd) == null) {
+			return false;
+
+		} else {
+			// 알림창이 존재하면 알림창 확인을 누를것
+			assertEquals(closeAlertAndGetItsText_webdriver(wd), msg);
+			return true;
+		}
+	}
+
+	private String closeAlertAndGetItsText() {
+		try {
+			Alert alert = driver.switchTo().alert();
+			String alertText = alert.getText();
+			if (acceptNextAlert) {
+				alert.accept();
+			} else {
+				alert.dismiss();
+			}
+			return alertText;
+		} catch (Exception e){
+			return e.getMessage();
+		} finally {
+			acceptNextAlert = true;
+		}
+	}
+
+	private String closeAlertAndGetItsText_webdriver(WebDriver wd) {
+		try {
+			Alert alert = wd.switchTo().alert();
+			String alertText = alert.getText();
+			if (acceptNextAlert) {
+				alert.accept();
+			} else {
+				alert.dismiss();
+			}
+			return alertText;
+		}  catch (Exception e){
+			return e.getMessage();
+		} finally {
+			acceptNextAlert = true;
+		}
+	}
+
+}
