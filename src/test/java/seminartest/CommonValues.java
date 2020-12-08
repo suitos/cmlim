@@ -174,7 +174,8 @@ public class CommonValues {
 	public static String YOUTUBE_INVAILD_URL = "https://www.youtube.com/embed/dkZdxNhFHBMaaaaaaa";
 	public static String TESTFILE_PATH = System.getProperty("user.dir") + "\\testdata\\";
 	public static String TESTFILE_PATH_MAC = System.getProperty("user.dir") + "/testdata/";
-	public static String TESTFILE_LIST[] = {"image.png", "text.txt", "ppt.pptx", "ppt2.ppt", "doc1.docx", "doc2.doc", "hwp.hwp", "image3.gif" ,"image2.jpg", "image4.jpeg", "image4.jpeg"}; 
+	public static String TESTFILE_LIST[] = {"image.png", "text.txt", "ppt.pptx", "ppt2.ppt", "doc1.docx", "doc2.doc", "hwp.hwp", "image3.gif" ,"image2.jpg", "image4.jpeg", "image4.jpeg"};
+	public static String TESTFILE_PDFS[] = {"pdf.pdf", "pdf2.pdf"};
 	public static String TESTFILE_INVALID_LIST[] = {"excel.xlsx", "exe.exe", "zip.zip"}; 
 	public static String ERROR_FILEFORMAT= "This file format is not supported.";
 	public static String ERROR_YOUTUBELINK = "Please, enter a valid YouTube link.";
@@ -332,6 +333,7 @@ public class CommonValues {
 		    options.addArguments("--disable-infobars"); 
 		    options.addArguments("--disable-dev-shm-usage");
 		    options.addArguments("--disable-browser-side-navigation");
+		    options.addArguments("--start-maximized");
 		    
 		    if(presenter) {
 		    	options.addArguments("auto-select-desktop-capture-source=Entire screen");
@@ -504,17 +506,18 @@ public class CommonValues {
 			System.out.println("cannot find element " + e.getMessage());
 		}
 		Thread.sleep(2000);
+		/*
 		System.out.println("try take screenshot");
 		String filepath = System.getProperty("user.dir") + "\\test-output\\failimg\\" + "channel.png";
 		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 		// Now you can do whatever you need to do with it, for example copy somewhere
 		FileUtils.copyFile(scrFile, new File(filepath));
+		*/
 		List<WebElement> channelList = driver.findElements(By.xpath(XPATH_CREATESEMINAR_CHANNELLIST));
-		
 		for (int i = 0; i < channelList.size(); i++) {
 			
-			System.out.println("channel : " + channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText());
-			if (channelList.get(i).findElement(By.xpath(".//label/span[1]")).getText().contentEquals("rsrsup1")) {
+			System.out.println("channel : " + channelList.get(i).findElement(By.xpath(".//label/span[1]")).getAttribute("innerText"));
+			if (channelList.get(i).findElement(By.xpath(".//label/span[1]")).getAttribute("innerText").contentEquals("rsrsup1")) {
 				// click second channel
 				channelList.get(i).findElement(By.xpath(".//label/span[1]")).click();
 				Thread.sleep(500);

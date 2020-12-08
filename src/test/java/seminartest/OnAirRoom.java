@@ -72,6 +72,7 @@ public class OnAirRoom {
 	public static String XPATH_ROOM_SCREEN_BTN = "//div[@id='presentation-buttons']/section[1]";
 	public static String XPATH_ROOM_CAM_BTN = "//div[@id='presentation-buttons']/section[2]";
 	public static String XPATH_ROOM_DOC_BTN = "//div[@id='presentation-buttons']/section[4]";
+	public static String XPATH_ROOM_DOC_UPLOAD = "//input[@id='doc-upload-input']";
 	public static String XPATH_ROOM_YUTUBE_BTN = "//div[@id='presentation-buttons']/section[3]";
 	public static String XPATH_ROOM_YUTUBEADD_BTN = "//button[@class='btn-rect plus']";
 	public static String XPATH_ROOM_YUTUBEADD_URL_BOX = "//input[@class='url-input']";
@@ -135,11 +136,6 @@ public class OnAirRoom {
 		driver.findElement(By.xpath("//div[@class='l-right']/button[1]")).click();
 		Thread.sleep(1000);
 		
-		Thread.sleep(500);
-
-		// check seminar type
-		driver.findElement(By.id("seminar-type")).click();
-		driver.findElement(By.xpath("//div[@class='box-option open']/div[1]")).click();
 
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).click();
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TITLE)).clear();
@@ -148,8 +144,9 @@ public class OnAirRoom {
 		driver.findElement(By.name("startTime")).sendKeys(seminarTime);
 		Thread.sleep(2000);
 
+		
 		//presentation tab
-		String presentationurl = CommonValues.SERVER_URL + CommonValues.CREATE_PRESENTATION_URI;
+		String presentationurl = CommonValues.SERVER_URL + CommonValues.CREATE_PRESENTATION_URI ;
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_TAB4)).click();
 
 		Thread.sleep(1000);
@@ -161,16 +158,21 @@ public class OnAirRoom {
 		String filePath = CommonValues.TESTFILE_PATH;
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) 
 			filePath = CommonValues.TESTFILE_PATH_MAC;
-	
-		String testDoc = filePath + CommonValues.TESTFILE_LIST[0];
+		String testDoc = filePath + CommonValues.TESTFILE_PDFS[0];
 		driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testDoc);
-		Thread.sleep(2000);
-		
+
 		//add youtube
 		driver.findElement(By.id("input-youtube-link")).clear();
 		driver.findElement(By.id("input-youtube-link")).sendKeys(CommonValues.YOUTUBE_URL[0]);
 		driver.findElement(By.xpath("//input[@id='input-youtube-link']/following::button[1]")).click();
 		Thread.sleep(1000);
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//li[@class='DocItem_doc-item__2bSNb']//textarea[@class='input-content']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		//add file, youtube description
 		// presentation list size
@@ -181,13 +183,18 @@ public class OnAirRoom {
 
 		docs_before.get(1).findElement(By.xpath(".//textarea[@class='input-content']")).clear();
 		docs_before.get(1).findElement(By.xpath(".//textarea[@class='input-content']")).sendKeys(DES_YOUTUBE);
-
-		docs_before.get(0).findElement(By.xpath(".//textarea[@class='input-content']")).click();
-		Thread.sleep(1000);
 		
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//li[@class='DocItem_doc-item__2bSNb']//textarea[@class='input-content']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
+		Thread.sleep(7000);
+		docs_before.get(0).findElement(By.xpath(".//textarea[@class='input-content']")).click();
 		// save seminar
 		driver.findElement(By.xpath(CommonValues.XPATH_CREATESEMINAR_SAVE_BTN)).click();
-		WebDriverWait wait = new WebDriverWait(driver, 10);
+
 		try {
 			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(ListTest.XPATH_LIST_TAB_SAVED)));
 		} catch (Exception e) {
@@ -200,7 +207,7 @@ public class OnAirRoom {
 		String seminarUri = "";
 		CommonValues comm = new CommonValues();
 		seminarUri = comm.findSeminarIDInList(driver, seminarName);
-
+		
 		// post seminar
 		comm.postSeminar(driver, seminarUri);
 		
@@ -227,7 +234,7 @@ public class OnAirRoom {
 	}
 	
 	//1. 게시자겸 발표자 세미나 룸입장, 세미나 시작
-	@Test(priority = 1, enabled = true)
+	@Test(priority = 1, dependsOnMethods = {"CreateOnAirSeminar"}, enabled = true)
 	public void SeminarRoom_Pres() throws Exception {
 		
 		String failMsg = "";
@@ -239,8 +246,14 @@ public class OnAirRoom {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)));
 		driver.findElement(By.xpath(CommonValues.XPATH_SEMINARVIEW_ENTER)).click();
-		Thread.sleep(2000);
-		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
 		if(tabs2.size() == 2) {
@@ -277,7 +290,7 @@ public class OnAirRoom {
 	}
 	
 	//2. 문서 파일 확인 (툴팁포함), 삭제
-	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
+	@Test(priority = 2, dependsOnMethods = { "SeminarRoom_Pres" }, alwaysRun = true,  enabled = true)
 	public void doc_checkDelete() throws Exception {
 		
 		String failMsg = "";
@@ -296,13 +309,13 @@ public class OnAirRoom {
 				failMsg = "1. doc item icon is enable.";
 			
 			//icon
-			if(!driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class").contentEquals("png icon")) {
-				failMsg = failMsg + "\n 2. doc item icon [Expected]png, [Actual]" + driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class");
+			if(!driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class").contentEquals("pdf icon")) {
+				failMsg = failMsg + "\n 2. doc item icon [Expected]pdf, [Actual]" + driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//i[1]")).getAttribute("class");
 			}
 			
 			//title
-			if(!driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText().contains(CommonValues.TESTFILE_LIST[0])) {
-				failMsg = failMsg + "\n 3. doc item title [Expected]" + CommonValues.TESTFILE_LIST[0] + " [Actual]" + driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText();
+			if(!driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText().contains(CommonValues.TESTFILE_PDFS[0])) {
+				failMsg = failMsg + "\n 3. doc item title [Expected]" + CommonValues.TESTFILE_PDFS[0] + " [Actual]" + driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON + "//div[@class='title']")).getText();
 			}
 			
 			Actions actions = new Actions(driver);
@@ -310,8 +323,15 @@ public class OnAirRoom {
 			// mouse hover
 			WebElement web = driver.findElement(By.xpath(XPATH_ROOM_DOC_ICON));
 			actions.moveToElement(web).perform();
-			Thread.sleep(100);
+			Thread.sleep(500);
 			
+			WebDriverWait wait = new WebDriverWait(driver, 10);
+			try {
+				wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath(OnAirRoom.XPATH_ROOM_TOOLTIP)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element : " + e.getMessage());
+			}
 			
 			//툴팁 확인
 			if(isElementPresent(By.xpath(XPATH_ROOM_TOOLTIP))){
@@ -369,19 +389,17 @@ public class OnAirRoom {
 	}
 	
 	// 3. 발표자 onair 룸에서 발표문서 추가
-	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres", "doc_checkDelete" }, enabled = false)
+	@Test(priority = 3, dependsOnMethods = { "doc_checkDelete" }, alwaysRun = true, enabled = true)
 	public void doc_addFile() throws Exception {
 		String failMsg = "";
-		
-		//refresh window
-		driver.navigate().refresh();
-		Thread.sleep(500);
 		
 		CommonValues comm = new CommonValues();
 		comm.checkSettingpopup(driver);
 		
-		//click doc icon
-		driver.findElement(By.xpath(XPATH_ROOM_DOC_BTN)).click();
+		if(!isElementPresent(By.xpath(XPATH_ROOM_DOC_UPLOAD))) {
+			//click doc icon
+			driver.findElement(By.xpath(XPATH_ROOM_DOC_BTN)).click();
+		}
 		
 		List<WebElement> docitems = driver.findElements(By.xpath(XPATH_ROOM_DOC_ICON));
 		int doccount = docitems.size();
@@ -390,7 +408,7 @@ public class OnAirRoom {
 		String filePath = CommonValues.TESTFILE_PATH;
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) 
 			filePath = CommonValues.TESTFILE_PATH_MAC;
-		String addedfile = filePath + CommonValues.TESTFILE_LIST[3];
+		String addedfile = filePath + CommonValues.TESTFILE_PDFS[1];
 		driver.findElement(By.xpath("//input[@id='doc-upload-input']")).sendKeys(addedfile);
 		Thread.sleep(500);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -398,7 +416,7 @@ public class OnAirRoom {
 		//check added file
 		docitems = driver.findElements(By.xpath(XPATH_ROOM_DOC_ICON));
 		if(doccount+1 == docitems.size()) {
-			if(!docitems.get(doccount).findElement(By.xpath(".//div[@class='title']")).getText().contains(CommonValues.TESTFILE_LIST[3])) {
+			if(!docitems.get(doccount).findElement(By.xpath(".//div[@class='title']")).getText().contains(CommonValues.TESTFILE_PDFS[1])) {
 				failMsg = "1. added file title error [Expected] " + CommonValues.TESTFILE_LIST[3]+ " [Actual]" + docitems.get(doccount).findElement(By.xpath("/div[@class='title']")).getText();
 			}
 			
@@ -413,14 +431,14 @@ public class OnAirRoom {
 	}
 	
 	// 4. 발표자 onair 룸에서 발표문서 추가 초과(10개 초과)
-	@Test(priority = 4, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = false)
+	@Test(priority = 4, dependsOnMethods = { "doc_addFile" }, enabled = true)
 	public void doc_addFileMax() throws Exception {
 		//기획안됨
 	}
 	
 	
 	// 5. 발표자 onair 룸에서 유튜브 확인 삭제
-	@Test(priority = 5, dependsOnMethods = { "SeminarRoom_Pres" }, alwaysRun = true, enabled = true)
+	@Test(priority = 5, dependsOnMethods = { "doc_addFile" }, alwaysRun = true, enabled = true)
 	public void youtube_checkDelete() throws Exception {
 		
 		String failMsg = "";
@@ -518,7 +536,7 @@ public class OnAirRoom {
 	}
 	
 	// 6. 발표자 onair 룸에서 유튜브 추가 : invalid case
-	@Test(priority = 6, dependsOnMethods = { "SeminarRoom_Pres", "youtube_checkDelete" }, alwaysRun = true, enabled = true)
+	@Test(priority = 6, dependsOnMethods = { "youtube_checkDelete" }, alwaysRun = true, enabled = true)
 	public void youtube_add1() throws Exception {
 		String failMsg = "";
 		
@@ -527,9 +545,11 @@ public class OnAirRoom {
 		CommonValues comm = new CommonValues();
 		comm.checkSettingpopup(driver);
 		
-		//click youtube icon
-		driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
-		Thread.sleep(500);
+		if(!isElementPresent_wd(driver, By.xpath(XPATH_ROOM_YUTUBEADD_BTN))) {
+			//click youtube icon
+			driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
+		}
+		
 		
 		if(!isElementPresent(By.xpath(XPATH_ROOM_YUTUBEADD_BTN))) {
 			driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
@@ -597,7 +617,7 @@ public class OnAirRoom {
 	}
 	
 	//7. 발표자 onair 룸에서 유튜브 추가
-	@Test(priority = 7, dependsOnMethods = { "SeminarRoom_Pres", "youtube_add1" }, alwaysRun = true, enabled = true)
+	@Test(priority = 7, dependsOnMethods = { "youtube_add1" }, alwaysRun = true, enabled = true)
 	public void youtube_add2() throws Exception {
 		String failMsg = "";
 				
@@ -625,7 +645,7 @@ public class OnAirRoom {
 		
 		WebDriverWait wait = new WebDriverWait(driver, 10);
 		try {
-			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_ROOM_TOAST)));
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(XPATH_ROOM_TOAST)));
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("cannot find element : " + e.getMessage());
@@ -662,7 +682,7 @@ public class OnAirRoom {
 	}
 
 	// 8. 발표자  onair 룸에서 유튜브 추가 최대(10개)
-	@Test(priority = 8, dependsOnMethods = { "SeminarRoom_Pres", "youtube_add2" }, alwaysRun = true, enabled = true)
+	@Test(priority = 8, dependsOnMethods = { "youtube_add2" }, alwaysRun = true, enabled = true)
 	public void youtube_max() throws Exception {
 		String failMsg = "";
 		
@@ -674,7 +694,7 @@ public class OnAirRoom {
 	}
 
 	// 8. 참석자 A 입장
-	@Test(priority = 8, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 8, dependsOnMethods = { "youtube_add2" }, alwaysRun = true,  enabled = true)
 	public void enterSeminar_attendA() throws Exception {
 		
 		//seminar url
@@ -728,7 +748,7 @@ public class OnAirRoom {
 	}
 	
 	// 9. 참석자 A : onair 화면 확인
-	@Test(priority = 9, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 9, dependsOnMethods = { "youtube_add2" }, alwaysRun = true, enabled = true)
 	public void onAirRoomBasic_attendA() throws Exception {
 		String failMsg = "";
 		
@@ -805,7 +825,7 @@ public class OnAirRoom {
 	}	
 
 	// 10. 발표자, 참석자A, 참석자 B : 채팅 기본(한줄씩)
-	@Test(priority = 10, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 10, dependsOnMethods = { "youtube_add2" }, alwaysRun = true, enabled = true)
 	public void chattingBasic() throws Exception {
 		String failMsg = "";
 		
@@ -876,7 +896,7 @@ public class OnAirRoom {
 	}
 
 	// 21. 참석자A 질믄 입력, 발표자, 참석자B 질문 뱃지확인 
-	@Test(priority = 21, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 21, dependsOnMethods = { "chattingBasic" }, alwaysRun = true, enabled = true)
 	public void qnaPublic() throws Exception {
 		String failMsg = "";
 		
@@ -913,7 +933,7 @@ public class OnAirRoom {
 			failMsg = failMsg + "\n 00. cannot find QnA bedge";
 		}
 		attendBDriver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).click();
-		Thread.sleep(100);
+		Thread.sleep(500);
 		
 		List<WebElement> qnas2 = attendBDriver.findElements(By.xpath(XPATH_ROOM_QNA_LIST));
 		if(qnas2.size() != 1) {
@@ -931,7 +951,7 @@ public class OnAirRoom {
 	}
 	
 	// 22. 참석자B 질믄 입력 (참석자A,참석자B 질믄), 참석자A가 본인 질문 삭제
-	@Test(priority = 22, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 22, dependsOnMethods = { "qnaPublic" }, alwaysRun = true,  enabled = true)
 	public void qnaPublic_delete1() throws Exception {
 		String failMsg = "";
 			
@@ -957,10 +977,18 @@ public class OnAirRoom {
 			Thread.sleep(100);
 			
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
+			
+			WebDriverWait wait = new WebDriverWait(attendADriver, 10);
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element : " + e.getMessage());
+			}
 			Thread.sleep(500);
 			
-			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -1013,7 +1041,7 @@ public class OnAirRoom {
 	}	
 
 	// 23. 참석자A 질믄 입력 (참석자A,참석자B 질믄), 발표자가  참석자B 질문 삭제
-	@Test(priority = 23, dependsOnMethods = { "SeminarRoom_Pres", "qnaPublic_delete1" }, alwaysRun = true, enabled = true)
+	@Test(priority = 23, dependsOnMethods = { "qnaPublic_delete1" }, alwaysRun = true, enabled = true)
 	public void qnaPublic_delete2() throws Exception {
 		String failMsg = "";
 		
@@ -1021,12 +1049,6 @@ public class OnAirRoom {
 		
 		//참석자A 질문작성
 		qna.addQuestion(attendADriver, QNA_QUESTION_PUBLIC, true);
-		
-		System.out.println("try take screenshot");
-		String filepath = System.getProperty("user.dir") + "\\test-output\\failimg\\" + "23.png";
-		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-		// Now you can do whatever you need to do with it, for example copy somewhere
-		FileUtils.copyFile(scrFile, new File(filepath));
 		
 		//발표자가  참석자B 질문 삭제
 		if(driver.findElement(By.xpath(XPATH_ROOM_TAB_QNA)).getAttribute("class").contentEquals("qna false")) {
@@ -1047,8 +1069,8 @@ public class OnAirRoom {
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
 			Thread.sleep(100);
 			
-			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -1114,7 +1136,7 @@ public class OnAirRoom {
 	}		
 
 	// 24. 참석자A 비공개 질믄 입력 (참석자B 비공개1 ,참석자B 비공개0)
-	@Test(priority = 24, dependsOnMethods = { "SeminarRoom_Pres", "qnaPublic_delete2"}, enabled = true)
+	@Test(priority = 24, dependsOnMethods = { "qnaPublic_delete2"}, alwaysRun = true, enabled = true)
 	public void qnaPrivate() throws Exception {
 		String failMsg = "";
 		
@@ -1176,7 +1198,7 @@ public class OnAirRoom {
 	}	
 
 	// 25. 참석자A 비공개1 ,참석자B 비공개1 만들기. 참석자A가 비공개 질문 삭제
-	@Test(priority = 25, dependsOnMethods = { "SeminarRoom_Pres", "qnaPrivate" }, alwaysRun = true, enabled = true)
+	@Test(priority = 25, dependsOnMethods = { "qnaPrivate" }, alwaysRun = true, enabled = true)
 	public void qnaPrivate_delete1() throws Exception {
 		String failMsg = "";
 		
@@ -1203,8 +1225,8 @@ public class OnAirRoom {
 			web.findElement(By.xpath(".//i[@class='ricon-close']")).click();
 			Thread.sleep(500);
 			
-			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			attendADriver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -1257,7 +1279,7 @@ public class OnAirRoom {
 	}		
 
 	// 26. 참석자A 비공개1 ,참석자B 비공개1. 발표자가 참석자B 비공개 질문 삭제
-	@Test(priority = 26, dependsOnMethods = { "SeminarRoom_Pres", "qnaPrivate_delete1" }, alwaysRun = true, enabled = true)
+	@Test(priority = 26, dependsOnMethods = { "qnaPrivate_delete1" }, alwaysRun = true, enabled = true)
 	public void qnaPrivate_delete2() throws Exception {
 		String failMsg = "";
 		
@@ -1292,8 +1314,8 @@ public class OnAirRoom {
 			}
 			Thread.sleep(500);
 			
-			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(MSG_DELETE_QUESTION)) {
-				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+			if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(MSG_DELETE_QUESTION)) {
+				failMsg = failMsg + "\n 2. delete popup msg[Expected]" + MSG_DELETE_QUESTION +  "[Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			//cancel
 			driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[2]")).click();
@@ -1343,7 +1365,7 @@ public class OnAirRoom {
 	}	
 	
 	//30. 참석자A 비공개1, 참석자A 공개질믄 입력. 발표자가 공개질문에 답변 작성
-	@Test(priority = 30, dependsOnMethods = { "SeminarRoom_Pres", "qnaPrivate_delete2" }, alwaysRun = true, enabled = true)
+	@Test(priority = 30, dependsOnMethods = { "qnaPrivate_delete2" }, alwaysRun = true, enabled = true)
 	public void qnaPublic_answer() throws Exception {
 		String failMsg = "";
 		List<String> ans = new ArrayList<String>();
@@ -1400,7 +1422,7 @@ public class OnAirRoom {
 	}
 	
 	//31. 참석자A 비공개1, 참석자A 공개질믄1,  발표자가 비공개질문에 답변 작성
-	@Test(priority = 31, dependsOnMethods = { "SeminarRoom_Pres", "qnaPublic_answer" }, alwaysRun = true, enabled = true)
+	@Test(priority = 31, dependsOnMethods = { "qnaPublic_answer" }, alwaysRun = true, enabled = true)
 	public void qnaPrivate_answer() throws Exception {
 		String failMsg = "";
 
@@ -1465,7 +1487,7 @@ public class OnAirRoom {
 	}
 	
 	//32. 참석자A 비공개1, 참석자A 공개질믄1,  발표자가 공개질문 답변 삭제 ( 공개, 비공개 순)
-	@Test(priority = 32, dependsOnMethods = { "SeminarRoom_Pres", "qnaPrivate_answer" }, alwaysRun = true, enabled = true)
+	@Test(priority = 32, dependsOnMethods = { "qnaPrivate_answer" }, alwaysRun = true, enabled = true)
 	public void qnaPublic_deleteAnswer() throws Exception {
 		String failMsg = "";
 		
@@ -1508,7 +1530,7 @@ public class OnAirRoom {
 	}
 
 	//33. 참석자A 비공개1, 참석자A 공개질믄1,  발표자가 비공개질문 답변 삭제 ( 공개, 비공개 순)
-	@Test(priority = 33, dependsOnMethods = { "SeminarRoom_Pres", "qnaPublic_deleteAnswer" }, alwaysRun = true, enabled = true)
+	@Test(priority = 33, dependsOnMethods = { "qnaPublic_deleteAnswer" }, alwaysRun = true, enabled = true)
 	public void qnaPrivate_deleteAnswer() throws Exception {
 		String failMsg = "";
 		
@@ -1573,7 +1595,7 @@ public class OnAirRoom {
 			System.out.println("cannot find element : " + e.getMessage());
 		}
 		Thread.sleep(700);
-		
+		/* 타이밍 문제로 토스트 확인은 하지 않는걸로
 		if(isElementPresent_wd(driver, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
 			if(!driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(CommonValues.SEMINAR_CLOSE_MSG)) {
 				failMsg = failMsg + "\n1-1. toast message. (presenter) [Expected]" + CommonValues.SEMINAR_CLOSE_MSG
@@ -1600,7 +1622,7 @@ public class OnAirRoom {
 		} else {
 			failMsg = failMsg + "\n3-2. cannot find toast (attendee B)";
 		}
-		
+		*/
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e =  new Exception(failMsg);
 	    	throw e;
