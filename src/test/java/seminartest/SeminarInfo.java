@@ -259,9 +259,9 @@ public class SeminarInfo {
 		
 		String postmsg = String.format(MSG_POST, "rsrup1");
 		try {
-			if(driver_publisher.findElement(By.xpath("//div[@class='modal-body']")).getText().contentEquals(postmsg)) {
+			if(driver_publisher.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(postmsg)) {
 				failMsg = failMsg + "\n 1. post popup msg [Expected]" + postmsg 
-						+ " [Actual]" + driver_publisher.findElement(By.xpath("//div[@class='modal-body']")).getText();
+						+ " [Actual]" + driver_publisher.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 			}
 			
 			//cancel

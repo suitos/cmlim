@@ -184,9 +184,9 @@ public class ListTest {
 				
 				Thread.sleep(500);
 				String popupmsg = String.format(CommonValues.MSG_POST_SEMINAR, userName);
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(popupmsg)){
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(popupmsg)){
 					failMsg = failMsg + "\n 2. post popup msg error : [Expected]" + popupmsg
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				Thread.sleep(500);
@@ -285,9 +285,9 @@ public class ListTest {
 			if(buttonTest(we, "link", true)) {
 				Thread.sleep(500);
 				
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(CommonValues.MSG_COPY_SEMINAR_LINK)){
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(CommonValues.MSG_COPY_SEMINAR_LINK)){
 					failMsg = failMsg + "\n 2. post popup msg error : [Expected]" + CommonValues.MSG_COPY_SEMINAR_LINK
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				//click confirm
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
@@ -527,9 +527,9 @@ public class ListTest {
 			if (buttonTest(we, "trash", true)) {
 				Thread.sleep(500);
 
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
 					failMsg = failMsg + "\n 2. msg error(delete seminar) [Expected]" + CommonValues.MSG_DELETE_SEMINAR
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				//cancel
@@ -647,10 +647,10 @@ public class ListTest {
 			if (buttonTest(we, "link", true)) {
 				Thread.sleep(500);
 				
-				if (!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText()
+				if (!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText")
 						.contentEquals(CommonValues.MSG_COPY_SEMINAR_LINK)) {
 					failMsg = failMsg + "\n 2. post popup msg error : [Expected]" + CommonValues.MSG_COPY_SEMINAR_LINK
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				// click confirm
 				driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
@@ -742,9 +742,9 @@ public class ListTest {
 		driver.get(editUrl);
 		Thread.sleep(500);
 		
-		if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(CommonValues.MSG_READYSEMINAR_EDIT)) {
+		if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(CommonValues.MSG_READYSEMINAR_EDIT)) {
 			failMsg = "1. popup msg error : [Expected]" + CommonValues.MSG_READYSEMINAR_EDIT
-					+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+					+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 		}
 		
 		driver.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button")).click();
@@ -1093,9 +1093,9 @@ public class ListTest {
 			if (buttonTest(we, "trash", true)) {
 				Thread.sleep(500);
 
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
 					failMsg = failMsg + "\n 2. msg error(delete seminar) [Expected]" + CommonValues.MSG_DELETE_SEMINAR
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				//cancel
@@ -1186,9 +1186,9 @@ public class ListTest {
 			if(buttonTest(we, "post", true)) {
 				Thread.sleep(500);
 				String popupmsg = String.format(CommonValues.MSG_POST_SEMINAR, userName);
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(popupmsg)){
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(popupmsg)){
 					failMsg = failMsg + "\n 2. post popup msg error : [Expected]" + popupmsg
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				Thread.sleep(500);
@@ -1458,9 +1458,9 @@ public class ListTest {
 			if (buttonTest(we, "trash", true)) {
 				Thread.sleep(500);
 
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
 					failMsg = failMsg + "\n 2. msg error(delete seminar) [Expected]" + CommonValues.MSG_DELETE_SEMINAR
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				//cancel
@@ -1998,9 +1998,9 @@ public class ListTest {
 			if (buttonTest(we, "trash", true)) {
 				Thread.sleep(500);
 
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
 					failMsg = failMsg + "\n 2. msg error(delete seminar) [Expected]" + CommonValues.MSG_DELETE_SEMINAR
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				//cancel
@@ -2094,9 +2094,9 @@ public class ListTest {
 			if(buttonTest(we, "post", true)) {
 				Thread.sleep(500);
 				String popupmsg = String.format(CommonValues.MSG_POST_SEMINAR, userName);
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(popupmsg)){
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(popupmsg)){
 					failMsg = failMsg + "\n 2. post popup msg error : [Expected]" + popupmsg
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				Thread.sleep(500);
@@ -2374,9 +2374,9 @@ public class ListTest {
 			if (buttonTest(we, "trash", true)) {
 				Thread.sleep(500);
 
-				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText().contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
+				if(!driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(CommonValues.MSG_DELETE_SEMINAR)) {
 					failMsg = failMsg + "\n 2. msg error(delete seminar) [Expected]" + CommonValues.MSG_DELETE_SEMINAR
-							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getText();
+							+ " [Actual]" + driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
 				}
 				
 				//cancel

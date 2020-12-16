@@ -268,7 +268,6 @@ public class ChannelInfo {
 			throw e;
 		}
 	}		
-	
 
 	
 	public void clearAttributeValue(WebElement el) 
