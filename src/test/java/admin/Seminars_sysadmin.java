@@ -481,9 +481,9 @@ public class Seminars_sysadmin {
 			failMsg = "1. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText().contentEquals(PUBLIC)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(PUBLIC)) {
 					failMsg = failMsg + "\n2-" + i + ". searched seminar prpperty. [Expected]" + PUBLIC 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -501,9 +501,9 @@ public class Seminars_sysadmin {
 			failMsg = failMsg + "\n3. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText().contentEquals(PRIVATE)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(PRIVATE)) {
 					failMsg = failMsg + "\n4-" + i + ". searched seminar prpperty. [Expected]" + PRIVATE 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -538,9 +538,9 @@ public class Seminars_sysadmin {
 			failMsg = "1. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(TEMP)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText().contentEquals(TEMP)) {
 					failMsg = failMsg + "\n2-" + i + ". searched seminar state. [Expected]" + TEMP 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -550,7 +550,7 @@ public class Seminars_sysadmin {
 		Thread.sleep(500);
 		driver.findElement(By.xpath(XPATH_SEMINAR_SELECTOR_STATE_NOTREADY)).click();
 		driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCH_BTN)).click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		
 		rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 		
@@ -558,9 +558,9 @@ public class Seminars_sysadmin {
 			failMsg = failMsg + "\n3. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(NOTREADY)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText().contentEquals(NOTREADY)) {
 					failMsg = failMsg + "\n4-" + i + ". searched seminar state. [Expected]" + NOTREADY 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -576,9 +576,9 @@ public class Seminars_sysadmin {
 		
 		if(rows.size() != 0) {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(STANDBY)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText().contentEquals(STANDBY)) {
 					failMsg = failMsg + "\n5-" + i + ". searched seminar state. [Expected]" + STANDBY 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -594,9 +594,9 @@ public class Seminars_sysadmin {
 		
 		if(rows.size() != 0) {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(ONAIR)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText().contentEquals(ONAIR)) {
 					failMsg = failMsg + "\n6-" + i + ". searched seminar state. [Expected]" + ONAIR 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -614,9 +614,9 @@ public class Seminars_sysadmin {
 			failMsg = failMsg + "\n7. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText().contentEquals(END)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText().contentEquals(END)) {
 					failMsg = failMsg + "\n8-" + i + ". searched seminar state. [Expected]" + END 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -651,9 +651,9 @@ public class Seminars_sysadmin {
 			failMsg = "1. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(TIMEZONE_KR)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText().contentEquals(TIMEZONE_KR)) {
 					failMsg = failMsg + "\n2-" + i + ". searched seminar state. [Expected]" + TIMEZONE_KR 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -671,9 +671,9 @@ public class Seminars_sysadmin {
 			failMsg = failMsg + "\n3. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(TIMEZONE_JP)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText().contentEquals(TIMEZONE_JP)) {
 					failMsg = failMsg + "\n4-" + i + ". searched seminar state. [Expected]" + TIMEZONE_JP 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -691,9 +691,9 @@ public class Seminars_sysadmin {
 			failMsg = failMsg + "\n5. searched item error [Expected]more than 1 [Actual]" + rows.size();
 		} else {
 			for(int i = 0 ; i < rows.size() ; i++) {
-				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText().contentEquals(TIMEZONE_US)) {
+				if(!rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText().contentEquals(TIMEZONE_US)) {
 					failMsg = failMsg + "\n6-" + i + ". searched seminar state. [Expected]" + TIMEZONE_US 
-							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText()
+							+ " [Actual]" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText()
 							+ ", seminar title:" + rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 				}
 			}
@@ -745,13 +745,13 @@ public class Seminars_sysadmin {
 		String channelName = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[2]")).getText();
 		String title = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 		String author = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[4]")).getText();
-		String property = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText();
-		String timezone = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText();
-		String expectedTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText();
-		String realTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[8]")).getText();
-		String excuteTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[9]")).getText();
-		String status = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText();
-		String attendee = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText();
+		String property = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText();
+		String timezone = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText();
+		String expectedTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[8]")).getText();
+		String realTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[9]")).getText();
+		String excuteTime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[10]")).getText();
+		String status = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[11]")).getText();
+		String attendee = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[12]")).getText();
 		
 		rows.get(0).click();
 		Thread.sleep(500);
@@ -856,33 +856,41 @@ public class Seminars_sysadmin {
 					String excelCol = "";
 					
 					String rowData = rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[" + (j+1) + "]")).getText();
+					
 					if(j == 0) {
+						//등록일 확인
 						excelCol = excelData[i][j].replace(".", "/");
-					} else if (j == 6 || j == 7) {
+					} else if (j == 7 || j == 8) {
+						//예정일, 진행일
 						excelCol = excelData[i][j+2].replace(".", "/");
 						
+						//System.out.println("$$$rowdata : " + rowData);
 						String[] date = rowData.split(" ");
+						
 						rowData = String.format("%s %s %s %s", date[0], date[1], date[2], date[4]);
 						
-					} else if (j == 8) {
+					} else if (j == 9) {
+						//진행시간
 						excelCol = excelData[i][j+2];
 						if (excelCol.isEmpty()) {
 							excelCol = "00:00:00";
 						}	
-					} else if(j >= 2 && j < 4) {
+					} else if(j >= 2 && j < 5) {
+						//세미나명, 게시자, 회사명 가져오기
 						excelCol = excelData[i][j + 1];
-					} else if (j >= 4) {
+					} else if (j >= 5) {
+						//회사명부터 
 						excelCol = excelData[i][j + 2];
 					} else {
 						excelCol = excelData[i][j];
 					}
 					excelCol = checkExcelData(excelCol);
 					
-					if(!rowData.contentEquals(excelCol)) {
-						failMsg = failMsg + "\n" + i + "-" + j +". excelData. [Expected]" 
-								+ rowData
-								+ " [Actual]" + excelCol;
-					}
+					if(!rowData.contentEquals(excelCol.trim())) {
+						failMsg = failMsg + "\n" + i + "-" + j + ". excelData. [Expected]" + rowData + " [Actual]"
+								+ excelCol;
+						
+					} 
 				}
 			}
 		} else {
@@ -937,6 +945,7 @@ public class Seminars_sysadmin {
 
 		String[][] data = new String[rowCount][cells];
 
+		//첫번째 행은 제외하고 가져온다.
 		for (int i = 1; i <  rowCount; i++) {
 			Row row = testDataSheet.getRow(i);
 			for (int j = 1; j < cells; j++) {
