@@ -373,17 +373,25 @@ public class Partners2 {
 			Thread.sleep(500);
 			WebElement tree = driver.findElement(By.xpath(XPATH_PARTNER_SELECTTREE));
 
+			Actions actions = new Actions(driver);
 			JavascriptExecutor js = (JavascriptExecutor) driver;
 			String item = String.format(findItem, PARTNER_TESTB);
 			for(int i = 0 ; i < 10 ; i++) {
 				if (isElementPresent(tree, By.xpath(item))) {
+					js.executeScript("arguments[0].scrollIntoView(true);",tree.findElement(By.xpath(item)));
+					System.out.println("$$$find korea partner : " + PARTNER_TESTB);
 					break;	
 				} else {
 					List<WebElement> pas = driver.findElements(By.xpath(XPATH_PARTNER_SELECTBOX_ITEM));
+					actions.moveToElement(pas.get(pas.size()-1));
+					actions.perform();
+					Thread.sleep(100);
+					
 					js.executeScript("arguments[0].scrollIntoView(true);", pas.get(pas.size()-1));
 					Thread.sleep(100);
 				}
 			}
+			Thread.sleep(500);
 			tree.findElement(By.xpath(item)).click();
 			Thread.sleep(500);
 			
@@ -458,15 +466,22 @@ public class Partners2 {
 
 			JavascriptExecutor js = (JavascriptExecutor) driver;
 			String item = String.format(findItem, PARTNER_KR_NAME);
+
+			Actions actions = new Actions(driver);
+
 			for(int i = 0 ; i < 10 ; i++) {
 				if (isElementPresent(tree, By.xpath(item))) {
-					System.out.println("$$$find korea partner");
+					System.out.println("$$$find korea partner : " + PARTNER_KR_NAME);
 					break;	
 				} else {
 					List<WebElement> pas = driver.findElements(By.xpath(XPATH_PARTNER_SELECTBOX_ITEM));
-					js.executeScript("arguments[0].scrollIntoView(true);", pas.get(0));
-		
+
+					actions.moveToElement(pas.get(0));
+					actions.perform();
 					Thread.sleep(100);
+					js.executeScript("arguments[0].scrollIntoView(true);", pas.get(0));
+					Thread.sleep(100);
+					js.executeScript("window.scrollBy(0,-100)");
 				}
 			}
 			tree.findElement(By.xpath(item)).click();
