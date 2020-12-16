@@ -79,6 +79,7 @@ public class CommonValues {
 	public static String XPATH_LIST_DATERADIO = "//div[@id='dateRadio']/label";
 	public static String XPATH_LIST_DATEPICKER_START = "//input[@placeholder='Start date']";
 	public static String XPATH_LIST_DATEPICKER_END = "//input[@placeholder='End date']";
+	public static String XPATH_LIST_SEARCHED_COUNT = "//span[@class='total']";
 	
 	public static String XPATH_MENU_PARTNER = "//ul[@role='menu']/li[1]";
 	public static String XPATH_MENU_USER = "//ul[@role='menu']/li[2]";
@@ -256,10 +257,9 @@ public class CommonValues {
 					if (file2.exists())
 						break;
 					}
-			} else {
+			} 
+		} else {
 			path = home + "/Downloads/" + filename + ".xlsx";
-			}
-
 		}
 		return path;
 	}

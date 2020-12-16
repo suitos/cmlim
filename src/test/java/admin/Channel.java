@@ -1,7 +1,8 @@
 package admin;
 
-import seminartest.CommonValues;
+import seminartest.AttendeesTest;
 import seminartest.DBConnection;
+import seminartest.OnAirRoom;
 
 import static org.testng.Assert.fail;
 
@@ -24,6 +25,8 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -71,13 +74,14 @@ public class Channel {
 	public static String XPATH_CHANNELDESCRIPTION = "/html/body/div[2]";
 	
 	public static String XPATH_CHANNELNAME2 = "/html/body/div[3]";
-	public static String XPATH_CHANNELURL2 = "/html/body/div[4]//button[1]";
+	public static String XPATH_CHANNELURL_MODAL_FOOTER = "//div[@class='ant-modal-footer']";
 	public static String XPATH_CHANNELDESCRIPTION2 = "/html/body/div[5]";
+	public static String XPATH_LIST_DOWNLOAD_BTN = "//button[@class='ant-btn ant-btn-sub ant-btn-sm']";
 	
 	//채널 정보
 	public static String XPATH_CHANNEL_INFO_BIGNAME = "//div[@class='__profile__desc']/h5/span";
 	public static String XPATH_CHANNEL_INFO_CHANNELNAME = "//section[@id='seminar-info-wrap']//tr[1]//div/div[1]";
-	public static String XPATH_CHANNEL_INFO_CHANNELURL = "//section[@id='seminar-info-wrap']//tr[2]//div/div[1]";
+	public static String XPATH_CHANNEL_INFO_CHANNELURL = "//section[@id='seminar-info-wrap']//tr[2]//div[@class='ant-col']";
 	public static String XPATH_CHANNEL_INFO_CHANNELMASTER = "//section[@id='seminar-info-wrap']//tr[3]//div/div[1]";
 	public static String XPATH_CHANNEL_INFO_CHANNELDESCRIPTION = "//section[@id='seminar-info-wrap']//tr[4]//div/div[1]";
 	public static String XPATH_CHANNEL_INFO_CHANNELDISCLOSURE = "//section[@id='seminar-info-wrap']//tr[5]//td";
@@ -122,7 +126,7 @@ public class Channel {
 	//키워드검색
 	public static String KEYWORD_SEARCH_TEXTBOX = "//input[@id='keyword']";
 	public static String KEYWORD_SEARCH_BTN = "//button[@id='search']";
-	public static String KEYWORD_PLACEHOLDER = "채널명, 채널 마스터의 닉네임, 이메일을 입력하세요.";
+	public static String KEYWORD_PLACEHOLDER = "채널명, 채널 마스터의 닉네임, 이메일, 회사명을 입력하세요.";
 	
 	public static String MSG_CHANNEL_NAME_EMPTY = "채널명을 기입해주세요.";
 	public static String MSG_CHANNEL_MASTER_EMPTY = "채널마스터를 설정해주세요.";
@@ -162,16 +166,16 @@ public class Channel {
 		System.out.println("BeforeTest!!!");
 		System.out.println(browsertype);
 
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.setDriverProperty(browsertype);
 		
 		//driver = comm.setDriver(driver, browsertype, "lang=en_US");
 		driver = comm.setDriver(driver, browsertype, "lang=ko_KR");
 
 		context.setAttribute("webDriver", driver);
-		driver.get(admin.CommonValues.ADMIN_URL);
+		driver.get(CommonValues.ADMIN_URL);
 		
-		comm.logintadmin(driver, admin.CommonValues.USER_PARTNER_KR2);
+		comm.logintadmin(driver, CommonValues.USER_PARTNER_KR2);
 
 		System.out.println("End BeforeTest!!!");
 	}
@@ -179,13 +183,13 @@ public class Channel {
 	@Test(priority=0)
 	public void EnterChannelList() throws Exception {
 	
-		driver.findElement(By.xpath(admin.CommonValues.XPATH_MENU_CHANNEL)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_MENU_CHANNEL)).click();
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELLIST);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELLIST);
 		
 	}
 	
-	@Test(priority=1)
+	@Test(priority=1, enabled = true)
 	public void DefaultCheck() throws Exception {
 		String failMsg = "";
 		
@@ -232,14 +236,22 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority = 2)
+	@Test(priority = 2, enabled = true)
 	public void dateSearch() throws Exception {
 		String failMsg = "";
 		
 		checkListView(driver);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
-		driver.findElement(By.xpath("//input[@value='all-months']")).click();
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_LIST_DATERADIO)));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
+		
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[1]")).click();
 		driver.findElement(By.xpath(KEYWORD_SEARCH_BTN)).click();
 
 		CheckDateData(); //전체
@@ -247,7 +259,7 @@ public class Channel {
 		checkListView(driver);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
-		driver.findElement(By.xpath("//input[@value='last-3-months']")).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[2]")).click();
 		driver.findElement(By.xpath(KEYWORD_SEARCH_BTN)).click();
 		
 		CheckDateData(); //최근 3개월
@@ -255,7 +267,7 @@ public class Channel {
 		checkListView(driver);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
-		driver.findElement(By.xpath("//input[@value='last-month']")).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[3]")).click();
 		driver.findElement(By.xpath(KEYWORD_SEARCH_BTN)).click();
 		
 		CheckDateData(); //지난달
@@ -267,10 +279,10 @@ public class Channel {
 	}
 		
 	
-	@Test(priority=10)
+	@Test(priority=10, enabled = true)
 	public void keywordSearch() throws Exception {
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.setCalender(driver);
 		
 		WebElement keywordtextbox = driver.findElement(By.xpath(KEYWORD_SEARCH_TEXTBOX));
@@ -302,7 +314,7 @@ public class Channel {
 			
 	}
 	
-	@Test(priority=11)
+	@Test(priority=11, enabled = true)
 	public void keywordSearch_invalid1() throws Exception {
 		
 		WebElement keywordtextbox = driver.findElement(By.xpath(KEYWORD_SEARCH_TEXTBOX));
@@ -332,7 +344,7 @@ public class Channel {
 		Thread.sleep(1000);
 	}
 	
-	@Test(priority=12)
+	@Test(priority=12, enabled = true)
 	public void keywordSearch_invalid2() throws Exception {
 		
 		WebElement keywordtextbox = driver.findElement(By.xpath(KEYWORD_SEARCH_TEXTBOX));
@@ -352,7 +364,7 @@ public class Channel {
 		CountCheckandDataCheck("@");
 	}
 	
-	@Test(priority=13)
+	@Test(priority=13, enabled = true)
 	public void listLinkCheck() throws Exception {
 		
 		checkListView(driver);
@@ -361,9 +373,9 @@ public class Channel {
 		
 		cellClick("[1]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO + channelID);
 		
 		checkListView(driver);
 		
@@ -371,65 +383,65 @@ public class Channel {
 		
 		cellClick("[2]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO + channelID);
 		
 		checkListView(driver);
 		
 		cellClick("[3]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO + channelID);
 		
 		checkListView(driver);
 		
 		cellClick("[4]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO + channelID);
 		
 		checkListView(driver);
 		
 		cellClick("[5]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO + channelID);
 		
 		checkListView(driver);
 		
 		cellClick("[6]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO + channelID);
 		
 		checkListView(driver);
 		
 		cellClick("[7]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO + channelID);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO + channelID);
 	}
 	
-	@Test(priority=14)
+	@Test(priority=14, enabled = true)
 	public void listPaging() throws Exception {
 		String failMsg = "";
 
 		checkListView(driver);
 
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.setCalender(driver);
 		Thread.sleep(1000);
 
 		String N2 = driver.findElement(By.xpath("//span[@class='total']")).getText().replace("건", "");
 		int Realcount = Integer.parseInt(N2);
 
-		List<WebElement> paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+		List<WebElement> paging = driver.findElements(By.xpath(CommonValues.XPATH_LIST_PAGING));
 		String lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
 		int lastPnum = Integer.parseInt(lastP);
 
@@ -448,7 +460,7 @@ public class Channel {
 				failMsg = failMsg + "\n 2. 2nd page is not actived";
 			}
 
-			List<WebElement> rows2 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows2 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows2.size() != 30) {
 				failMsg = failMsg + "\n 2-1. list rows [Expected]30 [Actual]" + rows2.size();
 			}
@@ -462,7 +474,7 @@ public class Channel {
 				failMsg = failMsg + "\n 2-2. 1st page is not actived";
 			}
 
-			List<WebElement> rows3 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows3 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows3.size() != 30) {
 				failMsg = failMsg + "\n 2-3. list rows [Expected]30 [Actual]" + rows3.size();
 			}
@@ -476,7 +488,7 @@ public class Channel {
 				failMsg = failMsg + "\n 2-4. last page is not actived";
 			}
 
-			List<WebElement> rows4 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows4 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows4.size() != Realcount % 30) {
 				failMsg = failMsg + "\n 2-5. list rows [Expected]" + Realcount % 30 + "[Actual]" + rows4.size();
 			}
@@ -491,7 +503,7 @@ public class Channel {
 				failMsg = failMsg + "\n 2. 2nd page is not actived(lastPnum is 2)";
 			}
 
-			List<WebElement> rows5 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows5 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows5.size() != Realcount % 30) {
 				failMsg = failMsg + "\n 2-1. list rows(lastPnum is 2) [Expected]" + Realcount % 30 + "[Actual]"
 						+ rows5.size();
@@ -506,7 +518,7 @@ public class Channel {
 				failMsg = failMsg + "\n 2-2. 1st page is not actived(lastPnum is 2)";
 			}
 
-			List<WebElement> rows6 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows6 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows6.size() != 30) {
 				failMsg = failMsg + "\n 2-3. list rows(lastPnum is 2) [Expected]30 [Actual]" + rows6.size();
 			}
@@ -520,7 +532,7 @@ public class Channel {
 				failMsg = failMsg + "\n 2-4. last page is not actived(lastPnum is 2)";
 			}
 
-			List<WebElement> rows7 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows7 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows7.size() != Realcount % 30) {
 				failMsg = failMsg + "\n 2-5. list rows(lastPnum is 2) [Expected]" + Realcount % 30 + "[Actual]"
 						+ rows7.size();
@@ -531,7 +543,7 @@ public class Channel {
 				failMsg = failMsg + "\n 2. 1st page is not actived(lastPnum is 1)";
 			}
 
-			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows.size() != Realcount % 30) {
 				failMsg = failMsg + "\n 2-1. list rows [Expected]" + Realcount % 30 + "[Actual]" + rows.size();
 			}
@@ -543,10 +555,10 @@ public class Channel {
 		Thread.sleep(500);
 
 		// click 50rows
-		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROWS + "[2]")).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_ROWS + "[2]")).click();
 		Thread.sleep(500);
 
-		paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+		paging = driver.findElements(By.xpath(CommonValues.XPATH_LIST_PAGING));
 		lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
 		lastPnum = Integer.parseInt(lastP);
 
@@ -557,23 +569,23 @@ public class Channel {
 				failMsg = failMsg + "\n 3. 1st page is not actived(lastPnum is 1)";
 			}
 
-			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows.size() != Realcount % 50) {
 				failMsg = failMsg + "\n 3-1. list rows [Expected]" + Realcount % 50 + "[Actual]" + rows.size();
 			}
 
 		} else {
-			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows.size() != 50) {
 				failMsg = failMsg + "\n 3-2. list rows [Expected]50 [Actual]" + rows.size();
 			}
 		}
 
 		// click 100rows
-		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROWS + "[3]")).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_ROWS + "[3]")).click();
 		Thread.sleep(500);
 
-		paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+		paging = driver.findElements(By.xpath(CommonValues.XPATH_LIST_PAGING));
 		lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
 		lastPnum = Integer.parseInt(lastP);
 
@@ -584,13 +596,13 @@ public class Channel {
 				failMsg = failMsg + "\n 4. 1st page is not actived(lastPnum is 1)";
 			}
 
-			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows.size() != Realcount % 100) {
 				failMsg = failMsg + "\n 4-1. list rows [Expected]" + Realcount % 100 + "[Actual]" + rows.size();
 			}
 
 		} else {
-			List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+			List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 			if (rows.size() != 100) {
 				failMsg = failMsg + "\n 4-2. list rows [Expected]100 [Actual]" + rows.size();
 			}
@@ -602,14 +614,15 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=15)
+	@Test(priority=15, enabled = true)
 	public void checkExcelData() throws Exception {
 		String failMsg = "";
 
 		checkListView(driver);
 
-		admin.CommonValues comm = new admin.CommonValues();
-		comm.setCalender(driver);
+		CommonValues comm = new CommonValues();
+		
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[1]")).click();
 		Thread.sleep(1000);
 
 		WebElement keywordtextbox = driver.findElement(By.xpath(KEYWORD_SEARCH_TEXTBOX));
@@ -617,33 +630,47 @@ public class Channel {
 		insertKeywordSearch(keywordtextbox, "rsrsup");
 
 		ListDataNullCheck();
+		
 
 		// Web 행,열 갯수
-		List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 		int ROWcount = rows.size();
 		List<WebElement> column = driver.findElements(By.xpath("//th[@class='ant-table-cell']"));
 		int Columncount = column.size();
 
 		// Excel Download
-		driver.findElement(By.xpath("//button[@class='ant-btn ant-btn-sub ant-btn-sm']")).click();
+		driver.findElement(By.xpath(XPATH_LIST_DOWNLOAD_BTN)).click();
 
 		TimeUnit.SECONDS.sleep(5);
 
 		String[][] data = new String[ROWcount][Columncount];
 
+		System.out.println("ROWcount " + ROWcount);
+		System.out.println("Columncount " + Columncount);
 		for (int i = 0; i < ROWcount; i++) {
 			for (int j = 0; j < Columncount; j++) {
+				
 				data[i][j] = rows.get(i)
-						.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[" + (j + 1) + "]")).getText();
+						.findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[" + (j + 1) + "]")).getText();
 				Thread.sleep(100);
+				
+				String webD = data[i][j];
+				String excelD = readExcelFile(comm.Excelpath("channel"), i, j);
 
-				if (readExcelFile(comm.Excelpath("channel"), i, j).contentEquals("")) {
-					readExcelFile(comm.Excelpath("channel"), i, j).replace("", "00:00:00");
+				if(j == 0) {
+					// 날짜 포맷이 다르다 변환필요
+					webD = webD.replace("/", ".");
+				} else if(j == 5) {
+					// 엑셀데이터 시간 0일경우 비어있으니 변환
+					//if(excelD.isBlank())
+						excelD = "00:00:00";
+				} 
+
+				if (!webD.contentEquals(excelD) ){
+					failMsg = failMsg + "\nNot equal data "  +i + "," + j + " : [WEB]" +webD + "[Excel]"
+							+ excelD;
 				}
-				if (!data[i][j].contentEquals(readExcelFile(comm.Excelpath("channel"), i, j))) {
-					failMsg = "Not equal data : [WEB]" + data[i][j] + "[Excel]"
-							+ readExcelFile(comm.Excelpath("channel"), i, j);
-				}
+				
 			}
 		}
 
@@ -651,7 +678,7 @@ public class Channel {
 		
 		insertKeywordSearch(keywordtextbox, "!@#$%^");
 		
-		driver.findElement(By.xpath("//button[@class='ant-btn ant-btn-sub ant-btn-sm']")).click();
+		driver.findElement(By.xpath(XPATH_LIST_DOWNLOAD_BTN)).click();
 
 		TimeUnit.SECONDS.sleep(5);
 		
@@ -667,16 +694,16 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=20)
+	@Test(priority=20, alwaysRun = true, enabled = true)
 	public void addChannel() throws Exception {
 		String failMsg = "";	
 		
 		checkListView(driver);
 		
-		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_CHANNELREGISTER_BTN)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_CHANNELREGISTER_BTN)).click();
 		Thread.sleep(500);
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELNEW);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELNEW);
 
 		
 		if(!driver.findElement(By.xpath("//label[@for='channelName']")).getAttribute("title").contentEquals("채널명")) {
@@ -705,11 +732,11 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=21)
+	@Test(priority=21, dependsOnMethods = {"addChannel"}, alwaysRun = true, enabled = true)
 	public void addChannel_empty() throws Exception {
 		String failMsg = "";	
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELNEW);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELNEW);
 		
 		driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_SAVE_BTN)).click();
 		Thread.sleep(500);
@@ -726,7 +753,7 @@ public class Channel {
 		
 		driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_CANCEL_BTN)).click();
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELLIST);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELLIST);
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -734,11 +761,11 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=22)
+	@Test(priority=22, dependsOnMethods = {"addChannel_empty"}, alwaysRun = true, enabled = true)
 	public void addChannel_insertChannelandlengthCheck() throws Exception {
 		String failMsg = "";	
 		
-		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_CHANNELREGISTER_BTN)).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_CHANNELREGISTER_BTN)).click();
 		Thread.sleep(500);
 
 		WebElement CHANNEL_NAME = driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_NAME));
@@ -748,14 +775,14 @@ public class Channel {
 			failMsg = "1. [Expected] channelName placeholder [Actual]" + CHANNEL_NAME.getAttribute("placeholder");
 		}
 		
-		admin.CommonValues comm = new admin.CommonValues();
-		comm.insertData(CHANNEL_NAME, 1, admin.CommonValues.SPECIAL_10);
+		CommonValues comm = new CommonValues();
+		comm.insertData(CHANNEL_NAME, 1, CommonValues.SPECIAL_10);
 
 		if(!driver.findElements(By.xpath(XPATH_CHANNEL_REGIST_NAME_ERROR)).isEmpty()){
 			 failMsg = "2.error MSG displayed [Expected] empty [Actual]" + driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_NAME_ERROR)).getText();   
 		}
 		
-		comm.insertData(CHANNEL_NAME, 2, admin.CommonValues.SPECIAL_10);
+		comm.insertData(CHANNEL_NAME, 2, CommonValues.SPECIAL_10);
 		
 		String a = CHANNEL_NAME.getAttribute("value");
 		System.out.println(a);
@@ -773,7 +800,7 @@ public class Channel {
 			failMsg = failMsg + "\n 4 [Expected] channelDescription placeholder [Actual]" + CHANNEL_DESCRIPTION.getAttribute("placeholder");
 		}
 		
-		comm.insertData(CHANNEL_DESCRIPTION, 3, admin.CommonValues.SPECIAL_10);
+		comm.insertData(CHANNEL_DESCRIPTION, 3, CommonValues.SPECIAL_10);
 		
 		String b = CHANNEL_DESCRIPTION.getAttribute("value");
 		System.out.println(b);
@@ -789,7 +816,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=23)
+	@Test(priority=23, dependsOnMethods = {"addChannel_insertChannelandlengthCheck"}, alwaysRun = true, enabled = true)
 	public void addChannel_insertChannelMaster() throws Exception {
 		String failMsg = "";	
 		
@@ -832,8 +859,8 @@ public class Channel {
 		
 		WebElement EMAIL_NAME = driver.findElement(By.xpath(XPATH_CHANNEL_USERSEARCH_EMAIL));
 		
-		admin.CommonValues comm = new admin.CommonValues();
-		comm.insertData(EMAIL_NAME, 1, admin.CommonValues.SPECIAL_10);
+		CommonValues comm = new CommonValues();
+		comm.insertData(EMAIL_NAME, 1, CommonValues.SPECIAL_10);
 		
 		TimeUnit.SECONDS.sleep(4);
 		
@@ -863,7 +890,7 @@ public class Channel {
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_TOAST)).getText();
 		}
 		
-		comm.insertData(EMAIL_NAME, 1, admin.CommonValues.WRONG_EMAIL);
+		comm.insertData(EMAIL_NAME, 1, CommonValues.WRONG_EMAIL);
 		
 		TimeUnit.SECONDS.sleep(4);
 		
@@ -879,7 +906,7 @@ public class Channel {
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_TOAST)).getText();
 		}
 		
-		comm.insertData(EMAIL_NAME, 1, admin.CommonValues.USER_PARTNER_KR);
+		comm.insertData(EMAIL_NAME, 1, CommonValues.USER_PARTNER_KR);
 		
 		TimeUnit.SECONDS.sleep(4);
 		
@@ -942,7 +969,7 @@ public class Channel {
 		}		
 	}
 	
-	@Test(priority=24) 
+	@Test(priority=24, dependsOnMethods = {"addChannel_insertChannelMaster"}, alwaysRun = true, enabled = true) 
 	public void addChannel_insertChannelMaster2() throws Exception {
 		String failMsg = "";	
 		
@@ -951,7 +978,7 @@ public class Channel {
 		
 		WebElement EMAIL_NAME = driver.findElement(By.xpath(XPATH_CHANNEL_USERSEARCH_EMAIL));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(EMAIL_NAME, 1, seminartest.CommonValues.USEREMAIL_ADMIN);
 		
 		driver.findElement(By.xpath(XPATH_CHANNEL_USERSEARCH_SEARCH_BTN)).click();
@@ -987,7 +1014,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=25) 
+	@Test(priority=25, dependsOnMethods = {"addChannel_insertChannelMaster2"}, alwaysRun = true, enabled = true) 
 	public void addChannel_channelType() throws Exception {
 		String failMsg = "";
 		
@@ -1002,7 +1029,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=26) 
+	@Test(priority=26, dependsOnMethods = {"addChannel_channelType"}, alwaysRun = true, enabled = true) 
 	public void addChannel_valid() throws Exception {
 		String failMsg = "";
 		
@@ -1013,12 +1040,12 @@ public class Channel {
 		channelMember = "1";
 		numberofSeminars = "0";
 		
-		driver.get(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELNEW);
+		driver.get(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELNEW);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
 		WebElement CHANNEL_NAME = driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_NAME));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(CHANNEL_NAME, 1, channelName);
 		
 		WebElement CHANNEL_MASTER = driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_MASTER));
@@ -1044,7 +1071,7 @@ public class Channel {
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_TOAST2)).getText();
 		}
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELLIST);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELLIST);
 		
 		ListDataNullCheck();
 		
@@ -1052,7 +1079,7 @@ public class Channel {
 		
 		cellClick("[1]");
 		
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		System.out.println(channelID);
 		seminartest.DBConnection DB = new seminartest.DBConnection();
 		DB.deleteChannel(channelID);
@@ -1063,7 +1090,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=27) 
+	@Test(priority=27, dependsOnMethods = {"addChannel_valid"}, alwaysRun = true, enabled = true) 
 	public void addChannel_valid2() throws Exception {
 		String failMsg = "";
 		
@@ -1074,17 +1101,17 @@ public class Channel {
 		channelMember = "1";
 		numberofSeminars = "0";
 		
-		driver.get(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELNEW);
+		driver.get(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELNEW);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
 		WebElement CHANNEL_NAME = driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_NAME));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(CHANNEL_NAME, 1, channelName);
 		
 		WebElement CHANNEL_DESCRIPTION = driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_DESCRIPTION));
 		
-		comm.insertData(CHANNEL_DESCRIPTION, 1, admin.CommonValues.SPECIAL_10);
+		comm.insertData(CHANNEL_DESCRIPTION, 1, CommonValues.SPECIAL_10);
 		
 		WebElement CHANNEL_MASTER = driver.findElement(By.xpath(XPATH_CHANNEL_REGIST_MASTER));
 		CHANNEL_MASTER.click();
@@ -1109,7 +1136,7 @@ public class Channel {
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_TOAST2)).getText();
 		}
 		
-		CheckURL(1, admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELLIST);
+		CheckURL(1, CommonValues.ADMIN_URL + CommonValues.URL_CHANNELLIST);
 		
 		ListDataNullCheck();
 		
@@ -1121,13 +1148,13 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=28) 
+	@Test(priority=28, dependsOnMethods = {"addChannel_valid2"}, alwaysRun = true, enabled = true) 
 	public void Channelinfo() throws Exception {
 		String failMsg = "";
 		
 		channelName = "ChannelTest";
 		channelMaster = seminartest.CommonValues.USERNICKNAME_ADMIN + "(" +seminartest.CommonValues.USEREMAIL_ADMIN + ")";
-		channelDescription = admin.CommonValues.SPECIAL_10; 
+		channelDescription = CommonValues.SPECIAL_10; 
 		channelDisclosure = "PRIVATE";
 		Plan = "";
 		numberofSeminars = "0건";
@@ -1136,7 +1163,7 @@ public class Channel {
 		cellClick("[1]");
 		
 		adminchannelURL = driver.getCurrentUrl();
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
 		CheckURL(1, adminchannelURL);
 		
@@ -1191,7 +1218,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=29) 
+	@Test(priority=29, dependsOnMethods = {"Channelinfo"}, alwaysRun = true, enabled = true) 
 	public void ModifyChannelName() throws Exception {
 		String failMsg = "";
 		
@@ -1203,10 +1230,10 @@ public class Channel {
 		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELNAMEBTN)).click();
 		WebElement Channelnametextbox = driver.findElement(By.xpath("//input[@id='channelName']"));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(Channelnametextbox, 1, "");
 		
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		
 		if(!driver.findElement(By.xpath("//div[@role='alert']")).getText().contentEquals(MSG_CHANNELNAME_MODIFY_EMPTY)){
 			failMsg = "1.Msg wrong When modify empty ChannelName";
@@ -1214,7 +1241,7 @@ public class Channel {
 		
 		TimeUnit.SECONDS.sleep(4);
 		
-		comm.insertData(Channelnametextbox, 2, admin.CommonValues.SPECIAL_10);
+		comm.insertData(Channelnametextbox, 2, CommonValues.SPECIAL_10);
 		
 		if(Channelnametextbox.getAttribute("value").length() != 30) {
 			failMsg = failMsg + "\n 2.Modified Channel Name is wrong length [Actual]" + Channelnametextbox.getAttribute("value").length();
@@ -1235,7 +1262,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=30) 
+	@Test(priority=30, dependsOnMethods = {"ModifyChannelName"}, alwaysRun = true, enabled = true) 
 	public void ModifyChannelName2() throws Exception {
 		String failMsg = "";
 		
@@ -1247,14 +1274,15 @@ public class Channel {
 		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELNAMEBTN)).click();
 		WebElement Channelnametextbox = driver.findElement(By.xpath("//input[@id='channelName']"));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(Channelnametextbox, 1, channelName);
 		
 		driver.findElement(By.xpath(XPATH_CHANNELNAME +"//button[1]")).click();
 	
-		if(!driver.findElement(By.xpath(XPATH_TOAST2)).getText().contentEquals(MSG_TOAST6)) {
+		String toastMsg = driver.findElement(By.xpath(XPATH_TOAST2)).getAttribute("innerText");
+		if(!toastMsg.contentEquals(MSG_TOAST6)) {
 			failMsg = "1.toast msg error When Modify Channelname [Expected]" + MSG_TOAST6
-					+ " [Actual]" + driver.findElement(By.xpath(XPATH_TOAST2)).getText();
+					+ " [Actual]" + toastMsg;
 		}
 		
 		Thread.sleep(1000);
@@ -1270,44 +1298,51 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=31) 
+	@Test(priority=31, dependsOnMethods = {"ModifyChannelName2"}, alwaysRun = true, enabled = true) 
 	public void ModifyChannelURL() throws Exception {
 		String failMsg = "";
 		
 		driver.get(adminchannelURL);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_CHANNEL_INFO_CHANNELURL)));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
 		channelURL = driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELURL)).getText();
 		
 		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELURLBTN)).click();
 		WebElement ChannelURLtextbox = driver.findElement(By.xpath("//input[@id='channelUrl']"));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(ChannelURLtextbox, 1, "");
 		
 		if(driver.findElement(By.xpath("//div[@role='alert']")).getText().contentEquals(MSG_CHANNELURL_MODIFY_EMPTY)){
 			failMsg = "1.Msg wrong When modify empty ChannelURL.";
 		}
 		
-		driver.findElement(By.xpath(XPATH_CHANNELURL2 +"//button[1]")).click();
+		driver.findElement(By.xpath(XPATH_CHANNELURL_MODAL_FOOTER +"/button[1]")).click();
 		
 		if(!driver.findElement(By.xpath("//div[@class='ant-modal-content']")).isDisplayed()) {
 			failMsg = failMsg + "\n 2.URL change Window is not displayed.";
 		}
 		
-		comm.insertData(ChannelURLtextbox, 1, admin.CommonValues.SPECIAL_10);
+		comm.insertData(ChannelURLtextbox, 1, CommonValues.SPECIAL_10);
 		
 		if(driver.findElement(By.xpath("//div[@role='alert']")).getText().contentEquals(MSG_CHANNELURL_MODIFY_WRONG)){
-			failMsg = failMsg + "\n 3.Msg wrong When modify wrong ChannelURL.";
+			failMsg = failMsg + "\n 3.Msg wrong When modify wrong ChannelURL. : [Actual]" + driver.findElement(By.xpath("//div[@role='alert']")).getText();
 		}
 		
-		comm.insertData(ChannelURLtextbox, 1, admin.CommonValues.CHARACTER_20 + admin.CommonValues.NUMBER_10);
+		comm.insertData(ChannelURLtextbox, 1, CommonValues.CHARACTER_20 + CommonValues.NUMBER_10);
 		
 		if(driver.findElement(By.xpath("//div[@role='alert']")).getText().contentEquals(MSG_CHANNELURL_MODIFY_WRONG)){
-			failMsg = failMsg + "\n 4.Msg wrong When modify ChannelURL over 10.";
+			failMsg = failMsg + "\n 4.Msg wrong When modify ChannelURL over 10. : [Actual] " + driver.findElement(By.xpath("//div[@role='alert']")).getText();
 		}
 		
-		driver.findElement(By.xpath(XPATH_CHANNELURL2 + "//button[2]")).click();
+		driver.findElement(By.xpath(XPATH_CHANNELURL_MODAL_FOOTER + "/button[2]")).click();
 		
 		if(!driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELURL)).getText().contentEquals(channelURL)){
 			failMsg = failMsg + "\n 5.Channel info channel URL modified [Expected]" + channelURL + " [Actual]" +
@@ -1320,7 +1355,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=32) 
+	@Test(priority=32, dependsOnMethods = {"ModifyChannelURL"}, alwaysRun = true, enabled = true) 
 	public void ModifyChannelURL_duplicate() throws Exception {
 		String failMsg = "";
 		String url = "rsrsup";
@@ -1333,16 +1368,16 @@ public class Channel {
 		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELURLBTN)).click();
 		WebElement ChannelURLtextbox = driver.findElement(By.xpath("//input[@id='channelUrl']"));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(ChannelURLtextbox, 1, url);
 		
-		driver.findElement(By.xpath(XPATH_CHANNELURL2 + "//button[1]")).click();
+		driver.findElement(By.xpath(XPATH_CHANNELURL_MODAL_FOOTER + "//button[1]")).click();
 		
 		if(driver.findElement(By.xpath("//div[@role='alert']")).getText().contentEquals(url + MSG_CHANNELURL_MODIFY_DUPLICATE)){
 			failMsg = "1.Msg wrong When modify Duplicate ChannelURL.";
 		}
 		
-		driver.findElement(By.xpath(XPATH_CHANNELURL2 + "//button[2]")).click();
+		driver.findElement(By.xpath(XPATH_CHANNELURL_MODAL_FOOTER + "//button[2]")).click();
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
@@ -1350,7 +1385,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=33) 
+	@Test(priority=33, dependsOnMethods = {"ModifyChannelURL_duplicate"}, alwaysRun = true, enabled = true) 
 	public void ModifyChannelURL_valid() throws Exception {
 		String failMsg = "";
 		String url = "rsrsup0";
@@ -1364,10 +1399,10 @@ public class Channel {
 		
 		WebElement ChannelURLtextbox = driver.findElement(By.xpath("//input[@id='channelUrl']"));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(ChannelURLtextbox, 1, url);
 		
-		driver.findElement(By.xpath(XPATH_CHANNELURL2 + "//button[1]")).click();
+		driver.findElement(By.xpath(XPATH_CHANNELURL_MODAL_FOOTER + "//button[1]")).click();
 		
 		if(!driver.findElement(By.xpath(XPATH_TOAST2)).getText().contentEquals(MSG_TOAST6)) {
 			failMsg = "1.toast msg error(Registerd email value search) [Expected]" + MSG_TOAST6
@@ -1385,7 +1420,7 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=34) 
+	@Test(priority=34, dependsOnMethods = {"ModifyChannelURL_valid"}, alwaysRun = true, enabled = true) 
 	public void ModifyChannelURL_finished() throws Exception {
 		String failMsg = "";
 		
@@ -1403,11 +1438,11 @@ public class Channel {
 	}
 		
 	
-	@Test(priority=35) 
+	@Test(priority=35, enabled = true) 
 	public void ModifyChannelDescription() throws Exception {
 		String failMsg = "";
 		
-		channelDescription = admin.CommonValues.SPECIAL_10; 
+		channelDescription = CommonValues.SPECIAL_10; 
 		
 		driver.get(adminchannelURL);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -1416,19 +1451,20 @@ public class Channel {
 		
 		WebElement Channeldescriptiontextbox = driver.findElement(By.xpath("//input[@id='description']"));
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.insertData(Channeldescriptiontextbox, 1, "");
 		
 		driver.findElement(By.xpath(XPATH_CHANNELDESCRIPTION + "//button[1]")).click();
 		
 		if(driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELDESCRIPTION)).getText() != null 
 			|| driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELDESCRIPTION)).getText() != "") {
-			failMsg = "1.ChannelDescription is not null [Expected]" + driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELDESCRIPTION)).getText();
+			failMsg = "1.ChannelDescription is not null [Actual]" + driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELDESCRIPTION)).getText();
 		}
 		
 		driver.findElement(By.xpath(XPATH_CHANNEL_INFO_CHANNELDESCRIPTIONBTN)).click();
 		
-		comm.insertData(Channeldescriptiontextbox, 3, admin.CommonValues.SPECIAL_10);
+		Channeldescriptiontextbox = driver.findElement(By.xpath("//input[@id='description']"));
+		comm.insertData(Channeldescriptiontextbox, 3, CommonValues.SPECIAL_10);
 		
 		if(Channeldescriptiontextbox.getAttribute("value").length() != 500) {
 			failMsg = failMsg + "\n 2.Channeldescriptiontextbox length is wrong [Expected]500"
@@ -1448,11 +1484,11 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=36) 
+	@Test(priority=36, dependsOnMethods = {"ModifyChannelDescription"}, alwaysRun = true, enabled = true) 
 	public void ModifyChannelDescription2() throws Exception {
 		String failMsg = "";
 		
-		String str = admin.CommonValues.SPECIAL_10;
+		String str = CommonValues.SPECIAL_10;
 		channelDescription = new String(new char[4]).replace("\0", str);
 		
 		driver.get(adminchannelURL);
@@ -1462,8 +1498,8 @@ public class Channel {
 		
 		WebElement Channeldescriptiontextbox = driver.findElement(By.xpath("//input[@id='description']"));
 		
-		admin.CommonValues comm = new admin.CommonValues();
-		comm.insertData(Channeldescriptiontextbox, 2, admin.CommonValues.SPECIAL_10);
+		CommonValues comm = new CommonValues();
+		comm.insertData(Channeldescriptiontextbox, 2, CommonValues.SPECIAL_10);
 		
 		driver.findElement(By.xpath(XPATH_CHANNELDESCRIPTION + "//button[1]")).click();
 		
@@ -1487,12 +1523,12 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=37) 
+	@Test(priority=37, dependsOnMethods = {"ModifyChannelDescription2"}, alwaysRun = true, enabled = true) 
 	public void ChannelinfoEmptyTAB() throws Exception {
 		String failMsg = "";
 		
 		channelDisclosure = "PRIVATE";
-		channelID = driver.getCurrentUrl().replace(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELINFO, "");
+		channelID = driver.getCurrentUrl().replace(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELINFO, "");
 		
 		driver.get(adminchannelURL);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -1538,13 +1574,13 @@ public class Channel {
 		}
 	}
 	
-	@Test(priority=38) 
+	@Test(priority=38, dependsOnMethods = {"ChannelinfoEmptyTAB"}, alwaysRun = true, enabled = true) 
 	public void ChannelinfoSearchTAB() throws Exception {
 		String failMsg = "";
 		
 		checkListView(driver);
 		
-		admin.CommonValues comm = new admin.CommonValues();
+		CommonValues comm = new CommonValues();
 		comm.setCalender(driver);
 		
 		WebElement keywordtextbox = driver.findElement(By.xpath(KEYWORD_SEARCH_TEXTBOX));
@@ -1588,10 +1624,10 @@ public class Channel {
 	}
 	
 	private void checkListView(WebDriver wd) throws InterruptedException {
-		if(!wd.getCurrentUrl().contentEquals(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELLIST)) {
-			wd.get(admin.CommonValues.ADMIN_URL + admin.CommonValues.URL_CHANNELLIST);
+		if(!wd.getCurrentUrl().contentEquals(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELLIST)) {
+			wd.get(CommonValues.ADMIN_URL + CommonValues.URL_CHANNELLIST);
 			Thread.sleep(500);
-		}
+		} 
 	}
 	
 	private void insertKeywordSearch(WebElement e, String data) throws Exception {
@@ -1599,15 +1635,17 @@ public class Channel {
 		while(!e.getAttribute("value").isEmpty() || !e.getText().isEmpty())
 			e.sendKeys(Keys.BACK_SPACE);
 		
+		e.clear();
 		e.sendKeys(data);
 		Thread.sleep(1000);
 		e.sendKeys(Keys.ENTER);
+		Thread.sleep(1000);
 	}
 	
 	private void CountCheckandDataCheck(String data) throws Exception {
 		String failMsg = "";	
 	
-		List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 		
 		int ROWcount = rows.size();
 		
@@ -1628,9 +1666,9 @@ public class Channel {
 			}
 			
 			for(int i=0; i<ROWcount; i++){
-			List<WebElement> a = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
-			String b = a.get(i).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[2]")).getText();
-			String c = a.get(i).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+			List<WebElement> a = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+			String b = a.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[2]")).getText();
+			String c = a.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
 			
 			if(data == " ") {
 				
@@ -1651,14 +1689,14 @@ public class Channel {
 	private void SingleRowDataCheck() throws Exception  {
 		String failMsg = "";
 		
-		List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
-		String openingdate = rows.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText();
-		String channel_name = rows.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[2]")).getText();
-		String channel_master = rows.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
-		String plan = rows.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[4]")).getText();
-		String runningtime = rows.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[5]")).getText();
-		String channel_member = rows.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText();
-		String numberofseminars = rows.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText();
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		String openingdate = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText();
+		String channel_name = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[2]")).getText();
+		String channel_master = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[3]")).getText();
+		String plan = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[4]")).getText();
+		String runningtime = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[6]")).getText();
+		String channel_member = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[7]")).getText();
+		String numberofseminars = rows.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[8]")).getText();
 		
 		if(!openingdate.contentEquals(date())) {
 			failMsg = "1.Opening date is wrong";
@@ -1696,20 +1734,20 @@ public class Channel {
 	}
 	
 	private void ListDataNullCheck() throws Exception {
-		List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 		int ROWcount = rows.size();
-		String N2 = driver.findElement(By.xpath("//span[@class='total']")).getText().replace("건", "");
+		String N2 = driver.findElement(By.xpath(CommonValues.XPATH_LIST_SEARCHED_COUNT)).getText().replace("건", "");
 		int Realcount = Integer.parseInt(N2);
 		
 		if(ROWcount == 0 && Realcount == 0) {
-			driver.findElement(By.xpath("//*[@id=\"dateRadio\"]/label[1]/span[2]")).click();
+			driver.findElement(By.xpath(CommonValues.XPATH_LIST_DATERADIO + "[2]")).click();
 			driver.findElement(By.xpath(KEYWORD_SEARCH_BTN)).click();
 		}
 	}
 	
 	private void cellClick(String Cell) throws Exception {
-		List<WebElement> row = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
-		row.get(0).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + Cell)).click();
+		List<WebElement> row = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
+		row.get(0).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + Cell)).click();
 		Thread.sleep(1000);
 	}
 	
@@ -1753,18 +1791,18 @@ public class Channel {
 		System.out.println(StandardStartdate);
 
 		// 리스트 줄수 100 선택
-		driver.findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROWS + "[3]")).click();
+		driver.findElement(By.xpath(CommonValues.XPATH_LIST_ROWS + "[3]")).click();
 
 		Thread.sleep(500);
 
-		List<WebElement> rows = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+		List<WebElement> rows = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 		int ROWcount = rows.size();
 		String N2 = driver.findElement(By.xpath("//span[@class='total']")).getText().replace("건", "");
 		int Realcount = Integer.parseInt(N2);
 
 		if (Realcount <= 100) {
 			for (int i = 0; i < ROWcount; i++) {
-				String data = rows.get(i).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
+				String data = rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
 				int datavalue = Integer.parseInt(data);
 				
 				if (!(StandardStartdatevalue <= datavalue && datavalue <= StandadEnddatevalue)) {
@@ -1773,7 +1811,7 @@ public class Channel {
 			}
 		} else if (Realcount > 100) { // 데이터 100개 초과할경우
 
-			List<WebElement> paging = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_PAGING));
+			List<WebElement> paging = driver.findElements(By.xpath(CommonValues.XPATH_LIST_PAGING));
 			String lastP = paging.get(paging.size() - 2).findElement(By.xpath("./a")).getText();
 			int lastPnum = Integer.parseInt(lastP);
 
@@ -1781,22 +1819,22 @@ public class Channel {
 				paging.get(paging.size() - 1).click(); // 다음페이지 반복 클릭
 				Thread.sleep(500);
 				if (j + 1 == lastPnum) { // 마지막 페이지 도달할 경우 row갯수 찾고 데이터 검사
-					List<WebElement> rows2 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+					List<WebElement> rows2 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 					int ROWcount2 = rows2.size();
 
 					for (int k = 0; k < ROWcount2; k++) {
-						String data = rows.get(k).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
+						String data = rows.get(k).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
 						int datavalue = Integer.parseInt(data);
 						if (!(StandardStartdatevalue <= datavalue && datavalue <= StandadEnddatevalue)) {
 							failMsg = "\n 2.default Search is wrong [Page num]" + j + 1 + " [Row num]" + k;
 						}
 					}
 				} else { // 마지막 페이지 도달할때까지 데이터 검사
-					List<WebElement> rows3 = driver.findElements(By.xpath(admin.CommonValues.XPATH_LIST_ROW_ITEM));
+					List<WebElement> rows3 = driver.findElements(By.xpath(CommonValues.XPATH_LIST_ROW_ITEM));
 					int ROWcount3 = rows3.size();
 
 					for (int i = 0; i < ROWcount3; i++) {
-						String data = rows.get(i).findElement(By.xpath(admin.CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
+						String data = rows.get(i).findElement(By.xpath(CommonValues.XPATH_LIST_ROW_CELL + "[1]")).getText().replace("/", "");
 						int datavalue = Integer.parseInt(data);
 						if (!(StandardStartdatevalue <= datavalue && datavalue <= StandadEnddatevalue)) {
 							failMsg = failMsg + "\n 3.default Search is wrong [Page num]" + j + 1 + " [Row num]" + i;
@@ -1842,8 +1880,10 @@ public class Channel {
 
 		int rowCount = testDataSheet.getLastRowNum();
 		
+		System.out.println("rowCount " + rowCount );
+		
 		if(rowCount == 0) {
-			
+			testDataWorkBook.close();
 			return null;
 			
 		} else {
@@ -1866,6 +1906,7 @@ public class Channel {
 					data[i][j] = a;
 				}
 			}
+			testDataWorkBook.close();
 			return data[x][y];
 		}
 	}
@@ -1877,9 +1918,8 @@ public class Channel {
 	    try {
 	        if (file.exists()) {
 	            file.delete();
-	            System.out.println("File is delete");
+	            System.out.println("delete file : " + filepath);
 	        } else {
-	            
 	            System.out.println("File is not exist");  
 	        }
 	    } catch (Exception e) {
