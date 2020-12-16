@@ -523,16 +523,17 @@ public class RoomFileShare {
 			Thread.sleep(1000);
 			
 			driver_presenter.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
-			Thread.sleep(500);
+			Thread.sleep(1000);
 			
 			fileList = driver_presenter.findElements(By.xpath(XPATH_ROOM_DOWNLOAD_LIST));
 			if(fileList.size() == (i+1)) {
-				if(fileList.get(i).findElement(By.xpath(XPATH_ROOM_DOWNLOAD_LIST_FILENAME)).getText().contentEquals(CommonValues.TESTFILE_LIST[i])) {
-					
+				if(!fileList.get(i).findElement(By.xpath(XPATH_ROOM_DOWNLOAD_LIST_FILENAME)).getText().contentEquals(CommonValues.TESTFILE_LIST[i])) {
+					failMsg = failMsg + "\n3-" + i + ". added file title [Expected]" + CommonValues.TESTFILE_LIST[i] 
+							+ " [Actual]" + fileList.get(i).findElement(By.xpath(XPATH_ROOM_DOWNLOAD_LIST_FILENAME)).getText();
 				}
 				sharedFileList.add(CommonValues.TESTFILE_LIST[i]);
 			} else {
-				failMsg = failMsg + "\n3-" + i + ". download file list count error [Expected]" + (i+1) + " [Actual]" + fileList.size();
+				failMsg = failMsg + "\n4-" + i + ". download file list count error [Expected]" + (i+1) + " [Actual]" + fileList.size();
 			}
 		}
 		
@@ -566,9 +567,9 @@ public class RoomFileShare {
 			Thread.sleep(500);
 			
 			if(isElementPresent(driver_presenter, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
-				if(!driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(MSG_DOWNLOADFILE_INVALID)) {
+				if(!driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getAttribute("innerText").contentEquals(MSG_DOWNLOADFILE_INVALID)) {
 					failMsg = failMsg + "\n0-" + i + ". invalid file message [Expected]" + MSG_DOWNLOADFILE_INVALID
-							 + " [Actual]" + driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+							 + " [Actual]" + driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getAttribute("innerText");
 				}
 			} else {
 				failMsg = failMsg + "\n0-" + i + ". cannot find toast.";
@@ -953,9 +954,9 @@ public class RoomFileShare {
 			Thread.sleep(500);
 			
 			if(isElementPresent(driver_presenter, By.xpath(OnAirRoom.XPATH_ROOM_TOAST))) {
-				if(!driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(MSG_DOWNLOADFILE_INVALID)) {
+				if(!driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getAttribute("innerText").contentEquals(MSG_DOWNLOADFILE_INVALID)) {
 					failMsg = failMsg + "\n0-" + i + ". invalid file message [Expected]" + MSG_DOWNLOADFILE_INVALID
-							 + " [Actual]" + driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+							 + " [Actual]" + driver_presenter.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getAttribute("innerText");
 				}
 			} else {
 				failMsg = failMsg + "\n0-" + i + ". cannot find toast.";
@@ -1244,7 +1245,14 @@ public class RoomFileShare {
 		js.executeScript("arguments[0].scrollIntoView();", driver_organizer.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)));
 		// click enter(new tab)
 		driver_organizer.findElement(By.xpath(AttendeesTest.XPATH_VIEW_JOIN)).click();
-		Thread.sleep(3000);
+		
+		WebDriverWait wait = new WebDriverWait(driver_organizer, 10);
+		try {
+			wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 		
 		tabs2 = new ArrayList<String>(driver_organizer.getWindowHandles());
 		if (tabs2.size() != 2) {
@@ -1257,6 +1265,13 @@ public class RoomFileShare {
 			driver_organizer.close();
 			// switch room tab
 			driver_organizer.switchTo().window(tabs2.get(1));
+			
+			try {
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("cannot find element : " + e.getMessage());
+			}
 		}
 		
 		if(isElementPresent(driver_organizer, By.xpath(CommonValues.XPATH_ROOM_SETTING_TITLE))) {

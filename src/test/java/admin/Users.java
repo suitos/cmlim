@@ -396,6 +396,7 @@ public class Users {
 		driver.findElement(By.xpath(XPATH_USER_INFO_EMAIL)).sendKeys("invalidStr");
 		driver.findElement(By.xpath(XPATH_USER_DUPLICATION_BTN)).click();
 		
+		Thread.sleep(500);
 		if(!driver.findElement(By.xpath(XPATH_USER_INFO_EMAIL_ERROR)).getText().contentEquals(MSG_USER_EMAIL_INVALID)) {
 			failMsg = failMsg + "\n2. email input error(invalid format) [Expected]" + MSG_USER_EMAIL_INVALID  
 					+ " [Actual]" + driver.findElement(By.xpath(XPATH_USER_INFO_EMAIL_ERROR)).getText();
