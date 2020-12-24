@@ -334,6 +334,7 @@ public class CommonValues {
 		    options.addArguments("--disable-dev-shm-usage");
 		    options.addArguments("--disable-browser-side-navigation");
 		    options.addArguments("--start-maximized");
+		    options.addArguments("use-fake-ui-for-media-stream");
 		    
 		    if(presenter) {
 		    	options.addArguments("auto-select-desktop-capture-source=Entire screen");
@@ -417,7 +418,15 @@ public class CommonValues {
 	    driver.findElement(By.id("lang")).click();
 	    //driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)=''])[1]/following::div[3]")).click();
 	    driver.findElement(By.xpath("//div[@class='box-option open']/div[2]")).click();
-	    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+	    WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//input[@name='email']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element " + e.getMessage());
+		}
+		Thread.sleep(500);
+	    
 	    driver.findElement(By.xpath("//input[@name='email']")).clear();
 	    driver.findElement(By.xpath("//input[@name='email']")).sendKeys(user);
 	    driver.findElement(By.xpath("//input[@name='password']")).clear();
@@ -442,6 +451,17 @@ public class CommonValues {
 	    	Exception e =  new Exception("login fail!!! : " + driver.getCurrentUrl());
 	    	throw e;
 	    }
+	}
+
+	public void logout(WebDriver driver) throws Exception
+	{
+		driver.get(CommonValues.SERVER_URL + "/logout");
+		WebDriverWait wait_master = new WebDriverWait(driver, 10);
+		try {
+			wait_master.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//input[@name='email']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element " + e.getMessage());
+		}
 	}
 	
 	public void setCreateSeminar(WebDriver driver, String title, boolean isnow) throws Exception {

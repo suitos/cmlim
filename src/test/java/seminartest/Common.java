@@ -103,11 +103,18 @@ public class Common {
 		WebElement SignupBtn = driver.findElement(By.xpath("//div[@class='l-right']/ul/li[2]"));
 		SignupBtn.click();
 		String signupurl = CommonValues.SERVER_URL + CommonValues.SIGNUP_URI;
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		
 		if (!signupurl.equalsIgnoreCase(driver.getCurrentUrl())) {
 			Exception e = new Exception(" signup Enter fail : " + driver.getCurrentUrl());
 			throw e;
+		}
+		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//img[@class='logo-image big']")));
+		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
 		}
 		
 		WebElement HeaderLogo = driver.findElement(By.xpath("//img[@class='logo-image big']"));
@@ -161,9 +168,9 @@ public class Common {
 		driver.findElement(By.id("profile-drop-down")).click();
 		driver.findElement(By.linkText("로그아웃")).click();
 		
-		Thread.sleep(500);
-		if (!CommonValues.SERVER_URL.equalsIgnoreCase(driver.getCurrentUrl()) && !(CommonValues.SERVER_URL + "/").equalsIgnoreCase(driver.getCurrentUrl()) ) {
-			Exception e = new Exception("logout fail : " + driver.getCurrentUrl());
+		Thread.sleep(2000);
+		if (!CommonValues.SERVER_URL.equalsIgnoreCase(driver.getCurrentUrl()) && !(CommonValues.SERVER_URL + "/login").equalsIgnoreCase(driver.getCurrentUrl()) ) {
+			Exception e = new Exception("logout fail. current url: " + driver.getCurrentUrl());
 			throw e;
 		}
 		
