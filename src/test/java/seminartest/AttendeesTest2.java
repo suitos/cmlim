@@ -2087,6 +2087,9 @@ public class AttendeesTest2{
 		}
 		
 		//설정팝업 확인
+		CommonValues comm = new CommonValues();
+		comm.checkSettingpopup(wd);
+		/*
 		if(isElementPresent_wd(wd, By.xpath("//div[@id='device-setting-wrap']"))) {
 			if(user.contentEquals(ROLE_PRESENER)) {
 				CommonValues comm = new CommonValues();
@@ -2100,7 +2103,7 @@ public class AttendeesTest2{
 				failMsg = failMsg + "\n 0-1. cannot find seminar setting popup " + user;
 			}
 		}
-		
+		*/
 
 		// 시작하기 버튼 확인
 		try {
@@ -2132,6 +2135,8 @@ public class AttendeesTest2{
 			}
 		}
 
+		comm.checkSettingpopup(wd);
+		
 		// 발표자가 인원탭에서 발표자 확인
 		if (!wd.findElement(By.xpath("//div[@class='Participants_header__fsxhk']")).isDisplayed()) {
 			wd.findElement(By.xpath("//div[@id='timeline-viewmode']/button[4]")).click();

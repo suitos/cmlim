@@ -201,7 +201,7 @@ public class AttendeesTest{
 		String failMsg = "";
 		
 		//발표자가 login(rsrsup3)
-		driver.get(CommonValues.SERVER_URL);;
+		driver.get(CommonValues.SERVER_URL);
 		CommonValues comm = new CommonValues();
 		comm.loginseminar(driver, USER_PRESENTER + "@gmail.com");
 		
@@ -366,7 +366,8 @@ public class AttendeesTest{
 			throw e;
 		}
 		
-		sameuserDriver.get(CommonValues.SERVER_URL + "/logout");
+		CommonValues comm = new CommonValues();
+		comm.logout(sameuserDriver);
 		Thread.sleep(1000);
 	}
 
@@ -375,11 +376,11 @@ public class AttendeesTest{
 	public void masterRoom_attendeesLink() throws Exception {
 		String failMsg = "";
 		
-		sameuserDriver.get(CommonValues.SERVER_URL + "/logout");
-		Thread.sleep(1000);
+		CommonValues comm = new CommonValues();
+		comm.logout(sameuserDriver);
 		//채널마스터  login(rsrsup1)
 		sameuserDriver.get(CommonValues.SERVER_URL);
-		CommonValues comm = new CommonValues();
+		
 		comm.loginseminar(sameuserDriver, USER_MASTER + "@gmail.com");
 		
 		Thread.sleep(1000);
@@ -412,7 +413,8 @@ public class AttendeesTest{
 			throw e;
 		}
 		
-		sameuserDriver.get(CommonValues.SERVER_URL + "/logout");
+		CommonValues comm = new CommonValues();
+		comm.logout(sameuserDriver);
 		Thread.sleep(1000);
 	}	
 	
@@ -904,18 +906,32 @@ public class AttendeesTest{
 	}
 	
 	// 20. 로그인한 유저  정보 수정하고 세미나 입장 (rsrsup4)
-	@Test(priority = 20, enabled = true)
+	@Test(priority = 20, dependsOnMethods = {"memberJoinInfo"}, alwaysRun = true, enabled = true)
 	public void memberJoinSeminar() throws Exception {
-
+		WebDriverWait wait = new WebDriverWait(memberDriver, 10);
+		
+		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		// go seminar
-		memberDriver.get(seminarLink);
-		Thread.sleep(500);
+		if (roomuri.equalsIgnoreCase(memberDriver.getCurrentUrl())) {
+			memberDriver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)).click();
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_POPUPBTN)));
+			
+			memberDriver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_POPUPBTN + "[1]")).click();
+		} else {
+			memberDriver.get(seminarLink);
+		}
+		
+		
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath(XPATH_VIEW_JOIN)));
+		Thread.sleep(2000);
 		
 		JavascriptExecutor js = (JavascriptExecutor) memberDriver;
 		js.executeScript("arguments[0].scrollIntoView();", memberDriver.findElement(By.xpath(XPATH_VIEW_JOIN)));
 		
 		memberDriver.findElement(By.xpath(XPATH_VIEW_JOIN)).click();
-		Thread.sleep(1000);
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath(XPATH_ATTEND_NICKNAME)));
 
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).clear();
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_NICKNAME)).click();
@@ -947,8 +963,7 @@ public class AttendeesTest{
 		
 		// join seminar
 		memberDriver.findElement(By.xpath(XPATH_ATTEND_ENTER)).click();
-		
-		WebDriverWait wait = new WebDriverWait(memberDriver, 10);
+
 		try {
 			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
 		} catch (Exception e) {
@@ -956,7 +971,6 @@ public class AttendeesTest{
 			System.out.println("cannot find element : " + e.getMessage());
 		}
 
-		String roomuri = CommonValues.SERVER_URL + CommonValues.SEMINAR_ROOM + seminarID;
 		// check room uri
 		if (!roomuri.equalsIgnoreCase(memberDriver.getCurrentUrl())) {
 			Exception e = new Exception("fail to join Seminar : " + memberDriver.getCurrentUrl());
@@ -971,8 +985,8 @@ public class AttendeesTest{
 	public void joinfullseminar() throws Exception {
 
 		//seminar link
-		sameuserDriver.get(CommonValues.SERVER_URL + "/logout");
-		Thread.sleep(500);
+		CommonValues comm = new CommonValues();
+		comm.logout(sameuserDriver);
 		
 		sameuserDriver.get(seminarLink);
 		Thread.sleep(1000);
@@ -1384,7 +1398,7 @@ public class AttendeesTest{
 			Thread.sleep(1000);
 			
 			if(!attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL) 
-					&& !attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/")) {
+					&& !attendeesDriver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/login")) {
 				failMsg = failMsg + "\n3. not loginview(after submit survey). current url : " + attendeesDriver.getCurrentUrl();
 			}
 			
@@ -1634,6 +1648,7 @@ public class AttendeesTest{
 		CommonValues comm = new CommonValues();
 		String ret = comm.checkSettingpopup(wd);
 		
+		/*
 		if(ret.isEmpty()) {
 			if(!user.contentEquals(ROLE_PRESENER)) {
 				failMsg = failMsg + "\n 0-1. find seminar setting popup " + user;
@@ -1643,7 +1658,7 @@ public class AttendeesTest{
 				failMsg = failMsg + "\n 0-2. " + ret + user;
 			}
 		}
-		
+		*/
 		//발표아이콘
 		if(isElementPresent_wd(wd, By.xpath(OnAirRoom.XPATH_ROOM_SCREEN_BTN + "/button"))) {
 			if(wd.findElement(By.xpath(OnAirRoom.XPATH_ROOM_SCREEN_BTN + "/button")).isEnabled()) {
@@ -1691,6 +1706,8 @@ public class AttendeesTest{
 		} catch (NoSuchElementException e) {
 			failMsg = failMsg + "\n 2. cannot find start seminar button " + user;
 		}
+		//임시. 계속 팝업이 뜬다.
+		comm.checkSettingpopup(wd);
 
 		// 참석자 인원 탭 확인
 		List<WebElement> roomTabs = wd.findElements(By.xpath("//div[@id='timeline-viewmode']/button"));

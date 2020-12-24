@@ -698,7 +698,8 @@ public class CommonValues {
 		Thread.sleep(500);
 		driver.findElement(By.xpath(XPATH_MODAL_FOOTER + "/button[1]")).click();
 		
-		Thread.sleep(1000);
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='SeminarView_right__23lrS right']/button")));
+		
 	}
 	
 	public String checkSettingpopup(WebDriver wd) throws InterruptedException {
@@ -708,10 +709,17 @@ public class CommonValues {
 		try {
 			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(XPATH_ROOM_SETTING_TITLE)));
 			Thread.sleep(500);
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath(XPATH_ROOM_SETTING_CONFIRM_BTN)));
 			wd.findElement(By.xpath(XPATH_ROOM_SETTING_CONFIRM_BTN)).click();
 			Thread.sleep(500);
+		
+			if(isElementPresent(wd,By.xpath(XPATH_ROOM_SETTING_CONFIRM_BTN))) {
+				wd.findElement(By.xpath(XPATH_ROOM_SETTING_CONFIRM_BTN)).click();
+				Thread.sleep(500);
+			}
 			return "";
 		} catch (Exception e) {
+			System.out.println("cannot find element : " + e.getMessage());
 			return "cannot find seminar setting popup.";
 		}
 	}

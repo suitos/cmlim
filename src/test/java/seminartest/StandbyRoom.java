@@ -357,7 +357,7 @@ public class StandbyRoom {
 	}
 	
 	// 3. 발표자 standby 룸에서 발표문서 추가 
-	@Test(priority = 3, dependsOnMethods = { "SeminarRoom_Pres" }, enabled = true)
+	@Test(priority = 3, dependsOnMethods = { "doc_checkDelete" }, alwaysRun = true, enabled = true)
 	public void doc_addFile() throws Exception {
 		String failMsg = "";
 		
