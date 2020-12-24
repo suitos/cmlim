@@ -1822,14 +1822,14 @@ public class SeminarInfo {
 		seminarID = seminarUri;
 		
 		// 각 유저 로그인
-		driver.get(CommonValues.SERVER_URL + "/logout");
 		CommonValues comm = new CommonValues();
+		comm.logout(driver);
 		comm.loginseminar(driver, USER_PRESENTER + "@gmail.com");
 		
-		driver_master.get(CommonValues.SERVER_URL + "/logout");
+		comm.logout(driver_master);
 		comm.loginseminar(driver_master, USER_MASTER + "@gmail.com");
 		
-		driver_organizer.get(CommonValues.SERVER_URL + "/logout");
+		comm.logout(driver_organizer);
 		comm.loginseminar(driver_organizer, USER_ORGANIZER + "@gmail.com");
 		
 		if (failMsg != null && !failMsg.isEmpty()) {

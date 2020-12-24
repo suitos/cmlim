@@ -166,8 +166,7 @@ public class ChannelVisibility {
 		}
 	    
 	    //logout
-	    String logout = CommonValues.SERVER_URL + "/logout";
-	    viewerdriver.get(logout);
+	    comm.logout(viewerdriver);
 	    return failMsg;
 	}
 	
@@ -205,9 +204,7 @@ public class ChannelVisibility {
 		}
 	    
 	    //logout
-	    String logout = CommonValues.SERVER_URL + "/logout";
-	    viewerdriver.get(logout);
-	    Thread.sleep(1000); 
+	    comm.logout(viewerdriver);
 	    return failMsg;
 	}
 	
