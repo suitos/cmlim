@@ -22,6 +22,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -645,7 +647,14 @@ public class logintest {
 		
 	    driver.findElement(By.xpath("//button[@type='submit']")).sendKeys(Keys.ENTER);
 	    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-	    Thread.sleep(1000); 
+	    
+	    WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(ListTest.XPATH_LIST_TAB_SAVED)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
 
 	    String listurl = CommonValues.SERVER_URL + CommonValues.LIST_URI;
 
@@ -744,8 +753,24 @@ public class logintest {
 		
 		// 첫번째 브라우저 세미나 만들기 클릭
 		driver.findElement(By.xpath("//div[@class='l-right']/button[1]")).click();
-		Thread.sleep(3000);
 		
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)));
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("cannot find element : " + e.getMessage());
+		}
+		
+		
+		if(isElementPresent(By.xpath(OnAirRoom.XPATH_ROOM_TOAST))){
+			if(driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText().contentEquals(MSG_LOGIN_DUPLICATED)) {
+				failMsg = failMsg + "1. error message. [Expected]" + MSG_LOGIN_DUPLICATED 
+						+ " [Actual]" + driver.findElement(By.xpath(OnAirRoom.XPATH_ROOM_TOAST)).getText();
+			}
+		}
+		Thread.sleep(1000);
+		/*
 		if(isAlertPresent()) {
 			Alert alert = driver.switchTo().alert();
 			String alert_msg = alert.getText();
@@ -759,9 +784,9 @@ public class logintest {
 		} else {
 			failMsg = "0. cannot find alert.";
 		}
-		
+		*/
 		if(!driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL) 
-				&& !driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/")) {
+				&& !driver.getCurrentUrl().contentEquals(CommonValues.SERVER_URL + "/login")) {
 			failMsg = failMsg + "\n2. token error. current url : " + driver.getCurrentUrl();
 		}
 		secondDriver.quit();

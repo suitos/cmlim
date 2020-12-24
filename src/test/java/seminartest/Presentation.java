@@ -27,6 +27,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -159,14 +161,33 @@ public class Presentation {
 		
 		// click confirm
 		driver.findElement(By.xpath("//label[@for='input-youtube-link']/button")).click();
-		Thread.sleep(500);
-		assertEquals(closeAlertAndGetItsText(), MSG_YOUTUBE_ERROR);
+
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		try {
+			wait.until(ExpectedConditions.alertIsPresent());
+			
+			assertEquals(closeAlertAndGetItsText(), MSG_YOUTUBE_ERROR);
+		} catch (Exception e) {
+			System.out.println("cannot find alert ");
+			
+			failMsg = failMsg + "\n2. cannot find alert";
+		} 
+		
+		
 		
 		// enter
 		driver.findElement(By.xpath("//input[@id='input-youtube-link']")).click();
 		driver.findElement(By.xpath("//input[@id='input-youtube-link']")).sendKeys(Keys.ENTER);
-		Thread.sleep(500);
-		assertEquals(closeAlertAndGetItsText(), MSG_YOUTUBE_ERROR);
+		
+		try {
+			wait.until(ExpectedConditions.alertIsPresent());
+			
+			assertEquals(closeAlertAndGetItsText(), MSG_YOUTUBE_ERROR);
+		} catch (Exception e) {
+			System.out.println("cannot find alert ");
+			
+			failMsg = failMsg + "\n3. cannot find alert";
+		} 
 		
 		if (failMsg != null && !failMsg.isEmpty()) {
 			Exception e = new Exception(failMsg);
