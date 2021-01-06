@@ -38,7 +38,7 @@ import org.testng.annotations.Test;
 
 public class RoomPresentation {
 
-	public static String PPT_FILE = "31p.pptx";
+	public static String PDF_FILE = "pdf46.pdf";
 	
 	public static String XPATH_CONTENT_DOC = "//div[@id='document-viewer-wrap']/div[@id='document-viewer-render']";
 	public static String ATTRIBUTE_DOC_FILENAME = "data-filename";
@@ -252,7 +252,7 @@ public class RoomPresentation {
 		}
 	}
 	
-	// 11. 페이지가 10장이상인 ppt 문서공유, 썸네일 스크롤 젤 끝으로 이동후 선택. 페이지 정상인지 확인
+	// 11. 페이지가 10장이상인 pdf 문서공유, 썸네일 스크롤 젤 끝으로 이동후 선택. 페이지 정상인지 확인
 	@Test(priority=11, dependsOnMethods = {"createSeminar"}, enabled = true)
 	public void loadDoc() throws Exception {
 		String failMsg = "";
@@ -267,9 +267,9 @@ public class RoomPresentation {
 		String filePath = CommonValues.TESTFILE_PATH;
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) 
 			filePath = CommonValues.TESTFILE_PATH_MAC;
-		String addedfile = filePath + PPT_FILE;
+		String addedfile = filePath + PDF_FILE;
 		driver_presenter.findElement(By.xpath("//input[@id='doc-upload-input']")).sendKeys(addedfile);
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 		driver_presenter.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		
 		//check added file
@@ -279,7 +279,7 @@ public class RoomPresentation {
 
 		} else {
 			docitems.get(doccount).findElement(By.xpath("./div[@class='btn-rect']")).click();
-			Thread.sleep(10000);
+			Thread.sleep(20000);
 			
 			List<WebElement> docPage = driver_presenter.findElements(By.xpath("//div[@id='document-viewer']//li"));
 			
@@ -299,7 +299,7 @@ public class RoomPresentation {
 					+ docPage.get(docPage.size()-1).findElement(By.xpath(".//img")).getAttribute("src");
 			}
 			Thread.sleep(1000);
-			docPage.get(docPage.size()-2).click();
+			docPage.get(docPage.size()-1).click();
 			Thread.sleep(500);
 			
 			if(driver_presenter.findElement(By.xpath("//article[@id='document-content']/img")).getAttribute("src").isEmpty()
@@ -313,8 +313,8 @@ public class RoomPresentation {
 			if(!isElementPresent(driver_presenter, By.xpath(XPATH_CONTENT_DOC))) {
 				failMsg = failMsg + "\n4. cannot find document content(presenter).";
 			} else {
-				if(!driver_presenter.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME).contentEquals(PPT_FILE)) {
-					failMsg = failMsg + "\n5. content area filename [Expected]" + PPT_FILE
+				if(!driver_presenter.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME).contentEquals(PDF_FILE)) {
+					failMsg = failMsg + "\n5. content area filename [Expected]" + PDF_FILE
 							 + " [Actual]" + driver_presenter.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME);
 				}
 			}
@@ -323,8 +323,8 @@ public class RoomPresentation {
 			if(!isElementPresent(driver_organizer, By.xpath(XPATH_CONTENT_DOC))) {
 				failMsg = failMsg + "\n6. cannot find document content(organizer).";
 			} else {
-				if(!driver_organizer.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME).contentEquals(PPT_FILE)) {
-					failMsg = failMsg + "\n7. content area filename(organizer) [Expected]" + PPT_FILE
+				if(!driver_organizer.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME).contentEquals(PDF_FILE)) {
+					failMsg = failMsg + "\n7. content area filename(organizer) [Expected]" + PDF_FILE
 							 + " [Actual]" + driver_organizer.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME);
 				}
 			}
@@ -333,8 +333,8 @@ public class RoomPresentation {
 			if(!isElementPresent(driver_guest, By.xpath(XPATH_CONTENT_DOC))) {
 				failMsg = failMsg + "\n8. cannot find document content(guest).";
 			} else {
-				if(!driver_guest.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME).contentEquals(PPT_FILE)) {
-					failMsg = failMsg + "\n9. content area filename(guest) [Expected]" + PPT_FILE
+				if(!driver_guest.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME).contentEquals(PDF_FILE)) {
+					failMsg = failMsg + "\n9. content area filename(guest) [Expected]" + PDF_FILE
 							 + " [Actual]" + driver_guest.findElement(By.xpath(XPATH_CONTENT_DOC)).getAttribute(ATTRIBUTE_DOC_FILENAME);
 				}
 			}
