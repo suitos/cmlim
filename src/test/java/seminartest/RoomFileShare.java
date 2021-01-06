@@ -523,7 +523,7 @@ public class RoomFileShare {
 			Thread.sleep(1000);
 			
 			driver_presenter.findElement(By.xpath(CommonValues.XPATH_MODAL_FOOTER + "/button[1]")).click();
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 			
 			fileList = driver_presenter.findElements(By.xpath(XPATH_ROOM_DOWNLOAD_LIST));
 			if(fileList.size() == (i+1)) {
