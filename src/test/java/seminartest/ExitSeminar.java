@@ -494,14 +494,14 @@ public class ExitSeminar {
 
 		JavascriptExecutor js = (JavascriptExecutor) Present_driver;
 		js.executeScript("arguments[0].scrollIntoView();",
-				Present_driver.findElement(By.xpath("//button[@id='btn-exit']/i")));
+				Present_driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)));
 
-		Present_driver.findElement(By.xpath("//button[@id='btn-exit']")).click();
-		WebDriverWait exit_popup = new WebDriverWait(Present_driver, 20);
-		exit_popup.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='submit']")));
+		Present_driver.findElement(By.xpath(CommonValues.XPATH_ROOM_STARTSEMINAR_EXIT_BTN)).click();
+		WebDriverWait wait = new WebDriverWait(Present_driver, 20);
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='submit']")));
 		Present_driver.findElement(By.xpath("//button[@type='submit']")).click();
 
-		Thread.sleep(1000);
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='buttons']/div/button[1]")));
 		Present_driver.findElement(By.xpath("//div[@class='buttons']/div/button[1]")).click();
 		TimeUnit.MINUTES.sleep(1);
 
