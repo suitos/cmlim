@@ -334,7 +334,7 @@ public class CommonValues {
 		    options.addArguments("--disable-dev-shm-usage");
 		    options.addArguments("--disable-browser-side-navigation");
 		    options.addArguments("--start-maximized");
-		    options.addArguments("use-fake-ui-for-media-stream");
+		    //options.addArguments("use-fake-ui-for-media-stream");
 		    
 		    if(presenter) {
 		    	options.addArguments("auto-select-desktop-capture-source=Entire screen");

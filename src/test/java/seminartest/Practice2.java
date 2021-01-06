@@ -72,6 +72,9 @@ public class Practice2 {
 	public static String REHEARSAL_END_TITLE = "Rehearsal has ended.";
 	public static String REHEARSAL_CANNOTENTER_MSG = "Currently, rehearsal is not allowed.";
 	public static String REHEARSAL_TERMINATED_MSG = "The seminar was revised or deleted and the rehearse has over.";
+	public static String REHEARSAL_EDIT_MSG = "The seminar is currently in rehearse mode.\n" + 
+			"This mode will end if you modify it.\n" + 
+			"Do you want to edit it anyway?";
 	
 	public static String XPATH_SEMINARlIST_PRACTICEBTN = "//button[@class='btn btn-basic btn-m ']";
 	public static String XPATH_SEMINARVIEW_PRACTICEBTN = "//button[@class='btn btn-basic btn-auto SeminarView_actionButton__3tFHP']";
@@ -560,21 +563,32 @@ public class Practice2 {
 	
 	@Test(priority=16)
 	public void Edit_Seminar() throws Exception {
+		String failMsg = "";
+		
+		WebDriverWait wait = new WebDriverWait(Present_driver, 20);
 		
 		Present_driver.get(seminarViewURL);
-		Present_driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='ricon ricon-edit']")));
 		Present_driver.findElement(By.xpath("//div[@class='ricon ricon-edit']")).click();
-		WebDriverWait wait = new WebDriverWait(Present_driver, 20);
-		wait.until(ExpectedConditions.textToBePresentInElement(Present_driver.findElement(By.xpath("//div[@class='modal-body']")), "The seminar is currently in rehearse mode.\n" + 
-				"This mode will end if you modify it.\n" + 
-				"Do you want to edit it anyway?"));
+
+		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CommonValues.XPATH_MODAL_BODY)));
 		
+		if(!Present_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText").contentEquals(REHEARSAL_EDIT_MSG)) {
+			failMsg = "1. edit warring msg [Expected]" + REHEARSAL_EDIT_MSG 
+					+ " [Actual]" + Present_driver.findElement(By.xpath(CommonValues.XPATH_MODAL_BODY)).getAttribute("innerText");
+		}
+	
 		Present_driver.findElement(By.xpath("//div[@class='modal-footer']/button[1]")).click();
 		Thread.sleep(2000);
 		Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-l ']")).click();
 		Thread.sleep(2000);
 		Present_driver.findElement(By.xpath("//button[@class='btn btn-primary btn-m ']")).click();
+		
+		if (failMsg != null && !failMsg.isEmpty()) {
+			Exception e = new Exception(failMsg);
+			throw e;
+		}
 
 	}
 	
