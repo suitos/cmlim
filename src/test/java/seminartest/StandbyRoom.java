@@ -136,12 +136,13 @@ public class StandbyRoom {
 			Exception e = new Exception("no presentation View : " + driver.getCurrentUrl());
 			throw e;
 		}
-		//add doc(png)
+		//add doc(pdf)
 		String filePath = CommonValues.TESTFILE_PATH;
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) 
 			filePath = CommonValues.TESTFILE_PATH_MAC;
 		String testDoc = filePath + CommonValues.TESTFILE_PDFS[0];
 		driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testDoc);
+		Thread.sleep(3000);
 
 		//add youtube
 		driver.findElement(By.id("input-youtube-link")).clear();

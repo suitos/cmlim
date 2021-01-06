@@ -160,7 +160,8 @@ public class OnAirRoom {
 			filePath = CommonValues.TESTFILE_PATH_MAC;
 		String testDoc = filePath + CommonValues.TESTFILE_PDFS[0];
 		driver.findElement(By.xpath("//div[@class='box-upload']/input[@class='file']")).sendKeys(testDoc);
-
+		Thread.sleep(3000);
+		
 		//add youtube
 		driver.findElement(By.id("input-youtube-link")).clear();
 		driver.findElement(By.id("input-youtube-link")).sendKeys(CommonValues.YOUTUBE_URL[0]);
@@ -506,7 +507,7 @@ public class OnAirRoom {
 			driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_ICON + "//i[@class='ricon-close']")).click();
 			Thread.sleep(500);
 			driver.findElement(By.xpath("//section[@id='confirm-dialog']//button[1]")).click();
-			Thread.sleep(500);
+			Thread.sleep(1000);
 			
 			
 			if (!driver.findElement(By.xpath(XPATH_ROOM_TOAST)).getText()
@@ -525,7 +526,7 @@ public class OnAirRoom {
 		//click youtube icon again
 		driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_BTN)).click();
 		if(isElementPresent(By.xpath(XPATH_ROOM_YUTUBE_ICON))){
-			failMsg = failMsg + "\n 4. find doc item after delete. file name : "
+			failMsg = failMsg + "\n 4. find youtube item after delete. file name : "
 					+ driver.findElement(By.xpath(XPATH_ROOM_YUTUBE_ICON + "//div[@class='title']")).getText();
 		}
 		
